@@ -35,23 +35,47 @@ with `DEEPSEEK_MODEL`. `llm_configured` is kept as an alias of `llm_available`.
 ```json
 {
   "version": "0.1.0",
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "provider": "deepseek",
   "model": "deepseek-flash",
   "llm_configured": true,
   "llm_available": true,
   "llm_key_source": "dotenv",
   "reasoning_effort": "max",
-  "demo_provider": "mock",
-  "opt_in_text": "<exact string, render verbatim>",
+  "demo_provider": "deepseek",
+  "demo_provider_note": null,
+  "opt_in_text": "<exact string, render verbatim; see below>",
   "disclaimer": "Experimental self-reflection, not a clinical or diagnostic tool",
   "limitations_title": "What this cannot tell you",
-  "max_episodes_scored": 40
+  "max_episodes_scored": 40,
+  "experimental_opt_in_text": "Show experimental personality and well-being language scores. These are 0–100 numbers built from word counts and AI ratings. They are not validated and are not a diagnosis. With AI scoring on, the same excerpts already selected are sent to DeepSeek again with extra questions.",
+  "score_other_opt_in_text": "Also score the other person. They have not agreed to be scored. Their scores are an experimental reading of their messages in this conversation only, stay on this computer, and should not be shared or used to judge them.",
+  "experimental_banner": "Experimental, not validated. These scores are not a diagnosis, not a personality test and not a measure of who anyone is. They come from word counts and AI ratings of this one conversation and can easily be wrong.",
+  "experimental_footer_support": "If anything in this conversation is weighing on you, consider talking with someone you trust or a licensed professional.",
+  "experimental_scale_note": "0–100 experimental index. 50 is the midpoint of fixed reference points, not an average person. The shaded band shows how uncertain the number is.",
+  "experimental_how_it_works": "<multi-paragraph string, render verbatim>",
+  "experimental_enabled": true,
+  "experimental_dimensions": [
+    {"key": "openness", "label": "Openness (experimental language index)", "family": "big_five", "evidence_strength": "moderate"},
+    {"key": "conscientiousness", "label": "Conscientiousness (experimental language index)", "family": "big_five", "evidence_strength": "moderate"},
+    {"key": "extraversion", "label": "Extraversion (experimental language index)", "family": "big_five", "evidence_strength": "moderate"},
+    {"key": "agreeableness", "label": "Agreeableness (experimental language index)", "family": "big_five", "evidence_strength": "moderate"},
+    {"key": "neuroticism", "label": "Neuroticism (experimental language index)", "family": "big_five", "evidence_strength": "moderate"},
+    {"key": "depression_language", "label": "Depression-related language (experimental language index)", "family": "wellbeing_language", "evidence_strength": "small"},
+    {"key": "anxiety_language", "label": "Anxiety-related language (experimental language index)", "family": "wellbeing_language", "evidence_strength": "small"},
+    {"key": "addictive_language", "label": "Addictive-tendency language (experimental language index)", "family": "wellbeing_language", "evidence_strength": "very_weak"},
+    {"key": "anger_hostility_language", "label": "Anger/hostility language (experimental language index)", "family": "interpersonal", "evidence_strength": "small"},
+    {"key": "narcissism_language", "label": "Narcissism-related language (experimental language index)", "family": "interpersonal", "evidence_strength": "very_weak"},
+    {"key": "attachment_anxious_language", "label": "Anxious-attachment-related language (experimental language index)", "family": "interpersonal", "evidence_strength": "very_weak"},
+    {"key": "attachment_avoidant_language", "label": "Avoidant-attachment-related language (experimental language index)", "family": "interpersonal", "evidence_strength": "very_weak"}
+  ]
 }
 ```
 `opt_in_text` (current value, render it verbatim from the API rather than copying it):
 
-> To score communication patterns, PsychoSight will send excerpts of this conversation to DeepSeek (an external AI service). The excerpts include messages from BOTH sides: your messages and the other person's messages, which are sent as context. Up to 40 short episodes are sent; nothing else from your Messages library leaves this computer. DeepSeek processes the excerpts under its own terms. Evidence quotes from the analysis are saved in the local report until you delete it. If you do not opt in, you still get a local-only report without the AI sections.
+> To score communication patterns, PsychoSight will send excerpts of this conversation to DeepSeek (an external AI service). The excerpts include messages from BOTH sides: your messages and the other person's messages, which are sent as context. Up to 40 short episodes are sent; nothing else from your Messages library leaves this computer. DeepSeek processes the excerpts under its own terms. Evidence quotes from the analysis are saved in the local report until you delete it. The demo conversation is synthetic: its excerpts are fictional messages written for the demo. If you do not opt in, you still get a local-only report without the AI sections.
+
+`demo_provider` is `"deepseek"` when a key is configured (the demo runs a real analysis) and `"mock"` otherwise; override with `PSYCHOSIGHT_DEMO_PROVIDER=mock|deepseek`. `demo_provider_note` is `null` with the real model and a short explanation string when the demo falls back to the mock (show it next to the demo entry). Sample captured from the running server with a key in `.env`; `experimental_*` fields are described under [Experimental scores](#experimental-scores).
 
 ## GET /conversations
 ```json
@@ -125,7 +149,7 @@ Additional fields:
 - Non-demo requests that leave the section off still include it, with `status: "not_run"` and reason `"not requested"`. No experimental model calls run in that case.
 - `PSYCHOSIGHT_EXPERIMENTAL=0` forces `status: "not_run"`, reason `"disabled by configuration"`, and `experimental_enabled: false` on `GET /config`.
 - A failure inside the section does not fail the job. The section is `status: "failed"` with reason `"Experimental scores could not be computed for this run."` The rest of the report is unchanged.
-- Progress events add stage `experimental`. `done` / `total` count experimental model calls. The cap is `PSYCHOSIGHT_EXP_MAX_LLM_CALLS` (default 110), separate from `PSYCHOSIGHT_MAX_LLM_CALLS`.
+- Progress events add stage `experimental`. `done` / `total` count finished units, not model calls: one per selected episode (both scoring runs finished) plus one per speaker with a holistic rating, in completion order. The cap is `PSYCHOSIGHT_EXP_MAX_LLM_CALLS` (default 110), separate from `PSYCHOSIGHT_MAX_LLM_CALLS`.
 
 `GET /analyses/{job_id}/report` includes the section only as the optional `experimental_scores` object (schema 1.1.0). Reports stored at 1.0.0, which have no such object, still load.
 

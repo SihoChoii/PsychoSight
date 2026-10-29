@@ -401,10 +401,10 @@ Example `run_meta` additions:
 - `experimental_opt_in_text` / `score_other_opt_in_text`: echo of the exact consent strings shown; a mismatch → 422 `EXPERIMENTAL_CONSENT_REQUIRED` (`strings.CONSENT_MISMATCH_MESSAGE`). The demo does not require the echo.
 - Without `llm_opt_in`: deterministic markers only; R and H contributions `not_run`; band +10.
 - Non-demo default (no consent): section present with `status: not_run`, reason `"not requested"`, no experimental work done.
-- Progress events add stage `experimental` with `done/total` = experimental LLM calls.
+- Progress events add stage `experimental` with `done/total` = finished units, not LLM calls: one per selected episode (counted when both of its scoring runs finish) plus one per holistic speaker, emitted in completion order.
 - A failure inside the stage never fails the analysis: section `status: failed`, reason `strings.REASON_FAILED`.
 
-**GET /config** adds: `experimental_opt_in_text`, `score_other_opt_in_text`, `experimental_banner`, `experimental_footer_support`, `experimental_scale_note`, `experimental_how_it_works`, `experimental_enabled` (false when `PSYCHOSIGHT_EXPERIMENTAL=0`), `experimental_dimensions` (list of `{key, label, family, evidence_strength}` in registry order). The frontend renders these verbatim.
+**GET /config** adds: `experimental_opt_in_text`, `score_other_opt_in_text`, `experimental_banner`, `experimental_footer_support`, `experimental_scale_note`, `experimental_how_it_works`, `experimental_enabled` (false when `PSYCHOSIGHT_EXPERIMENTAL=0`), `experimental_dimensions` (list of `{key, label, family, evidence_strength}` in registry order). The frontend renders these verbatim. Also present (main pipeline, not experimental): `demo_provider` (`"deepseek"` or `"mock"`) and `demo_provider_note` (`null` with the real model, otherwise a short string explaining the mock fallback), plus `llm_available` and `llm_key_source` (`"env"`, `"dotenv"` or `null`; the key itself is never returned). `schema_version` is `"1.1.0"`.
 
 **CLI:** `analyze --experimental-scores [--score-other]`; `--demo` implies both unless `--no-experimental-scores` (also turns off other). `--score-other` without `--experimental-scores` exits 2 with `EXPERIMENTAL_CONSENT_REQUIRED`.
 
