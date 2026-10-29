@@ -61,7 +61,7 @@ the opt-in. The opt-in text itself says the demo excerpts are synthetic.
 ```json
 {
   "conversations": [
-    {"id": "demo", "label": "Demo conversation (synthetic)", "message_count": 4259, "latest_date": "2026-02-01T20:17:46-08:00",
+    {"id": "demo", "label": "Demo conversation (synthetic)", "message_count": 4259, "latest_date": "2026-02-01T13:48:05-08:00",
      "is_group": false, "supported": true, "is_demo": true, "participant_count": 1},
     {"id": "42", "label": "+1 555-0100", "message_count": 3021, "latest_date": "...", "is_group": false, "supported": true, "is_demo": false, "participant_count": 1}
   ],
