@@ -1,0 +1,11 @@
+[project]
+name = "psychosight-lite"
+version = "0.1.0"
+description = "PsychoSight Lite backend: descriptive communication-pattern reports for one 1:1 iMessage conversation"
+requires-python = ">=3.9"
+dependencies = ["fastapi>=0.100", "uvicorn>=0.22", "jsonschema>=4.17", "httpx>=0.24"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning:fastapi.testclient", "ignore:Using `httpx` with `starlette.testclient`"]

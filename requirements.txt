@@ -1,0 +1,5 @@
+fastapi>=0.100
+uvicorn>=0.22
+jsonschema>=4.17
+httpx>=0.24
+pytest>=7

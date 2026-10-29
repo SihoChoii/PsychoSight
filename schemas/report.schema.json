@@ -1,0 +1,261 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SihoChoii/PsychoSight/schemas/report.schema.json",
+  "title": "PsychoSight Lite communication patterns report",
+  "description": "One report for one 1:1 conversation. Descriptive, me-vs-other and week-vs-week only, with counts. Values with too little evidence are null with a reason.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "report_id", "mode", "header", "weeks", "series", "episodes", "rubric", "observations", "quotes", "limitations_title", "limitations", "disclaimer", "run_meta"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "report_id": {"type": "string", "minLength": 1, "description": "Same as the analysis job_id."},
+    "mode": {"enum": ["full", "deterministic_only"], "description": "full = LLM sections ran after opt-in; deterministic_only = no LLM call was made."},
+    "header": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conversation_id", "conversation_label", "is_demo", "date_from", "date_to", "timezone", "message_counts", "episode_count", "episodes_scored", "week_count"],
+      "properties": {
+        "conversation_id": {"type": "string"},
+        "conversation_label": {"type": "string"},
+        "is_demo": {"type": "boolean"},
+        "date_from": {"type": ["string", "null"], "format": "date", "description": "First local date with a message in the analyzed range."},
+        "date_to": {"type": ["string", "null"], "format": "date"},
+        "requested_range": {
+          "type": "object", "additionalProperties": false,
+          "properties": {"date_from": {"type": ["string", "null"]}, "date_to": {"type": ["string", "null"]}}
+        },
+        "timezone": {"type": "string", "description": "Timezone used for weeks and local hours."},
+        "message_counts": {"$ref": "#/$defs/sideCounts"},
+        "word_counts": {"$ref": "#/$defs/sideCounts"},
+        "episode_count": {"type": "integer", "minimum": 0},
+        "episodes_scored": {"type": "integer", "minimum": 0, "description": "Episodes sent to the LLM rubric scorer (0 in deterministic_only mode)."},
+        "week_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "weeks": {
+      "type": "array",
+      "description": "ISO weeks in chronological order. Every series point references one of these keys.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["week", "start_date", "end_date", "episodes", "messages", "words"],
+        "properties": {
+          "week": {"type": "string", "pattern": "^[0-9]{4}-W[0-9]{2}$"},
+          "start_date": {"type": "string", "format": "date"},
+          "end_date": {"type": "string", "format": "date"},
+          "episodes": {"type": "integer", "minimum": 0},
+          "messages": {"$ref": "#/$defs/sideCounts"},
+          "words": {"$ref": "#/$defs/sideCounts"}
+        }
+      }
+    },
+    "series": {
+      "type": "array",
+      "description": "Deterministic features. One entry per feature with an overall value and weekly points for me and other.",
+      "items": {"$ref": "#/$defs/feature"}
+    },
+    "episodes": {
+      "type": "array",
+      "description": "Episode index without message text.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["episode_id", "start", "end", "week", "initiator", "messages", "words", "late_night_start", "pooled", "scored", "selection"],
+        "properties": {
+          "episode_id": {"type": "string"},
+          "start": {"type": "string", "format": "date-time"},
+          "end": {"type": "string", "format": "date-time"},
+          "week": {"type": "string"},
+          "initiator": {"$ref": "#/$defs/speaker"},
+          "messages": {"$ref": "#/$defs/sideCounts"},
+          "words": {"$ref": "#/$defs/sideCounts"},
+          "late_night_start": {"type": "boolean", "description": "Episode started between 01:00 and 04:00 local time. Neutral fact."},
+          "pooled": {"type": "boolean", "description": "Fewer than 100 words: counted only inside the weekly window."},
+          "scored": {"type": "boolean"},
+          "selection": {"enum": [null, "top_signal", "random"]}
+        }
+      }
+    },
+    "rubric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason", "scored_speaker", "items", "unstable_items", "episodes_selected", "episodes_scored", "agreement_rate"],
+      "properties": {
+        "status": {"$ref": "#/$defs/sectionStatus"},
+        "reason": {"type": ["string", "null"]},
+        "scored_speaker": {"const": "me"},
+        "prompt_version": {"type": ["string", "null"]},
+        "episodes_selected": {"type": "integer", "minimum": 0},
+        "episodes_scored": {"type": "integer", "minimum": 0},
+        "agreement_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1, "description": "Share of (episode, item) pairs, both runs non-null, whose two scores differ by 1 or less."},
+        "unstable_items": {"type": "array", "items": {"type": "string"}},
+        "items": {"type": "array", "items": {"$ref": "#/$defs/rubricItem"}}
+      }
+    },
+    "observations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason", "items"],
+      "properties": {
+        "status": {"$ref": "#/$defs/sectionStatus"},
+        "reason": {"type": ["string", "null"]},
+        "prompt_version": {"type": ["string", "null"]},
+        "note": {"type": ["string", "null"]},
+        "items": {"type": "array", "maxItems": 5, "items": {"$ref": "#/$defs/observation"}}
+      }
+    },
+    "quotes": {
+      "type": "array",
+      "description": "Every verified evidence quote in the report. Verbatim snippets of single messages.",
+      "items": {"$ref": "#/$defs/quote"}
+    },
+    "limitations_title": {"const": "What this cannot tell you"},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "disclaimer": {"const": "Experimental self-reflection, not a clinical or diagnostic tool"},
+    "run_meta": {"$ref": "#/$defs/runMeta"}
+  },
+  "$defs": {
+    "speaker": {"enum": ["me", "other"]},
+    "sideCounts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["me", "other"],
+      "properties": {"me": {"type": "integer", "minimum": 0}, "other": {"type": "integer", "minimum": 0}}
+    },
+    "sectionStatus": {"enum": ["ok", "not_run", "insufficient_data", "failed"]},
+    "cell": {
+      "description": "A value with the count it is based on, or null with a reason when evidence is too thin.",
+      "oneOf": [
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["value", "count"],
+          "properties": {"value": {"type": "number"}, "count": {"type": "integer", "minimum": 0}}
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["value", "count", "reason"],
+          "properties": {"value": {"type": "null"}, "count": {"type": "integer", "minimum": 0}, "reason": {"const": "insufficient data"}}
+        }
+      ]
+    },
+    "sidePair": {
+      "type": "object", "additionalProperties": false,
+      "required": ["me", "other"],
+      "properties": {"me": {"$ref": "#/$defs/cell"}, "other": {"$ref": "#/$defs/cell"}}
+    },
+    "feature": {
+      "type": "object", "additionalProperties": false,
+      "required": ["key", "label", "unit", "count_unit", "description", "approximate", "min_count", "overall", "points"],
+      "properties": {
+        "key": {"enum": ["message_count", "avg_words_per_message", "absolutist_pct", "i_pct", "we_pct", "initiation_pct", "reply_latency_median_s", "double_text_pct", "late_night_episodes"]},
+        "label": {"type": "string"},
+        "unit": {"type": "string"},
+        "count_unit": {"enum": ["messages", "words", "episodes", "replies", "turns"]},
+        "description": {"type": "string"},
+        "approximate": {"type": "boolean"},
+        "min_count": {"type": ["integer", "null"], "minimum": 0, "description": "Minimum count for a value to be shown instead of null."},
+        "overall": {"$ref": "#/$defs/sidePair"},
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["week", "me", "other"],
+            "properties": {"week": {"type": "string"}, "me": {"$ref": "#/$defs/cell"}, "other": {"$ref": "#/$defs/cell"}}
+          }
+        }
+      }
+    },
+    "rubricItem": {
+      "type": "object", "additionalProperties": false,
+      "required": ["key", "label", "description", "anchors", "speaker", "status", "reason", "mean", "n_scored", "n_null", "n_unstable_pairs", "agreement_rate", "by_week", "quote_ids"],
+      "properties": {
+        "key": {"type": "string"},
+        "label": {"type": "string"},
+        "description": {"type": "string"},
+        "anchors": {
+          "type": "object", "additionalProperties": false,
+          "required": ["1", "3", "5"],
+          "properties": {"1": {"type": "string"}, "3": {"type": "string"}, "5": {"type": "string"}}
+        },
+        "speaker": {"$ref": "#/$defs/speaker"},
+        "status": {"enum": ["ok", "unstable", "insufficient_data", "not_run"]},
+        "reason": {"type": ["string", "null"]},
+        "mean": {"type": ["number", "null"], "minimum": 1, "maximum": 5},
+        "n_scored": {"type": "integer", "minimum": 0, "description": "Episodes where both runs gave a score and agreed within 1 point."},
+        "n_null": {"type": "integer", "minimum": 0, "description": "Episodes where a run returned null (not enough context)."},
+        "n_unstable_pairs": {"type": "integer", "minimum": 0},
+        "agreement_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "by_week": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["week", "mean", "count"],
+            "properties": {"week": {"type": "string"}, "mean": {"type": ["number", "null"]}, "count": {"type": "integer", "minimum": 0}, "reason": {"type": "string"}}
+          }
+        },
+        "quote_ids": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "quote": {
+      "type": "object", "additionalProperties": false,
+      "required": ["quote_id", "episode_id", "speaker", "timestamp", "text"],
+      "properties": {
+        "quote_id": {"type": "string"},
+        "episode_id": {"type": "string"},
+        "speaker": {"$ref": "#/$defs/speaker"},
+        "timestamp": {"type": "string", "format": "date-time"},
+        "text": {"type": "string", "minLength": 1, "maxLength": 400},
+        "item_key": {"type": ["string", "null"]}
+      }
+    },
+    "observation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["observation_id", "text", "confidence", "supporting_episodes", "episode_ids", "item_keys", "feature_keys", "quotes"],
+      "properties": {
+        "observation_id": {"type": "string"},
+        "text": {"type": "string", "minLength": 1},
+        "confidence": {"enum": ["low", "medium", "high"]},
+        "supporting_episodes": {"type": "integer", "minimum": 0},
+        "episode_ids": {"type": "array", "items": {"type": "string"}},
+        "item_keys": {"type": "array", "items": {"type": "string"}},
+        "feature_keys": {"type": "array", "items": {"type": "string"}},
+        "quotes": {"type": "array", "items": {"$ref": "#/$defs/quote"}}
+      }
+    },
+    "runMeta": {
+      "type": "object", "additionalProperties": false,
+      "required": ["run_id", "created_at", "mode", "llm_opt_in", "source", "provider", "model", "prompt_version", "synthesis_prompt_version", "extractor_version", "cache_hits", "cache_misses", "llm_calls", "thresholds"],
+      "properties": {
+        "run_id": {"type": "string"},
+        "created_at": {"type": "string", "format": "date-time"},
+        "finished_at": {"type": ["string", "null"], "format": "date-time"},
+        "duration_s": {"type": ["number", "null"], "minimum": 0},
+        "mode": {"enum": ["full", "deterministic_only"]},
+        "llm_opt_in": {"type": "boolean"},
+        "source": {"enum": ["demo", "chat.db"]},
+        "provider": {"enum": [null, "deepseek", "mock"]},
+        "model": {"type": ["string", "null"]},
+        "reasoning_effort": {"type": ["string", "null"]},
+        "prompt_version": {"type": "string"},
+        "synthesis_prompt_version": {"type": "string"},
+        "extractor_version": {"type": "string"},
+        "backend_version": {"type": "string"},
+        "cache_hits": {"type": "integer", "minimum": 0},
+        "cache_misses": {"type": "integer", "minimum": 0},
+        "llm_calls": {"type": "integer", "minimum": 0},
+        "llm_retries": {"type": "integer", "minimum": 0},
+        "invalid_outputs": {"type": "integer", "minimum": 0},
+        "dropped_quotes": {"type": "integer", "minimum": 0},
+        "dropped_observations": {"type": "integer", "minimum": 0},
+        "thresholds": {
+          "type": "object", "additionalProperties": false,
+          "required": ["turn_gap_s", "episode_gap_s", "min_words", "pool_episode_words", "min_episodes", "min_replies", "min_turns", "max_episodes_scored"],
+          "properties": {
+            "turn_gap_s": {"type": "integer"}, "episode_gap_s": {"type": "integer"}, "min_words": {"type": "integer"},
+            "pool_episode_words": {"type": "integer"}, "min_episodes": {"type": "integer"}, "min_replies": {"type": "integer"},
+            "min_turns": {"type": "integer"}, "max_episodes_scored": {"type": "integer"}
+          }
+        }
+      }
+    }
+  }
+}
