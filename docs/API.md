@@ -19,6 +19,7 @@ Every error response is
 | `NOT_FOUND` | 404 | Unknown conversation, job or report. |
 | `REPORT_NOT_READY` | 409 | Report requested before the job is `done`. |
 | `INVALID_REQUEST` | 422 | Body failed validation (e.g. bad date). |
+| `EXPERIMENTAL_CONSENT_REQUIRED` | 422 | `score_other` is true while `experimental_scores` is false, or an echoed experimental consent string does not match the current text from `GET /config`. |
 | `INTERNAL_ERROR` | 500 | Unexpected failure (no message text in the message). |
 
 ## GET /health
@@ -80,6 +81,7 @@ Request:
 Response `202 {"job_id": "a1b2...", "status": "queued"}`. Fast-fail errors: `GROUP_CHAT_UNSUPPORTED`, `NOT_FOUND`,
 `LLM_OPT_IN_REQUIRED`, `LLM_UNAVAILABLE` (opt-in with no usable key/model for a real conversation).
 The demo conversation uses the offline mock LLM unless `PSYCHOSIGHT_DEMO_PROVIDER=deepseek`.
+Experimental score fields, demo defaults, and `EXPERIMENTAL_CONSENT_REQUIRED` are in [Experimental scores](#experimental-scores).
 
 ## GET /analyses/{job_id}
 ```json
@@ -100,6 +102,56 @@ The demo conversation uses the offline mock LLM unless `PSYCHOSIGHT_DEMO_PROVIDE
 ## DELETE /analyses/{job_id}
 Deletes the stored report (which contains evidence quotes) and the job. `200 {"deleted": true, "job_id": "..."}`,
 `404 NOT_FOUND` if unknown.
+
+## Experimental scores
+
+Optional report section. It is off unless the request turns it on, except `conversation_id: "demo"`, where it is on by default. The section is experimental and not validated. Fixed wording is served by `GET /config` and rendered verbatim. Methods, evidence, and limits: [EXPERIMENTAL_SCORES.md](EXPERIMENTAL_SCORES.md).
+
+### POST /analyses
+
+Additional fields:
+
+| Field | Default | Demo default |
+|---|---|---|
+| `experimental_scores` | `false` | `true` |
+| `score_other` | `false` | `true` |
+| `experimental_opt_in_text` | omitted | echo not required |
+| `score_other_opt_in_text` | omitted | echo not required |
+
+- `score_other: true` with `experimental_scores: false` → **422** `EXPERIMENTAL_CONSENT_REQUIRED`, message: "Scoring the other person requires the experimental scores consent."
+- On a non-demo conversation, `experimental_opt_in_text` must equal `experimental_opt_in_text` from `GET /config` when experimental scores are requested, and `score_other_opt_in_text` must equal `score_other_opt_in_text` when the other person is scored. A mismatch → **422** `EXPERIMENTAL_CONSENT_REQUIRED`, message: "The experimental consent text does not match the current text from GET /config."
+- The demo does not require the echo.
+- Without `llm_opt_in`, word-count markers still run. Episode AI items and the overall AI rating are `not_run`, and the uncertainty band is widened by 10 points.
+- Non-demo requests that leave the section off still include it, with `status: "not_run"` and reason `"not requested"`. No experimental model calls run in that case.
+- `PSYCHOSIGHT_EXPERIMENTAL=0` forces `status: "not_run"`, reason `"disabled by configuration"`, and `experimental_enabled: false` on `GET /config`.
+- A failure inside the section does not fail the job. The section is `status: "failed"` with reason `"Experimental scores could not be computed for this run."` The rest of the report is unchanged.
+- Progress events add stage `experimental`. `done` / `total` count experimental model calls. The cap is `PSYCHOSIGHT_EXP_MAX_LLM_CALLS` (default 110), separate from `PSYCHOSIGHT_MAX_LLM_CALLS`.
+
+`GET /analyses/{job_id}/report` includes the section only as the optional `experimental_scores` object (schema 1.1.0). Reports stored at 1.0.0, which have no such object, still load.
+
+### GET /config
+
+Additional fields, all safe to show: `experimental_opt_in_text`, `score_other_opt_in_text`, `experimental_banner`, `experimental_footer_support`, `experimental_scale_note`, `experimental_how_it_works`, `experimental_enabled`, `experimental_dimensions`.
+
+`experimental_dimensions` is twelve objects in registry order, each `{key, label, family, evidence_strength}`. `schema_version` in this response is `"1.1.0"`.
+
+Current consent and banner strings (also the values tests should echo):
+
+```text
+Show experimental personality and well-being language scores. These are 0–100 numbers built from word counts and AI ratings. They are not validated and are not a diagnosis. With AI scoring on, the same excerpts already selected are sent to DeepSeek again with extra questions.
+```
+
+```text
+Also score the other person. They have not agreed to be scored. Their scores are an experimental reading of their messages in this conversation only, stay on this computer, and should not be shared or used to judge them.
+```
+
+```text
+Experimental, not validated. These scores are not a diagnosis, not a personality test and not a measure of who anyone is. They come from word counts and AI ratings of this one conversation and can easily be wrong.
+```
+
+### CLI
+
+`python -m psychosight analyze --experimental-scores [--score-other]`. `--demo` implies both unless `--no-experimental-scores` (which also turns off scoring the other person). `--score-other` without `--experimental-scores` exits 2 with `EXPERIMENTAL_CONSENT_REQUIRED`.
 
 ## Message text
 There is no endpoint that returns full message text. Message text leaves the backend only as evidence `quotes` in

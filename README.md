@@ -92,6 +92,17 @@ quotes must be verbatim and from my messages) -> `synthesize` (opt-in only: scop
 conversation, in the N episodes reviewed, ...", ids/quotes/wording post-checked, confidence from supporting
 episodes and agreement) -> `report` (validated against the JSON Schema, a failure is a hard error).
 
+### Experimental scores
+
+An optional section can add 0–100 indexes from word counts in this conversation and, when AI scoring is already on, from extra ratings of the same selected excerpts. The indexes are experimental and not validated. They are easy to get wrong, and several of them rest on weak evidence. The banner, both consent lines, and the longer validity note come from `GET /config` and should be shown as returned. Details: `docs/EXPERIMENTAL_SCORES.md`.
+
+```bash
+.venv/bin/python -m psychosight analyze --demo --experimental-scores --score-other
+.venv/bin/python -m psychosight analyze --demo --no-experimental-scores   # demo otherwise includes both
+```
+
+`--score-other` is only valid together with `--experimental-scores` (exit 2, `EXPERIMENTAL_CONSENT_REQUIRED`, if it is not). The other person has not agreed; that consent says the result stays on this computer. `PSYCHOSIGHT_EXPERIMENTAL=0` leaves the section `not_run` ("disabled by configuration"). `PSYCHOSIGHT_EXP_MAX_LLM_CALLS` caps the extra model calls (default 110) separately from `PSYCHOSIGHT_MAX_LLM_CALLS`.
+
 ### Privacy
 - **Local-first.** Analysis runs on this Mac. chat.db is read through a read-only snapshot.
 - **Nothing is sent anywhere without opt-in.** Without `llm_opt_in` you get a full deterministic-only report and no
