@@ -150,3 +150,20 @@ def test_cors_local_origins_only(client):
     assert ok2.headers.get("access-control-allow-origin") == "http://127.0.0.1:3000"
     bad = client.get("/health", headers={"Origin": "https://evil.example"})
     assert "access-control-allow-origin" not in bad.headers
+
+
+def test_cli_commands(tmp_path, capsys):
+    from psychosight.cli import main
+    out = tmp_path / "r.json"
+    assert main(["analyze", "--demo", "--opt-in-llm", "--out", str(out)]) == 0
+    rep = json.loads(out.read_text())
+    check(rep)
+    assert main(["--demo"]) == 0
+    det = json.loads(capsys.readouterr().out)
+    check(det)
+    assert det["mode"] == "deterministic_only"
+    assert main(["delete-report", rep["report_id"]]) == 0
+    assert main(["delete-report", rep["report_id"]]) == 1
+    assert main(["list-conversations"]) == 0
+    assert main(["check-llm"]) == 2  # no key in tests -> LLM_UNAVAILABLE
+    assert "LLM_UNAVAILABLE" in capsys.readouterr().err

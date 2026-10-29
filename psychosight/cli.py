@@ -48,6 +48,8 @@ def build_parser() -> argparse.ArgumentParser:
     dr = sub.add_parser("delete-report", help="delete a stored report (it contains evidence quotes)")
     dr.add_argument("report_id")
 
+    sub.add_parser("check-llm", help="smoke-test DeepSeek with ONE synthetic demo episode (no real messages)")
+
     sv = sub.add_parser("serve", help="serve the API and static UI on localhost")
     sv.add_argument("--host", default=config.DEFAULT_HOST)
     sv.add_argument("--port", type=int, default=None, help=f"default {config.DEFAULT_PORT} or PSYCHOSIGHT_PORT")
@@ -120,6 +122,33 @@ def cmd_delete(args) -> int:
     return 1
 
 
+def cmd_check_llm(args) -> int:
+    """Phase 12.1 smoke test: model list + one rubric call on a synthetic episode."""
+    import tempfile
+
+    from . import rubric, sessionize
+    from .llm import DeepSeekProvider
+
+    provider = DeepSeekProvider()
+    models = provider.list_models()
+    print(f"model={provider.model} reasoning_effort={provider.reasoning_effort} base_url={provider.settings.base_url}")
+    print(f"provider models: {', '.join(models) if models else '(could not list)'}")
+    if models and provider.model not in models:
+        print("warning: DEEPSEEK_MODEL is not in the provider's model list", file=sys.stderr)
+    eps = sessionize.sessionize(loader.load_demo().msgs)
+    sel = rubric.select_episodes(eps)
+    ep = next(e for e in eps if e.id in sel)
+    store = Store(Path(tempfile.mkdtemp(prefix="ps-check-")) / "check.db")
+    stats = rubric.ScoringStats()
+    record = rubric.score_one(provider, ep, 0, store, stats, rubric.CallBudget(4))
+    ok = record is not None
+    print(f"rubric call on synthetic {ep.id}: {'valid JSON' if ok else 'INVALID output'} calls={stats.llm_calls} "
+          f"retries={stats.llm_retries} dropped_quotes={stats.dropped_quotes}")
+    if ok:
+        print("scores: " + ", ".join(f"{k}={v['score']}" for k, v in record["items"].items()))
+    return 0 if ok else 1
+
+
 def cmd_serve(args) -> int:
     import uvicorn
 
@@ -143,7 +172,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                                     opt_in_llm=args.opt_in_llm, mode=None, out=None, no_save=False)
             return cmd_analyze(ns)
         handlers = {"list-conversations": cmd_list, "analyze": cmd_analyze, "list-reports": cmd_list_reports,
-                    "delete-report": cmd_delete, "serve": cmd_serve}
+                    "delete-report": cmd_delete, "serve": cmd_serve, "check-llm": cmd_check_llm}
         if args.cmd not in handlers:
             build_parser().print_help()
             return 2
