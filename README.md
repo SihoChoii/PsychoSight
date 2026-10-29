@@ -31,6 +31,9 @@ else from `.env` at the repo root, else `~/.psychosight/.env` (both gitignored; 
 is `deepseek-flash` (DeepSeek-V4.1-Flash) at the highest thinking effort (`reasoning_effort: max`). The key is only
 used after the explicit opt-in and is shown masked (`sk-…abcd`) by `check-llm`. Without a key everything else still
 works: deterministic-only reports and the offline mock demo.
+A full AI run on the demo conversation (`PSYCHOSIGHT_DEMO_PROVIDER=deepseek`, 40 episodes x 2 scoring runs + 1 synthesis
+call) took about 5 minutes live and roughly 90k input / 280k output tokens (most of it reasoning); re-runs reuse the
+local score cache.
 
 ### Environment variables
 Any of these can also go in `.env`; a real environment variable wins over the file.
