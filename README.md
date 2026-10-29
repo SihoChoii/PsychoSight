@@ -30,10 +30,11 @@ The key is **not in git** (judges receive it privately). It is read from the `DE
 else from `.env` at the repo root, else `~/.psychosight/.env` (both gitignored; no extra dependency). The default model
 is `deepseek-flash` (DeepSeek-V4.1-Flash) at the highest thinking effort (`reasoning_effort: max`). The key is only
 used after the explicit opt-in and is shown masked (`sk-…abcd`) by `check-llm`. Without a key everything else still
-works: deterministic-only reports and the offline mock demo.
-A full AI run on the demo conversation (`PSYCHOSIGHT_DEMO_PROVIDER=deepseek`, 40 episodes x 2 scoring runs + 1 synthesis
-call) took about 5 minutes live and roughly 90k input / 280k output tokens (most of it reasoning); re-runs reuse the
-local score cache.
+works: deterministic-only reports, and the demo with offline mock scores (labelled "not real model").
+
+**The demo runs the real model.** With a key configured, opting in on the synthetic demo conversation runs a real
+DeepSeek analysis (same pipeline as a real chat; the excerpts are fictional). `PSYCHOSIGHT_DEMO_PROVIDER=mock` forces
+the offline mock (tests and CI do this). Timing and token use for a full demo run are in "Demo conversation" below.
 
 ### Environment variables
 Any of these can also go in `.env`; a real environment variable wins over the file.
@@ -51,9 +52,9 @@ Any of these can also go in `.env`; a real environment variable wins over the fi
 | `PSYCHOSIGHT_STATIC_DIR` | no | UI directory; default `web/dist`, then `web/` only if it is plain static files (an unbuilt Vite `web/` with `package.json` is skipped: run `cd web && npm install && npm run build`). |
 | `PSYCHOSIGHT_DATA_DIR` | no | Local SQLite location; default `~/.psychosight/`. |
 | `PSYCHOSIGHT_CHAT_DB` | no | Default `~/Library/Messages/chat.db`. |
-| `PSYCHOSIGHT_DEMO_PROVIDER` | no | `mock` (default, offline) or `deepseek` to score the synthetic demo conversation with the real API. |
+| `PSYCHOSIGHT_DEMO_PROVIDER` | no | Unset (default): the demo uses DeepSeek when a key is configured, else the offline mock. `mock` or `deepseek` forces one. |
 | `PSYCHOSIGHT_MAX_LLM_CALLS` | no | Per-run call ceiling (default 200). |
-| `PSYCHOSIGHT_LLM_CONCURRENCY` | no | Main rubric model calls in flight (default 8; both runs of an episode go out in parallel). |
+| `PSYCHOSIGHT_LLM_CONCURRENCY` | no | Main rubric model calls in flight (default 12; both runs of an episode go out in parallel). |
 | `PSYCHOSIGHT_EXP_LLM_CONCURRENCY` | no | Experimental-stage model calls in flight (default 24). |
 | `PSYCHOSIGHT_EXP_OVERLAP` | no | Default `1`: with the real model, experimental calls start alongside the main rubric and synthesis. `0` runs the stage after synthesis. |
 
@@ -65,7 +66,7 @@ Any of these can also go in `.env`; a real environment variable wins over the fi
 # CLI
 .venv/bin/python -m psychosight list-conversations
 .venv/bin/python -m psychosight analyze --demo                         # deterministic-only (no LLM)
-.venv/bin/python -m psychosight analyze --demo --opt-in-llm --out demo.json   # full mode, offline mock LLM
+.venv/bin/python -m psychosight analyze --demo --opt-in-llm --out demo.json   # full mode, real model if a key is set
 .venv/bin/python -m psychosight analyze -c 42 --from 2026-08-01 --to 2026-10-28 --opt-in-llm --out report.json
 .venv/bin/python -m psychosight list-reports
 .venv/bin/python -m psychosight delete-report <report_id>
@@ -82,6 +83,30 @@ curl -s $B/analyses/$JOB          # status, stage, progress
 curl -s $B/analyses/$JOB/report   # report JSON
 curl -s -X DELETE $B/analyses/$JOB
 ```
+
+### Demo conversation
+`demo` is a synthetic 1:1 chat between two fictional people, me (Sam) and Robin, generated deterministically by
+`scripts/make_demo_conversation.py` (seed 1017) into `psychosight/data/demo_conversation.jsonl` (about 650 KB; run the
+script to regenerate, `--check` to verify). It has 4,259 messages in 191 episodes over 26 weeks (Aug 4, 2025 to
+Feb 1, 2026), shaped into phases so the report has something to describe:
+
+| Weeks | Phase | Planted patterns |
+|---|---|---|
+| Aug 4 - Sep 14 | warm | I open most episodes and reply fast; acknowledging Robin's feelings |
+| Sep 15 - Oct 19 | busy | Robin opens most; my replies take several minutes; I shift topics to myself; Robin double-texts |
+| Oct 20 - Nov 9 | conflict | arguments with escalating language and absolutist words, blame, late-night (01:00-04:00) bursts; one runs through the repeated 01:00 hour of the Nov 2 DST change |
+| Nov 10 - 16 | quiet | no messages at all |
+| Nov 17 - Dec 21 | repair | apologies, repair attempts, taking responsibility, long reflective messages |
+| Dec 22 - Feb 1 | steady | balanced, holidays, one small disagreement repaired quickly |
+
+It also has logistics, plans, jokes, emoji, `example.com` links, tapback and attachment-only rows (dropped by the
+loader), a duplicated row, and one prompt-injection style message (ignored by the scorer). Everything is fictional.
+
+A full real-model run of the demo scores 40 of the 191 episodes (`MAX_EPISODES_SCORED`, about 60% highest-signal and
+40% seeded random) twice each, plus one synthesis call: 81 calls, about 113k input and 505k output tokens (about 490k
+of them reasoning), and 7.2 minutes measured with the default 12 parallel calls (9.2 minutes with 8). Re-runs reuse the
+local score cache (only the synthesis call runs again, about 50 s). `docs/sample_report.json` is such a real
+`deepseek-flash` run on the demo.
 
 ### How it works
 `loader` (imports `psychosight/msgexport.py`, Siho's exporter, unchanged) -> `sessionize` (turn: same sender,

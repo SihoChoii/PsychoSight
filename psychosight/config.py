@@ -13,7 +13,7 @@ from . import __version__, defaults
 BACKEND_VERSION = __version__
 SCHEMA_VERSION = "1.1.0"
 PROMPT_VERSION = "rubric-v1"
-SYNTHESIS_PROMPT_VERSION = "synthesis-v2"
+SYNTHESIS_PROMPT_VERSION = "synthesis-v3"
 EXTRACTOR_VERSION = "features-v1"
 
 TURN_GAP_S = 30
@@ -33,7 +33,7 @@ ITEM_MIN_EPISODES = 3
 ITEM_MIN_AGREEMENT = 0.7
 HIGH_CONFIDENCE_AGREEMENT = 0.8
 MAX_LLM_CALLS = 200
-LLM_CONCURRENCY = 8  # main rubric calls in flight; override with PSYCHOSIGHT_LLM_CONCURRENCY
+LLM_CONCURRENCY = 12  # main rubric calls in flight; override with PSYCHOSIGHT_LLM_CONCURRENCY
 EXP_LLM_CONCURRENCY = 24  # experimental calls in flight; override with PSYCHOSIGHT_EXP_LLM_CONCURRENCY
 
 DEFAULT_HOST = "127.0.0.1"
