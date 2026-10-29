@@ -1,301 +1,300 @@
 {
   "anchors_version": "exp-anchors-v1",
-  "draft": true,
-  "note": "Fixed reference points per marker id. Never fitted to user data or population data. Track C finalizes and removes draft.",
+  "note": "Fixed reference points per marker id, shared across dimensions. Never fitted to a user's messages or to population data. lo and hi are raw-scale endpoints; direction is applied when the sub-score is computed. Published group contrasts name their source. Rubric and holistic items use the 1-5 scale endpoints. Every other span is an engineering anchor.",
   "markers": {
     "wwbp.openness": {
       "c": 0.0,
       "k": 1.0,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder; logistic squash"
+      "note": "Engineering logistic. A sum of 0 lexicon units per 100 words is the midpoint; k=1. Not fitted."
     },
     "long_word_share": {
-      "lo": 14.0,
-      "hi": 26.0,
+      "lo": 10,
+      "hi": 20,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for the percent of words with 7 or more letters."
     },
     "empath_intellect": {
-      "lo": 0.1,
-      "hi": 1.0,
+      "lo": 0,
+      "hi": 2,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for art, reading and ideas words, which are rare in messages."
     },
     "holistic.openness": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "wwbp.conscientiousness": {
       "c": 0.0,
       "k": 1.0,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder; logistic squash"
+      "note": "Engineering logistic. A sum of 0 lexicon units per 100 words is the midpoint; k=1. Not fitted."
     },
     "swear_rate": {
-      "lo": 0.0,
-      "hi": 2.0,
+      "lo": 0,
+      "hi": 2,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for swear words. Zero is none."
     },
     "llm.follows_through_on_plans": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "holistic.conscientiousness": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "wwbp.extraversion": {
       "c": 0.0,
       "k": 1.0,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder; logistic squash"
+      "note": "Engineering logistic. A sum of 0 lexicon units per 100 words is the midpoint; k=1. Not fitted."
     },
     "pos_emotion_rate": {
-      "lo": 1.5,
-      "hi": 5.5,
+      "lo": 1,
+      "hi": 5,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for positive-emotion words."
     },
     "social_word_rate": {
-      "lo": 1.0,
-      "hi": 5.0,
+      "lo": 1,
+      "hi": 5,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for social words."
     },
     "initiation_share": {
       "lo": 0.2,
       "hi": 0.8,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for who starts the episode. The midpoint is an even split."
     },
     "holistic.extraversion": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "wwbp.agreeableness": {
       "c": 0.0,
       "k": 1.0,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder; logistic squash"
+      "note": "Engineering logistic. A sum of 0 lexicon units per 100 words is the midpoint; k=1. Not fitted."
     },
     "anger_swear_rate": {
-      "lo": 0.0,
-      "hi": 2.5,
+      "lo": 0,
+      "hi": 2,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for anger and swear words combined."
     },
     "we_rate": {
-      "lo": 0.2,
-      "hi": 2.0,
+      "lo": 0,
+      "hi": 2,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for we/us/our words."
     },
     "llm.validates_feelings": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "llm.assigns_fault_to_other": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "llm.escalating_language": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "llm.repair_attempts": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "holistic.agreeableness": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "wwbp.neuroticism": {
       "c": 0.0,
       "k": 1.0,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder; logistic squash"
+      "note": "Engineering logistic. A sum of 0 lexicon units per 100 words is the midpoint; k=1. Not fitted."
     },
     "neg_emotion_rate": {
       "lo": 1.63,
       "hi": 2.92,
       "anchor_source": "Rude, Gortner & Pennebaker 2004",
-      "note": "draft placeholder"
+      "note": "Published group contrast for negative-emotion words: 1.63% to 2.92%."
     },
     "anxiety_word_rate": {
-      "lo": 0.1,
-      "hi": 1.2,
+      "lo": 0,
+      "hi": 2,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for worry and nervousness words."
     },
     "i_rate": {
       "lo": 10.76,
       "hi": 12.17,
       "anchor_source": "Rude, Gortner & Pennebaker 2004",
-      "note": "draft placeholder"
+      "note": "Published group contrast for I/me/my words: 10.76% to 12.17%."
     },
     "llm.expressed_worry": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "llm.reassurance_seeking": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "holistic.neuroticism": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "vader_compound": {
       "lo": -0.5,
       "hi": 0.5,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for mean VADER compound. Neutral 0 is the midpoint."
     },
     "absolutist_rate": {
-      "lo": 0.5,
-      "hi": 1.8,
+      "lo": 0,
+      "hi": 2,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for absolutist words. Not a published group contrast."
     },
     "llm.hopeless_or_low_energy_wording": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "llm.negative_self_evaluation": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "tentative_worry_rate": {
-      "lo": 1.0,
-      "hi": 4.0,
+      "lo": 0,
+      "hi": 4,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for tentative and worry words."
     },
     "substance_first_person_rate": {
-      "lo": 0.0,
+      "lo": 0,
       "hi": 0.5,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for alcohol or drug words near I/me/my."
     },
     "gambling_first_person_rate": {
-      "lo": 0.0,
-      "hi": 0.3,
-      "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
-    },
-    "craving_phrase_rate": {
-      "lo": 0.0,
-      "hi": 0.3,
-      "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
-    },
-    "late_night_episode_share": {
-      "lo": 0.0,
+      "lo": 0,
       "hi": 0.5,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for betting words near I/me/my."
+    },
+    "craving_phrase_rate": {
+      "lo": 0,
+      "hi": 0.5,
+      "anchor_source": "engineering anchor",
+      "note": "Engineering span for craving or urge phrases."
+    },
+    "late_night_episode_share": {
+      "lo": 0,
+      "hi": 0.5,
+      "anchor_source": "engineering anchor",
+      "note": "Engineering span for the share of episodes started from 01:00 to 04:00."
     },
     "llm.urge_or_loss_of_control_wording": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "llm.using_to_cope_wording": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "anger_rage_rate": {
-      "lo": 0.0,
-      "hi": 1.5,
+      "lo": 0,
+      "hi": 2,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for anger and rage words."
     },
     "achievement_work_rate": {
-      "lo": 0.5,
-      "hi": 3.0,
+      "lo": 0,
+      "hi": 4,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for achievement and work words."
     },
     "you_rate": {
-      "lo": 2.0,
-      "hi": 6.0,
+      "lo": 1,
+      "hi": 7,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for you/your words in a two-person chat."
     },
     "tentative_anxiety_rate": {
-      "lo": 1.0,
-      "hi": 4.0,
+      "lo": 0,
+      "hi": 4,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for tentative and anxious-sounding words."
     },
     "llm.topic_redirect_to_self": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "llm.superiority_or_entitlement_phrasing": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "double_text_rate": {
-      "lo": 5.0,
-      "hi": 40.0,
+      "lo": 0,
+      "hi": 40,
       "anchor_source": "engineering anchor",
-      "note": "draft placeholder"
+      "note": "Engineering span for the percent of messages that follow another message from the same person."
     },
     "llm.worry_about_the_relationship": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "llm.emotional_disclosure": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     },
     "llm.deflects_closeness": {
       "lo": 1,
       "hi": 5,
       "anchor_source": "rubric scale",
-      "note": "1-5 rubric endpoints"
+      "note": "1-5 rubric endpoints."
     }
   }
 }
