@@ -1,5 +1,6 @@
 import fullReport from "../../docs/sample_report.json";
 import deterministicReport from "../../docs/sample_report_deterministic_only.json";
+import liveExperimentalReport from "../../docs/sample_report_experimental.json";
 import { ApiError, type Client } from "./api";
 import {
   deterministicSection,
@@ -160,6 +161,9 @@ function virtualReport(jobId: string): Report | null {
   }
   if (jobId === "sample-det") {
     return cloneReport(deterministic, { id: jobId, mode: "deterministic_only", ...DEMO_JOB });
+  }
+  if (jobId === "sample-exp-live") {
+    return cloneReport(liveExperimentalReport as unknown as Report, { id: jobId, mode: "full", ...DEMO_JOB });
   }
   const experimental: Record<string, { mode: "full" | "deterministic_only"; source: Report; section: ExperimentalScores }> = {
     "sample-exp": { mode: "full", source: full, section: stubSection },

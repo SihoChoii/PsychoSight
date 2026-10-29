@@ -2,6 +2,7 @@ import type { ComponentProps } from "react";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import fullReport from "../../docs/sample_report.json";
+import liveReportJson from "../../docs/sample_report_experimental.json";
 import { buildAnalysisRequest } from "./analysis-request";
 import { mockApi } from "./mock";
 import { ProgressView } from "./components/ProgressView";
@@ -153,6 +154,71 @@ describe("experimental scores section", () => {
     const depression = screen.getByRole("article", { name: /Depression-related language/ });
     expect(within(depression).getAllByText("Confidence low").length).toBe(2);
     expect(within(depression).queryByText("Confidence medium")).not.toBeInTheDocument();
+  });
+
+  it("renders the live DeepSeek sample report", async () => {
+    const errors: unknown[][] = [];
+    const spy = vi.spyOn(console, "error").mockImplementation((...args) => {
+      errors.push(args);
+    });
+    const report = await mockApi.getReport("sample-exp-live");
+    const section = report.experimental_scores;
+    expect(report.schema_version).toBe("1.1.0");
+    expect(report.report_id).toBe("sample-exp-live");
+    expect(section?.status).toBe("ok");
+    expect(section?.dimensions).toHaveLength(12);
+    expect(section?.speakers_scored).toEqual(["me", "other"]);
+    const file = liveReportJson as unknown as Report;
+    expect(section?.quotes).toEqual(file.experimental_scores?.quotes);
+
+    for (const dim of section?.dimensions ?? []) {
+      expect(dim.per_speaker.other).not.toBeNull();
+      for (const speaker of [dim.per_speaker.me, dim.per_speaker.other]) {
+        expect(speaker?.status).toBe("ok");
+        expect(speaker?.confidence).not.toBe("high");
+        const width = (speaker?.band?.hi ?? 0) - (speaker?.band?.lo ?? 0);
+        if (dim.family === "big_five") expect(speaker?.confidence).toBe("medium");
+        else {
+          expect(speaker?.confidence).toBe("low");
+          expect(width).toBeGreaterThanOrEqual(20);
+        }
+      }
+    }
+
+    renderReport(report);
+    expect(screen.getByRole("heading", { name: "Observations" })).toBeInTheDocument();
+    const card = screen.getByRole("region", { name: "Experimental scores" });
+    expect(within(card).getByTestId("exp-banner")).toBeVisible();
+    expect(within(card).queryByRole("heading", { name: "Big Five" })).not.toBeInTheDocument();
+
+    openCard();
+    expect(screen.getByRole("heading", { name: "Big Five" })).toBeVisible();
+    expect(screen.getAllByRole("article")).toHaveLength(12);
+    expect(screen.queryByText(INSUFFICIENT_TEXT)).not.toBeInTheDocument();
+    expect(within(card).queryByText(/\bhigh\b/i)).not.toBeInTheDocument();
+
+    const openness = screen.getByRole("article", { name: "Openness (experimental language index)" });
+    expect(within(openness).getByText("51", { selector: ".exp-score-num" })).toBeInTheDocument();
+    expect(within(openness).getByText("45", { selector: ".exp-score-num" })).toBeInTheDocument();
+    expect(within(openness).getAllByText("Confidence medium")).toHaveLength(2);
+
+    const neuroticism = screen.getByRole("article", { name: "Neuroticism (experimental language index)" });
+    fireEvent.click(within(neuroticism).getAllByRole("button", { name: "Why this number" })[0]);
+    const me = section?.dimensions.find((dim) => dim.key === "neuroticism")?.per_speaker.me;
+    const quoteId = me?.contributions.flatMap((item) => item.quote_ids)[0];
+    const quote = section?.quotes.find((item) => item.id === quoteId);
+    expect(quote?.text).toBeTruthy();
+    expect(within(neuroticism).getByText(quote?.text ?? "")).toBeInTheDocument();
+    expect(report.quotes.some((item) => item.text === quote?.text)).toBe(false);
+    expect(within(neuroticism).getAllByText(TREND_NOTE).length).toBeGreaterThan(0);
+    const spark = within(neuroticism).getAllByRole("img", { name: /Weekly trend for me/ })[0];
+    expect(spark).toHaveAttribute("data-scale", "trend");
+    expect(Number(spark.getAttribute("data-ymin"))).toBeGreaterThanOrEqual(20);
+    expect(Number(spark.getAttribute("data-ymax"))).toBeLessThanOrEqual(32);
+    expect(Number(spark.getAttribute("data-ymax"))).toBeLessThan(me?.score ?? 0);
+
+    spy.mockRestore();
+    expect(errors).toEqual([]);
   });
 });
 
