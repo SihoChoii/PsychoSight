@@ -40,7 +40,7 @@ def test_frozen_bundle_serves_its_own_dist_and_skips_bundled_dotenv(tmp_path, mo
     dist = bundle / "web" / "dist"
     dist.mkdir(parents=True)
     (dist / "index.html").write_text("ok", encoding="utf-8")
-    (bundle / ".env").write_text("DEEPSEEK_API_KEY=sk-should-not-be-read\n", encoding="utf-8")
+    (bundle / ".env").write_text("DEEPSEEK_API_KEY=sk-FAKE-should-not-be-read\n", encoding="utf-8")
     elsewhere = tmp_path / "cwd"
     elsewhere.mkdir()
     monkeypatch.chdir(elsewhere)

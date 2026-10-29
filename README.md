@@ -27,7 +27,8 @@ cp .env.example .env      # then paste the DeepSeek key after DEEPSEEK_API_KEY=
 .venv/bin/python -m psychosight check-llm
 ```
 The key is **not in git** (judges receive it privately). It is read from the `DEEPSEEK_API_KEY` environment variable,
-else from `.env` at the repo root, else `~/.psychosight/.env` (both gitignored; no extra dependency). The default model
+else from `.env` at the repo root, else `~/.psychosight/.env` (both gitignored; no extra dependency), else (packaged
+app only) a `psychosight.env` bundled into the app at build time (see `docs/PACKAGING_KEY.md`). The default model
 is `deepseek-flash` (DeepSeek-V4.1-Flash) at the highest thinking effort (`reasoning_effort: max`). The key is only
 used after the explicit opt-in and is shown masked (`sk-…abcd`) by `check-llm`. Without a key everything else still
 works: deterministic-only reports, and the demo with offline mock scores (labelled "not real model").
@@ -151,7 +152,8 @@ An optional section can add 0–100 indexes from word counts in this conversatio
   PsychoSight under Full Disk Access. Use **Open Full Disk Access Settings** in the app, turn PsychoSight on, then
   quit and reopen. **Recheck** tells you if a relaunch is still required. From a terminal, grant access to that
   terminal instead. The demo conversation works meanwhile. Details: `packaging/macos/README.md`.
-- **`LLM_UNAVAILABLE` "No DeepSeek API key found"**: `cp .env.example .env`, paste the key, restart the backend.
+- **`LLM_UNAVAILABLE` "No DeepSeek API key found"**: the message lists every place searched. `cp .env.example .env`,
+  paste the key, restart the backend (packaged app: rerun `scripts/inject_bundled_key.py`, see `docs/PACKAGING_KEY.md`).
 - **`LLM_UNAVAILABLE` "rejected the API key"**: the key in `.env` (or `DEEPSEEK_API_KEY`) is wrong or revoked;
   replace it and run `python -m psychosight check-llm`.
 - **`LLM_UNAVAILABLE` "rejected the model"**: the error lists the model ids your key can use (from DeepSeek's
@@ -188,4 +190,4 @@ Dev and build notes also live in `web/README.md`.
 
 ## macOS app
 
-`packaging/macos/build.sh` builds a double-clickable `PsychoSight.app` with the Python runtime, dependencies, and `web/dist` inside the bundle. It does not contain a DeepSeek key. The key belongs in `~/.psychosight/.env`. Full Disk Access, when you want to read Messages, is granted to PsychoSight.app. Details: `packaging/macos/README.md`.
+`packaging/macos/build.sh` builds a double-clickable `PsychoSight.app` with the Python runtime, dependencies, and `web/dist` inside the bundle. When a key is available at build time it is written into the app as `Contents/Resources/psychosight.env` (mode 600, gitignored). Anyone with the app can extract that key, so share it only with trusted judges and rotate the key afterwards. A `~/.psychosight/.env` or `DEEPSEEK_API_KEY` still overrides it. Full Disk Access, when you want to read Messages, is granted to PsychoSight.app. Details: `packaging/macos/README.md` and `docs/PACKAGING_KEY.md`.

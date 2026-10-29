@@ -1,7 +1,8 @@
 """Thin LLM provider layer: DeepSeek (OpenAI-compatible) and an offline MockProvider.
 
 Privacy rules enforced here:
-- The API key (DEEPSEEK_API_KEY from the environment or a gitignored .env file) is never logged or written.
+- The API key (DEEPSEEK_API_KEY from the environment, a gitignored .env file or the app's bundled psychosight.env)
+  is never logged or written; log lines and error messages are scrubbed of it (config.redact).
 - Reasoning traces (`reasoning_content`) can quote messages: they are discarded on receipt and never
   logged, returned or persisted.
 - Request and response bodies are never logged; only status codes, counts and timings.
@@ -11,7 +12,6 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import random
 import threading
 import time
@@ -33,18 +33,16 @@ _LOG_GUARD = False
 
 
 class _RedactSecrets(logging.Filter):
-    """Drop the API key from any psychosight log line that managed to include it."""
+    """Mask the API key (any source) and key-shaped tokens in any psychosight log line that managed to include one."""
 
     def filter(self, record: logging.LogRecord) -> bool:
-        key = os.environ.get("DEEPSEEK_API_KEY") or ""
-        if not key:
-            return True
         try:
             msg = record.getMessage()
         except Exception:  # noqa: BLE001
             return True
-        if key in msg:
-            record.msg = msg.replace(key, "[redacted]")
+        clean = config.redact(msg, replacement="[redacted]")
+        if clean != msg:
+            record.msg = clean
             record.args = ()
         return True
 
@@ -96,8 +94,10 @@ class Provider:
         """Optional preflight."""
 
 
+# Static summary kept for imports; the raised error uses config.missing_key_message(), which lists the paths searched.
 MISSING_KEY_MESSAGE = ("No DeepSeek API key found. Copy .env.example to .env and put the DeepSeek key in it "
-                       "(or export DEEPSEEK_API_KEY), then restart the backend.")
+                       "(or export DEEPSEEK_API_KEY), or rebuild the app with scripts/inject_bundled_key.py; "
+                       "then restart the backend.")
 
 RETRY_STATUS = {429, 500, 502, 503, 504}
 
@@ -109,8 +109,9 @@ class DeepSeekProvider(Provider):
                  transport: Optional[httpx.BaseTransport] = None,
                  sleep: Callable[[float], None] = time.sleep, max_attempts: int = 6):
         self.settings = settings or config.llm_settings()
+        config.remember_secret(self.settings.api_key)
         if not self.settings.api_key:
-            raise LLMUnavailable(MISSING_KEY_MESSAGE)
+            raise LLMUnavailable(config.missing_key_message())
         if not self.settings.model:
             raise LLMUnavailable("DEEPSEEK_MODEL is not set. Export the exact DeepSeek model id "
                                  "(see GET https://api.deepseek.com/models).")
@@ -215,9 +216,8 @@ class DeepSeekProvider(Provider):
             if status in (400, 404, 422) and self._is_model_error(resp):
                 raise self._model_rejected(status)
             if status in (401, 403):
-                where = {"dotenv": "the key in your .env file", "env": "the DEEPSEEK_API_KEY environment variable"}
                 raise LLMUnavailable(f"DeepSeek rejected the API key (HTTP {status}). Check "
-                                     f"{where.get(self.settings.key_source, 'DEEPSEEK_API_KEY')}.")
+                                     f"{config.describe_key_source(self.settings)}.")
             if status == 402:
                 raise LLMUnavailable("DeepSeek reports insufficient balance (HTTP 402).")
             if status in RETRY_STATUS:

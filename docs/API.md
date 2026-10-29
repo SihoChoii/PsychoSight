@@ -15,7 +15,7 @@ Every error response is
 | `FULL_DISK_ACCESS_REQUIRED` | 403 | chat.db missing or unreadable. The packaged app probes it on launch and the UI can open Full Disk Access settings. |
 | `GROUP_CHAT_UNSUPPORTED` | 400 | Conversation has more than one other participant. 1:1 only. |
 | `LLM_OPT_IN_REQUIRED` | 400 | `mode:"full"` requested without `llm_opt_in:true`. LLM stages never run without opt-in. |
-| `LLM_UNAVAILABLE` | 503 (or job error) | Opt-in given but no key is configured (message: copy `.env.example` to `.env` and put the key in it, or export `DEEPSEEK_API_KEY`), the key was rejected, the model string was rejected (message lists the provider's models), or the provider failed. |
+| `LLM_UNAVAILABLE` | 503 (or job error) | Opt-in given but no key is configured (message starts "No DeepSeek API key found", lists every place searched: env var, repo `.env`, `~/.psychosight/.env`, the app's bundled `psychosight.env`; and how to fix: copy `.env.example` to `.env`, export `DEEPSEEK_API_KEY`, or rebuild the app with `scripts/inject_bundled_key.py`), the key was rejected, the model string was rejected (message lists the provider's models), or the provider failed. |
 | `NOT_FOUND` | 404 | Unknown conversation, job or report. |
 | `REPORT_NOT_READY` | 409 | Report requested before the job is `done`. |
 | `INVALID_REQUEST` | 422 | Body or query failed validation (e.g. bad date format, `limit`/`offset`/`q` out of range on `GET /conversations`). |
@@ -31,8 +31,10 @@ Every error response is
 No secrets: the API key is never returned, not even masked. The key is not in git; set it once with
 `cp .env.example .env` and paste it (or export `DEEPSEEK_API_KEY`). `llm_available` is `true` when a key is
 configured. `llm_key_source` is `"env"` (environment variable), `"dotenv"` (`.env` at the repo root or
-`~/.psychosight/.env`) or `null` (no key: full mode on a real conversation returns `LLM_UNAVAILABLE`; the mock demo
-and deterministic-only reports still work). `model` defaults to `deepseek-flash` (DeepSeek-V4.1-Flash), overridable
+`~/.psychosight/.env`), `"bundled"` (lowest priority: the `psychosight.env` written into the packaged app at build
+time, see `docs/PACKAGING_KEY.md`) or `null` (no key: full mode on a real conversation returns `LLM_UNAVAILABLE`; the
+mock demo and deterministic-only reports still work). `llm_key_note` (additive) is `null` when a key is found, else
+the same "No DeepSeek API key found ..." message listing the places searched (paths only, never a value). `model` defaults to `deepseek-flash` (DeepSeek-V4.1-Flash), overridable
 with `DEEPSEEK_MODEL`. `llm_configured` is kept as an alias of `llm_available`.
 `demo_provider` is the provider the synthetic demo will use: `"deepseek"` whenever a key is configured, else `"mock"`
 (override with `PSYCHOSIGHT_DEMO_PROVIDER=mock|deepseek`). `demo_provider_note` is `null` for the real model and a
@@ -47,6 +49,7 @@ the opt-in. The opt-in text itself says the demo excerpts are synthetic.
   "llm_configured": true,
   "llm_available": true,
   "llm_key_source": "dotenv",
+  "llm_key_note": null,
   "reasoning_effort": "max",
   "demo_provider": "deepseek",
   "demo_provider_note": null,

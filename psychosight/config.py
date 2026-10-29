@@ -1,10 +1,13 @@
-"""Constants and environment readers. Secrets come from the environment or a gitignored `.env` file (repo root or
-~/.psychosight/.env) and are never logged or written anywhere."""
+"""Constants and environment readers. Secrets come from the environment, a gitignored `.env` file (repo root or
+~/.psychosight/.env) or, lowest priority, a `psychosight.env` bundled into the packaged macOS app at build time.
+They are never logged or written anywhere by the backend."""
 
 from __future__ import annotations
 
 import os
+import re
 import sys
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -100,6 +103,10 @@ def thresholds() -> dict:
     }
 
 
+PACKAGE_DIR = Path(__file__).resolve().parent
+BUNDLED_ENV_NAME = "psychosight.env"
+
+
 def dotenv_paths() -> list:
     """Files read for settings not in the environment. PSYCHOSIGHT_DOTENV (os-separated list) overrides.
 
@@ -147,12 +154,61 @@ def _dotenv() -> dict:
     return merged
 
 
+def _app_resources_for(start) -> Optional[Path]:
+    """`<X>.app/Contents/Resources` for the first `*.app` ancestor (with a Contents dir) of `start`, else None."""
+    try:
+        path = Path(start).expanduser().resolve()
+    except (OSError, RuntimeError, TypeError, ValueError):
+        return None
+    for parent in [path] + list(path.parents):
+        if parent.suffix == ".app" and (parent / "Contents").is_dir():
+            return parent / "Contents" / "Resources"
+    return None
+
+
+def bundled_env_paths() -> list:
+    """Candidate bundled key files, in lookup order (the first readable one is used).
+
+    1. PSYCHOSIGHT_BUNDLED_ENV: an explicit path. When set, it is the ONLY candidate (tests and packagers pin it).
+    2. `<package dir>/_bundled/psychosight.env` (PyInstaller, py2app or a bundled venv carrying the package).
+    3. `<App>.app/Contents/Resources/psychosight.env`, derived from sys.executable, sys.argv[0] or this file
+       by walking up to a `*.app/Contents` ancestor.
+    """
+    explicit = os.environ.get("PSYCHOSIGHT_BUNDLED_ENV", "").strip()
+    if explicit:
+        return [Path(explicit).expanduser()]
+    paths = [PACKAGE_DIR / "_bundled" / BUNDLED_ENV_NAME]
+    for start in (getattr(sys, "executable", None), (sys.argv[0] if sys.argv and sys.argv[0] else None), __file__):
+        if not start:
+            continue
+        resources = _app_resources_for(start)
+        if resources is not None:
+            candidate = resources / BUNDLED_ENV_NAME
+            if candidate not in paths:
+                paths.append(candidate)
+    return paths
+
+
+def _bundled() -> dict:
+    """Values from the first readable bundled file. Read on each call (cheap; a few hundred bytes)."""
+    for path in bundled_env_paths():
+        try:
+            return parse_dotenv(path.read_text(encoding="utf-8"))
+        except OSError:
+            continue
+    return {}
+
+
 def _env_with_source(name: str) -> tuple:
+    """(value, source): source is "env", "dotenv" or "bundled" (lowest priority), or (None, None)."""
     value = os.environ.get(name, "").strip()
     if value:
         return value, "env"
     value = (_dotenv().get(name) or "").strip()
-    return (value, "dotenv") if value else (None, None)
+    if value:
+        return value, "dotenv"
+    value = (_bundled().get(name) or "").strip()
+    return (value, "bundled") if value else (None, None)
 
 
 def _env(name: str) -> Optional[str]:
@@ -171,7 +227,7 @@ class LLMSettings:
     send_temperature: bool
     timeout_s: float
     max_tokens: Optional[int]
-    key_source: Optional[str] = None  # "env", "dotenv" or None
+    key_source: Optional[str] = None  # "env", "dotenv", "bundled" or None
 
     def __repr__(self) -> str:  # never show the key
         return (
@@ -191,11 +247,82 @@ def mask_key(key: Optional[str]) -> str:
     return f"{key[:3]}…{key[-4:]}" if len(key) > 12 else "…"
 
 
+_KNOWN_SECRETS: set = set()
+_SECRETS_LOCK = threading.Lock()
+
+
+def remember_secret(value: Optional[str]) -> None:
+    """Record a loaded key so log lines and error messages can be scrubbed of it, whatever its source."""
+    if value and len(value) >= 8 and value != PLACEHOLDER_KEY:
+        with _SECRETS_LOCK:
+            _KNOWN_SECRETS.add(value)
+
+
+def known_secrets() -> list:
+    env_key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
+    with _SECRETS_LOCK:
+        values = set(_KNOWN_SECRETS)
+    if env_key and len(env_key) >= 8 and env_key != PLACEHOLDER_KEY:
+        values.add(env_key)
+    return sorted(values, key=len, reverse=True)
+
+
+_KEY_SHAPE = re.compile(r"sk-[A-Za-z0-9_\-]{16,}")
+
+
+def redact(text, replacement: Optional[str] = None):
+    """Replace any loaded key (and any key-shaped `sk-...` token) with its masked form (`sk-…1a2b`),
+    or with `replacement` when given."""
+    if not isinstance(text, str) or not text:
+        return text
+    for secret in known_secrets():
+        if secret in text:
+            text = text.replace(secret, replacement if replacement is not None else mask_key(secret))
+    return _KEY_SHAPE.sub(lambda m: replacement if replacement is not None else mask_key(m.group(0)), text)
+
+
+def _home_short(path: Path) -> str:
+    try:
+        return "~/" + str(Path(path).expanduser().relative_to(Path.home()))
+    except ValueError:
+        return str(path)
+
+
+def key_search_locations() -> list:
+    """Human-readable list of the places a key is looked for, in priority order (paths only, never values)."""
+    places = ["the DEEPSEEK_API_KEY environment variable"]
+    places += [f".env file {_home_short(p)}" for p in dotenv_paths()]
+    bundled = bundled_env_paths()
+    places.append("the app's bundled psychosight.env (" + ", ".join(_home_short(p) for p in bundled) + ")")
+    return places
+
+
+def missing_key_message() -> str:
+    return ("No DeepSeek API key found. Looked in, in order: " + "; ".join(key_search_locations()) + ". "
+            "To fix: Copy .env.example to .env and put the DeepSeek key in it (or export DEEPSEEK_API_KEY), "
+            "or rebuild the app with scripts/inject_bundled_key.py (see docs/PACKAGING_KEY.md); "
+            "then restart the backend.")
+
+
+KEY_SOURCE_DESCRIPTIONS = {
+    "env": "the DEEPSEEK_API_KEY environment variable",
+    "dotenv": "the key in your .env file",
+    "bundled": "the key bundled in the app (psychosight.env; rebuild with scripts/inject_bundled_key.py)",
+}
+
+
+def describe_key_source(settings: "LLMSettings") -> str:
+    """Where the key came from plus its masked form, e.g. 'the key in your .env file (sk-…1a2b)'."""
+    where = KEY_SOURCE_DESCRIPTIONS.get(settings.key_source or "", "DEEPSEEK_API_KEY")
+    return f"{where} ({mask_key(settings.api_key)})" if settings.api_key else where
+
+
 def llm_settings() -> LLMSettings:
     max_tokens = _env("DEEPSEEK_MAX_TOKENS")
     api_key, key_source = _env_with_source("DEEPSEEK_API_KEY")
     if api_key == PLACEHOLDER_KEY:  # .env copied from .env.example but not filled in
         api_key, key_source = None, None
+    remember_secret(api_key)
     return LLMSettings(
         api_key=api_key,
         key_source=key_source,

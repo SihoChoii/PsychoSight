@@ -2,7 +2,7 @@
 
 `PsychoSight.app` is a double-clickable app. It starts the FastAPI backend as a child of the signed `PsychoSight` executable, on `127.0.0.1` only, and opens the UI in a window at that same origin. Port `8765` is used when it is free; otherwise the app picks another free port. Quit the window or the Dock icon and the backend stops with it.
 
-The app bundles its own Python, dependencies, `web/dist`, `schemas/report.schema.json`, and `psychosight` package data (`data/`, `experimental/`, including `wwbp/`). It does not need system Python or Node. It does not contain a DeepSeek API key.
+The app bundles its own Python, dependencies, `web/dist`, `schemas/report.schema.json`, and `psychosight` package data (`data/`, `experimental/`, including `wwbp/`). It does not need system Python or Node. A temporary DeepSeek key can be sealed into the app at build time. It is not committed.
 
 ## Build and install
 
@@ -18,14 +18,19 @@ The app is not sandboxed. It is signed with the Developer ID Application identit
 
 ## API key
 
-The backend checks `DEEPSEEK_API_KEY`, then a checkout `.env` when you run from source, then `~/.psychosight/.env`. The packaged app does not read a `.env` inside the bundle. For the app, put the key in `~/.psychosight/.env`:
+Lookup order, first match wins: `DEEPSEEK_API_KEY`, then a checkout `.env` when you run from source, then `~/.psychosight/.env`, then the bundled `PsychoSight.app/Contents/Resources/psychosight.env`. The packaged app does not read a `.env` packed next to its Python files. `GET /config` reports `llm_key_source` as `env`, `dotenv`, `bundled`, or `null`. The key itself is never returned or logged.
+
+`packaging/macos/build.sh` injects the key after PyInstaller and before signing:
 
 ```bash
-cp ~/.psychosight/.env.example ~/.psychosight/.env
-# edit DEEPSEEK_API_KEY. The example value your-key-here is not a key.
+python scripts/inject_bundled_key.py "dist/PsychoSight.app/Contents/Resources/psychosight.env"
 ```
 
-The first launch writes `~/.psychosight/.env.example` if that file is missing, and writes `~/.psychosight/FIRST_RUN.txt` when no key is configured. It does not create or overwrite `~/.psychosight/.env`. A key that is already there is left in place. Without a key, deterministic reports and the demo (offline mock, labelled "not real model") still work.
+The script reads `DEEPSEEK_API_KEY`, otherwise the gitignored repo `.env`, otherwise `~/.psychosight/.env`. It writes mode `600` and prints only a masked key. If none of those has a key, the build still finishes and warns that the app has no bundled key. See `docs/PACKAGING_KEY.md`.
+
+To rotate the key, put the new value in the gitignored `.env` or the environment, rebuild, and re-sign. Anyone who has the `.app` can extract `psychosight.env`, so share the app only with trusted judges and rotate or revoke the key after judging. A user-level `~/.psychosight/.env` or an environment variable overrides the bundled key without rebuilding. Deleting the key in the DeepSeek console is what stops copies that were already shared.
+
+The first launch writes `~/.psychosight/.env.example` if that file is missing, and writes `~/.psychosight/FIRST_RUN.txt` when no key is configured. It does not create or overwrite `~/.psychosight/.env`. Without a key, deterministic reports and the demo (offline mock, labelled "not real model") still work.
 
 Logs are `~/Library/Logs/PsychoSight/server.log` and `launcher.log`. They are not given the API key or message text.
 

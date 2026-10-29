@@ -2,7 +2,8 @@
 
 The same signed executable is the Dock app and, as a child process, the FastAPI server
 (``python -m psychosight serve`` on 127.0.0.1). Full Disk Access granted to PsychoSight.app
-covers that process tree. No API key is read from the bundle.
+covers that process tree. A build-time ``psychosight.env`` under Contents/Resources is the
+lowest-priority key. The launcher does not put that key in the environment.
 """
 
 from __future__ import annotations
@@ -21,12 +22,12 @@ from psychosight import config
 from psychosight.resources import package_dir, pick_loopback_port
 
 NOTE = (
-    "PsychoSight does not include a DeepSeek API key.\n\n"
-    "To run the real model, copy ~/.psychosight/.env.example to ~/.psychosight/.env, "
-    "set DEEPSEEK_API_KEY, then quit and reopen PsychoSight. "
-    "An environment variable of the same name also works and takes priority.\n\n"
-    "Without a key, the demo still runs with offline mock scores (labelled \"not real model\"). "
-    "The key is never stored in the app and is never logged."
+    "PsychoSight has no DeepSeek API key in the environment or in ~/.psychosight/.env.\n\n"
+    "A key bundled into the app at build time is used when nothing else is set. "
+    "To override it, copy ~/.psychosight/.env.example to ~/.psychosight/.env and set DEEPSEEK_API_KEY, "
+    "or export that variable, then quit and reopen PsychoSight.\n\n"
+    "Without any key, the demo still runs with offline mock scores (labelled \"not real model\"). "
+    "The key is never logged."
 )
 
 
@@ -179,6 +180,16 @@ def stop_server(proc: Optional[subprocess.Popen]) -> None:
             pass
 
 
+def bundled_env_path() -> Optional[Path]:
+    """``<App>.app/Contents/Resources/psychosight.env`` when this process is inside a bundle."""
+    exe = Path(sys.executable).resolve()
+    for parent in [exe, *exe.parents]:
+        if parent.suffix == ".app" and (parent / "Contents").is_dir():
+            candidate = parent / "Contents" / "Resources" / "psychosight.env"
+            return candidate if candidate.is_file() else None
+    return None
+
+
 def start_server(port: int, static: Path) -> subprocess.Popen:
     log_dir = Path.home() / "Library" / "Logs" / "PsychoSight"
     log_dir.mkdir(parents=True, exist_ok=True)
@@ -191,9 +202,14 @@ def start_server(port: int, static: Path) -> subprocess.Popen:
         "--parent-pid", str(os.getpid()),
         "--static-dir", str(static),
     ]
+    env = os.environ.copy()
+    # Point at the bundled file. Do not copy DEEPSEEK_API_KEY into this environment.
+    bundled = bundled_env_path()
+    if bundled is not None:
+        env["PSYCHOSIGHT_BUNDLED_ENV"] = str(bundled)
     proc = subprocess.Popen(
         cmd, stdout=handle, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
-        env=os.environ.copy(), close_fds=True,
+        env=env, close_fds=True,
     )
     handle.close()
     return proc

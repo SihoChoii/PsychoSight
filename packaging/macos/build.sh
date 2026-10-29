@@ -1,6 +1,7 @@
 #!/bin/bash
-# Build PsychoSight.app from this checkout, sign it, and install it.
-# Does not read, copy, or bundle a DeepSeek API key.
+# Build PsychoSight.app from this checkout, optionally seal a DeepSeek key into it, sign it, and install it.
+# The key is read at build time from DEEPSEEK_API_KEY, the gitignored repo .env, or ~/.psychosight/.env.
+# It is written only to the built app (mode 600) and is never committed.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -46,6 +47,21 @@ if ! file "$MAIN" | grep -q "arm64"; then
   echo "expected an arm64 executable at $MAIN" >&2
   file "$MAIN" >&2 || true
   exit 1
+fi
+
+echo "injecting bundled key before signing"
+INJECT_DEST="$APP/Contents/Resources/psychosight.env"
+inject_status=0
+"$VENV/bin/python" "$ROOT/scripts/inject_bundled_key.py" "$INJECT_DEST" || inject_status=$?
+if [[ "$inject_status" -eq 1 && -f "$HOME/.psychosight/.env" ]]; then
+  inject_status=0
+  "$VENV/bin/python" "$ROOT/scripts/inject_bundled_key.py" "$INJECT_DEST" --env-file "$HOME/.psychosight/.env" || inject_status=$?
+fi
+if [[ "$inject_status" -eq 1 ]]; then
+  echo "warning: no DeepSeek API key found in the environment, the repo .env, or ~/.psychosight/.env. The app will ship without a bundled key." >&2
+elif [[ "$inject_status" -ne 0 ]]; then
+  echo "bundled key injection failed (exit $inject_status)" >&2
+  exit "$inject_status"
 fi
 
 IDENTITY="-"

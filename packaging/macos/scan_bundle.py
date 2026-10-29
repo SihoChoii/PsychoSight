@@ -1,4 +1,8 @@
-"""Fail if a built app contains a real DeepSeek key or a bundled .env. Prints paths only."""
+"""Fail if a built app contains a real DeepSeek key outside the one build-time file.
+
+The allowed file is Contents/Resources/psychosight.env, written by scripts/inject_bundled_key.py.
+This scanner prints paths only, never key values.
+"""
 
 from __future__ import annotations
 
@@ -7,9 +11,12 @@ from pathlib import Path
 
 NEEDLE = b"DEEPSEEK_API_KEY="
 PLACEHOLDER = b"your-key-here"
+ALLOWED = Path("Contents/Resources/psychosight.env")
 
 
-def offending(path: Path) -> bool:
+def offending(path: Path, app: Path) -> bool:
+    if path.relative_to(app) == ALLOWED:
+        return False
     if path.name == ".env" or (path.name.endswith(".env") and path.name != ".env.example"):
         return True
     try:
@@ -35,9 +42,12 @@ def main(argv: list[str]) -> int:
     if not app.is_dir():
         print(f"not a bundle: {app}", file=sys.stderr)
         return 2
-    bad = [str(path.relative_to(app)) for path in app.rglob("*") if path.is_file() and offending(path)]
+    bad = [str(path.relative_to(app)) for path in app.rglob("*") if path.is_file() and offending(path, app)]
+    allowed = app / ALLOWED
+    if allowed.is_file():
+        print("bundled key file present:", ALLOWED)
     if bad:
-        print("refusing to ship: bundle contains a .env or a DEEPSEEK_API_KEY assignment", file=sys.stderr)
+        print("refusing to ship: bundle contains a key outside Contents/Resources/psychosight.env", file=sys.stderr)
         for item in bad:
             print(item, file=sys.stderr)
         return 1
