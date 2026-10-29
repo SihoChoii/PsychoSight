@@ -278,7 +278,7 @@ def _coerce_content(content) -> str:
 
 def get_provider(is_demo: bool, llm_opt_in: bool) -> Provider:
     require_opt_in(llm_opt_in)
-    if is_demo and config.demo_provider_name() != "deepseek":
+    if is_demo and config.demo_provider_name() == "mock":
         from .mock_provider import MockProvider
         return MockProvider()
     return DeepSeekProvider()

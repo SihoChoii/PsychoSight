@@ -6,80 +6,178 @@
     "conversation_id": "demo",
     "conversation_label": "Demo conversation (synthetic)",
     "is_demo": true,
-    "date_from": "2025-09-22",
-    "date_to": "2025-11-15",
+    "date_from": "2025-08-04",
+    "date_to": "2026-02-01",
     "requested_range": {
       "date_from": null,
       "date_to": null
     },
-    "timezone": "America/Los_Angeles",
+    "timezone": "UTC-07:00",
     "message_counts": {
-      "me": 316,
-      "other": 318
+      "me": 2100,
+      "other": 2159
     },
     "word_counts": {
-      "me": 3130,
-      "other": 3078
+      "me": 13649,
+      "other": 13146
     },
-    "episode_count": 59,
+    "episode_count": 191,
     "episodes_scored": 0,
-    "week_count": 8
+    "week_count": 25
   },
   "weeks": [
+    {
+      "week": "2025-W32",
+      "start_date": "2025-08-04",
+      "end_date": "2025-08-10",
+      "episodes": 7,
+      "messages": {
+        "me": 78,
+        "other": 80
+      },
+      "words": {
+        "me": 470,
+        "other": 435
+      }
+    },
+    {
+      "week": "2025-W33",
+      "start_date": "2025-08-11",
+      "end_date": "2025-08-17",
+      "episodes": 8,
+      "messages": {
+        "me": 97,
+        "other": 102
+      },
+      "words": {
+        "me": 647,
+        "other": 638
+      }
+    },
+    {
+      "week": "2025-W34",
+      "start_date": "2025-08-18",
+      "end_date": "2025-08-24",
+      "episodes": 8,
+      "messages": {
+        "me": 100,
+        "other": 92
+      },
+      "words": {
+        "me": 577,
+        "other": 533
+      }
+    },
+    {
+      "week": "2025-W35",
+      "start_date": "2025-08-25",
+      "end_date": "2025-08-31",
+      "episodes": 7,
+      "messages": {
+        "me": 79,
+        "other": 85
+      },
+      "words": {
+        "me": 455,
+        "other": 551
+      }
+    },
+    {
+      "week": "2025-W36",
+      "start_date": "2025-09-01",
+      "end_date": "2025-09-07",
+      "episodes": 7,
+      "messages": {
+        "me": 68,
+        "other": 68
+      },
+      "words": {
+        "me": 499,
+        "other": 437
+      }
+    },
+    {
+      "week": "2025-W37",
+      "start_date": "2025-09-08",
+      "end_date": "2025-09-14",
+      "episodes": 8,
+      "messages": {
+        "me": 84,
+        "other": 83
+      },
+      "words": {
+        "me": 482,
+        "other": 448
+      }
+    },
+    {
+      "week": "2025-W38",
+      "start_date": "2025-09-15",
+      "end_date": "2025-09-21",
+      "episodes": 6,
+      "messages": {
+        "me": 74,
+        "other": 81
+      },
+      "words": {
+        "me": 544,
+        "other": 499
+      }
+    },
     {
       "week": "2025-W39",
       "start_date": "2025-09-22",
       "end_date": "2025-09-28",
-      "episodes": 9,
+      "episodes": 6,
       "messages": {
-        "me": 50,
-        "other": 51
+        "me": 64,
+        "other": 69
       },
       "words": {
         "me": 493,
-        "other": 479
+        "other": 433
       }
     },
     {
       "week": "2025-W40",
       "start_date": "2025-09-29",
       "end_date": "2025-10-05",
-      "episodes": 8,
+      "episodes": 7,
       "messages": {
-        "me": 45,
-        "other": 44
+        "me": 86,
+        "other": 101
       },
       "words": {
-        "me": 440,
-        "other": 427
+        "me": 563,
+        "other": 597
       }
     },
     {
       "week": "2025-W41",
       "start_date": "2025-10-06",
       "end_date": "2025-10-12",
-      "episodes": 1,
+      "episodes": 8,
       "messages": {
-        "me": 1,
-        "other": 2
+        "me": 88,
+        "other": 110
       },
       "words": {
-        "me": 10,
-        "other": 23
+        "me": 510,
+        "other": 635
       }
     },
     {
       "week": "2025-W42",
       "start_date": "2025-10-13",
       "end_date": "2025-10-19",
-      "episodes": 10,
+      "episodes": 7,
       "messages": {
-        "me": 51,
-        "other": 50
+        "me": 68,
+        "other": 79
       },
       "words": {
-        "me": 500,
-        "other": 484
+        "me": 439,
+        "other": 451
       }
     },
     {
@@ -88,54 +186,194 @@
       "end_date": "2025-10-26",
       "episodes": 9,
       "messages": {
-        "me": 52,
-        "other": 54
+        "me": 101,
+        "other": 105
       },
       "words": {
-        "me": 519,
-        "other": 529
+        "me": 639,
+        "other": 635
       }
     },
     {
       "week": "2025-W44",
       "start_date": "2025-10-27",
       "end_date": "2025-11-02",
-      "episodes": 1,
+      "episodes": 10,
       "messages": {
-        "me": 1,
-        "other": 2
+        "me": 129,
+        "other": 131
       },
       "words": {
-        "me": 11,
-        "other": 17
+        "me": 815,
+        "other": 813
       }
     },
     {
       "week": "2025-W45",
       "start_date": "2025-11-03",
       "end_date": "2025-11-09",
-      "episodes": 10,
+      "episodes": 8,
       "messages": {
-        "me": 57,
-        "other": 57
+        "me": 86,
+        "other": 82
       },
       "words": {
-        "me": 564,
-        "other": 546
+        "me": 546,
+        "other": 516
       }
     },
     {
-      "week": "2025-W46",
-      "start_date": "2025-11-10",
-      "end_date": "2025-11-16",
-      "episodes": 11,
+      "week": "2025-W47",
+      "start_date": "2025-11-17",
+      "end_date": "2025-11-23",
+      "episodes": 7,
       "messages": {
-        "me": 59,
-        "other": 58
+        "me": 78,
+        "other": 69
       },
       "words": {
-        "me": 593,
-        "other": 573
+        "me": 530,
+        "other": 431
+      }
+    },
+    {
+      "week": "2025-W48",
+      "start_date": "2025-11-24",
+      "end_date": "2025-11-30",
+      "episodes": 8,
+      "messages": {
+        "me": 86,
+        "other": 82
+      },
+      "words": {
+        "me": 669,
+        "other": 598
+      }
+    },
+    {
+      "week": "2025-W49",
+      "start_date": "2025-12-01",
+      "end_date": "2025-12-07",
+      "episodes": 7,
+      "messages": {
+        "me": 84,
+        "other": 81
+      },
+      "words": {
+        "me": 591,
+        "other": 564
+      }
+    },
+    {
+      "week": "2025-W50",
+      "start_date": "2025-12-08",
+      "end_date": "2025-12-14",
+      "episodes": 8,
+      "messages": {
+        "me": 78,
+        "other": 71
+      },
+      "words": {
+        "me": 596,
+        "other": 471
+      }
+    },
+    {
+      "week": "2025-W51",
+      "start_date": "2025-12-15",
+      "end_date": "2025-12-21",
+      "episodes": 8,
+      "messages": {
+        "me": 81,
+        "other": 83
+      },
+      "words": {
+        "me": 498,
+        "other": 438
+      }
+    },
+    {
+      "week": "2025-W52",
+      "start_date": "2025-12-22",
+      "end_date": "2025-12-28",
+      "episodes": 8,
+      "messages": {
+        "me": 89,
+        "other": 95
+      },
+      "words": {
+        "me": 614,
+        "other": 627
+      }
+    },
+    {
+      "week": "2026-W01",
+      "start_date": "2025-12-29",
+      "end_date": "2026-01-04",
+      "episodes": 7,
+      "messages": {
+        "me": 86,
+        "other": 84
+      },
+      "words": {
+        "me": 502,
+        "other": 522
+      }
+    },
+    {
+      "week": "2026-W02",
+      "start_date": "2026-01-05",
+      "end_date": "2026-01-11",
+      "episodes": 8,
+      "messages": {
+        "me": 78,
+        "other": 75
+      },
+      "words": {
+        "me": 398,
+        "other": 443
+      }
+    },
+    {
+      "week": "2026-W03",
+      "start_date": "2026-01-12",
+      "end_date": "2026-01-18",
+      "episodes": 7,
+      "messages": {
+        "me": 65,
+        "other": 66
+      },
+      "words": {
+        "me": 528,
+        "other": 430
+      }
+    },
+    {
+      "week": "2026-W04",
+      "start_date": "2026-01-19",
+      "end_date": "2026-01-25",
+      "episodes": 8,
+      "messages": {
+        "me": 90,
+        "other": 96
+      },
+      "words": {
+        "me": 556,
+        "other": 512
+      }
+    },
+    {
+      "week": "2026-W05",
+      "start_date": "2026-01-26",
+      "end_date": "2026-02-01",
+      "episodes": 9,
+      "messages": {
+        "me": 83,
+        "other": 89
+      },
+      "words": {
+        "me": 488,
+        "other": 489
       }
     }
   ],
@@ -150,101 +388,288 @@
       "min_count": null,
       "overall": {
         "me": {
-          "value": 316,
-          "count": 316
+          "value": 2100,
+          "count": 2100
         },
         "other": {
-          "value": 318,
-          "count": 318
+          "value": 2159,
+          "count": 2159
         }
       },
       "points": [
         {
-          "week": "2025-W39",
+          "week": "2025-W32",
           "me": {
-            "value": 50,
-            "count": 50
+            "value": 78,
+            "count": 78
           },
           "other": {
-            "value": 51,
-            "count": 51
+            "value": 80,
+            "count": 80
+          }
+        },
+        {
+          "week": "2025-W33",
+          "me": {
+            "value": 97,
+            "count": 97
+          },
+          "other": {
+            "value": 102,
+            "count": 102
+          }
+        },
+        {
+          "week": "2025-W34",
+          "me": {
+            "value": 100,
+            "count": 100
+          },
+          "other": {
+            "value": 92,
+            "count": 92
+          }
+        },
+        {
+          "week": "2025-W35",
+          "me": {
+            "value": 79,
+            "count": 79
+          },
+          "other": {
+            "value": 85,
+            "count": 85
+          }
+        },
+        {
+          "week": "2025-W36",
+          "me": {
+            "value": 68,
+            "count": 68
+          },
+          "other": {
+            "value": 68,
+            "count": 68
+          }
+        },
+        {
+          "week": "2025-W37",
+          "me": {
+            "value": 84,
+            "count": 84
+          },
+          "other": {
+            "value": 83,
+            "count": 83
+          }
+        },
+        {
+          "week": "2025-W38",
+          "me": {
+            "value": 74,
+            "count": 74
+          },
+          "other": {
+            "value": 81,
+            "count": 81
+          }
+        },
+        {
+          "week": "2025-W39",
+          "me": {
+            "value": 64,
+            "count": 64
+          },
+          "other": {
+            "value": 69,
+            "count": 69
           }
         },
         {
           "week": "2025-W40",
           "me": {
-            "value": 45,
-            "count": 45
+            "value": 86,
+            "count": 86
           },
           "other": {
-            "value": 44,
-            "count": 44
+            "value": 101,
+            "count": 101
           }
         },
         {
           "week": "2025-W41",
           "me": {
-            "value": 1,
-            "count": 1
+            "value": 88,
+            "count": 88
           },
           "other": {
-            "value": 2,
-            "count": 2
+            "value": 110,
+            "count": 110
           }
         },
         {
           "week": "2025-W42",
           "me": {
-            "value": 51,
-            "count": 51
+            "value": 68,
+            "count": 68
           },
           "other": {
-            "value": 50,
-            "count": 50
+            "value": 79,
+            "count": 79
           }
         },
         {
           "week": "2025-W43",
           "me": {
-            "value": 52,
-            "count": 52
+            "value": 101,
+            "count": 101
           },
           "other": {
-            "value": 54,
-            "count": 54
+            "value": 105,
+            "count": 105
           }
         },
         {
           "week": "2025-W44",
           "me": {
-            "value": 1,
-            "count": 1
+            "value": 129,
+            "count": 129
           },
           "other": {
-            "value": 2,
-            "count": 2
+            "value": 131,
+            "count": 131
           }
         },
         {
           "week": "2025-W45",
           "me": {
-            "value": 57,
-            "count": 57
+            "value": 86,
+            "count": 86
           },
           "other": {
-            "value": 57,
-            "count": 57
+            "value": 82,
+            "count": 82
           }
         },
         {
-          "week": "2025-W46",
+          "week": "2025-W47",
           "me": {
-            "value": 59,
-            "count": 59
+            "value": 78,
+            "count": 78
           },
           "other": {
-            "value": 58,
-            "count": 58
+            "value": 69,
+            "count": 69
+          }
+        },
+        {
+          "week": "2025-W48",
+          "me": {
+            "value": 86,
+            "count": 86
+          },
+          "other": {
+            "value": 82,
+            "count": 82
+          }
+        },
+        {
+          "week": "2025-W49",
+          "me": {
+            "value": 84,
+            "count": 84
+          },
+          "other": {
+            "value": 81,
+            "count": 81
+          }
+        },
+        {
+          "week": "2025-W50",
+          "me": {
+            "value": 78,
+            "count": 78
+          },
+          "other": {
+            "value": 71,
+            "count": 71
+          }
+        },
+        {
+          "week": "2025-W51",
+          "me": {
+            "value": 81,
+            "count": 81
+          },
+          "other": {
+            "value": 83,
+            "count": 83
+          }
+        },
+        {
+          "week": "2025-W52",
+          "me": {
+            "value": 89,
+            "count": 89
+          },
+          "other": {
+            "value": 95,
+            "count": 95
+          }
+        },
+        {
+          "week": "2026-W01",
+          "me": {
+            "value": 86,
+            "count": 86
+          },
+          "other": {
+            "value": 84,
+            "count": 84
+          }
+        },
+        {
+          "week": "2026-W02",
+          "me": {
+            "value": 78,
+            "count": 78
+          },
+          "other": {
+            "value": 75,
+            "count": 75
+          }
+        },
+        {
+          "week": "2026-W03",
+          "me": {
+            "value": 65,
+            "count": 65
+          },
+          "other": {
+            "value": 66,
+            "count": 66
+          }
+        },
+        {
+          "week": "2026-W04",
+          "me": {
+            "value": 90,
+            "count": 90
+          },
+          "other": {
+            "value": 96,
+            "count": 96
+          }
+        },
+        {
+          "week": "2026-W05",
+          "me": {
+            "value": 83,
+            "count": 83
+          },
+          "other": {
+            "value": 89,
+            "count": 89
           }
         }
       ]
@@ -259,105 +684,288 @@
       "min_count": 300,
       "overall": {
         "me": {
-          "value": 9.91,
-          "count": 3130
+          "value": 6.5,
+          "count": 13649
         },
         "other": {
-          "value": 9.68,
-          "count": 3078
+          "value": 6.09,
+          "count": 13146
         }
       },
       "points": [
         {
+          "week": "2025-W32",
+          "me": {
+            "value": 6.03,
+            "count": 470
+          },
+          "other": {
+            "value": 5.44,
+            "count": 435
+          }
+        },
+        {
+          "week": "2025-W33",
+          "me": {
+            "value": 6.67,
+            "count": 647
+          },
+          "other": {
+            "value": 6.25,
+            "count": 638
+          }
+        },
+        {
+          "week": "2025-W34",
+          "me": {
+            "value": 5.77,
+            "count": 577
+          },
+          "other": {
+            "value": 5.79,
+            "count": 533
+          }
+        },
+        {
+          "week": "2025-W35",
+          "me": {
+            "value": 5.76,
+            "count": 455
+          },
+          "other": {
+            "value": 6.48,
+            "count": 551
+          }
+        },
+        {
+          "week": "2025-W36",
+          "me": {
+            "value": 7.34,
+            "count": 499
+          },
+          "other": {
+            "value": 6.43,
+            "count": 437
+          }
+        },
+        {
+          "week": "2025-W37",
+          "me": {
+            "value": 5.74,
+            "count": 482
+          },
+          "other": {
+            "value": 5.4,
+            "count": 448
+          }
+        },
+        {
+          "week": "2025-W38",
+          "me": {
+            "value": 7.35,
+            "count": 544
+          },
+          "other": {
+            "value": 6.16,
+            "count": 499
+          }
+        },
+        {
           "week": "2025-W39",
           "me": {
-            "value": 9.86,
+            "value": 7.7,
             "count": 493
           },
           "other": {
-            "value": 9.39,
-            "count": 479
+            "value": 6.28,
+            "count": 433
           }
         },
         {
           "week": "2025-W40",
           "me": {
-            "value": 9.78,
-            "count": 440
+            "value": 6.55,
+            "count": 563
           },
           "other": {
-            "value": 9.7,
-            "count": 427
+            "value": 5.91,
+            "count": 597
           }
         },
         {
           "week": "2025-W41",
           "me": {
-            "value": null,
-            "count": 10,
-            "reason": "insufficient data"
+            "value": 5.8,
+            "count": 510
           },
           "other": {
-            "value": null,
-            "count": 23,
-            "reason": "insufficient data"
+            "value": 5.77,
+            "count": 635
           }
         },
         {
           "week": "2025-W42",
           "me": {
-            "value": 9.8,
-            "count": 500
+            "value": 6.46,
+            "count": 439
           },
           "other": {
-            "value": 9.68,
-            "count": 484
+            "value": 5.71,
+            "count": 451
           }
         },
         {
           "week": "2025-W43",
           "me": {
-            "value": 9.98,
-            "count": 519
+            "value": 6.33,
+            "count": 639
           },
           "other": {
-            "value": 9.8,
-            "count": 529
+            "value": 6.05,
+            "count": 635
           }
         },
         {
           "week": "2025-W44",
           "me": {
-            "value": null,
-            "count": 11,
-            "reason": "insufficient data"
+            "value": 6.32,
+            "count": 815
           },
           "other": {
-            "value": null,
-            "count": 17,
-            "reason": "insufficient data"
+            "value": 6.21,
+            "count": 813
           }
         },
         {
           "week": "2025-W45",
           "me": {
-            "value": 9.89,
-            "count": 564
+            "value": 6.35,
+            "count": 546
           },
           "other": {
-            "value": 9.58,
-            "count": 546
+            "value": 6.29,
+            "count": 516
           }
         },
         {
-          "week": "2025-W46",
+          "week": "2025-W47",
           "me": {
-            "value": 10.05,
-            "count": 593
+            "value": 6.79,
+            "count": 530
           },
           "other": {
-            "value": 9.88,
-            "count": 573
+            "value": 6.25,
+            "count": 431
+          }
+        },
+        {
+          "week": "2025-W48",
+          "me": {
+            "value": 7.78,
+            "count": 669
+          },
+          "other": {
+            "value": 7.29,
+            "count": 598
+          }
+        },
+        {
+          "week": "2025-W49",
+          "me": {
+            "value": 7.04,
+            "count": 591
+          },
+          "other": {
+            "value": 6.96,
+            "count": 564
+          }
+        },
+        {
+          "week": "2025-W50",
+          "me": {
+            "value": 7.64,
+            "count": 596
+          },
+          "other": {
+            "value": 6.63,
+            "count": 471
+          }
+        },
+        {
+          "week": "2025-W51",
+          "me": {
+            "value": 6.15,
+            "count": 498
+          },
+          "other": {
+            "value": 5.28,
+            "count": 438
+          }
+        },
+        {
+          "week": "2025-W52",
+          "me": {
+            "value": 6.9,
+            "count": 614
+          },
+          "other": {
+            "value": 6.6,
+            "count": 627
+          }
+        },
+        {
+          "week": "2026-W01",
+          "me": {
+            "value": 5.84,
+            "count": 502
+          },
+          "other": {
+            "value": 6.21,
+            "count": 522
+          }
+        },
+        {
+          "week": "2026-W02",
+          "me": {
+            "value": 5.1,
+            "count": 398
+          },
+          "other": {
+            "value": 5.91,
+            "count": 443
+          }
+        },
+        {
+          "week": "2026-W03",
+          "me": {
+            "value": 8.12,
+            "count": 528
+          },
+          "other": {
+            "value": 6.52,
+            "count": 430
+          }
+        },
+        {
+          "week": "2026-W04",
+          "me": {
+            "value": 6.18,
+            "count": 556
+          },
+          "other": {
+            "value": 5.33,
+            "count": 512
+          }
+        },
+        {
+          "week": "2026-W05",
+          "me": {
+            "value": 5.88,
+            "count": 488
+          },
+          "other": {
+            "value": 5.49,
+            "count": 489
           }
         }
       ]
@@ -372,105 +980,288 @@
       "min_count": 300,
       "overall": {
         "me": {
-          "value": 2.78,
-          "count": 3130
+          "value": 0.99,
+          "count": 13649
         },
         "other": {
-          "value": 1.43,
-          "count": 3078
+          "value": 0.94,
+          "count": 13146
         }
       },
       "points": [
         {
+          "week": "2025-W32",
+          "me": {
+            "value": 1.06,
+            "count": 470
+          },
+          "other": {
+            "value": 0.46,
+            "count": 435
+          }
+        },
+        {
+          "week": "2025-W33",
+          "me": {
+            "value": 0.77,
+            "count": 647
+          },
+          "other": {
+            "value": 0.47,
+            "count": 638
+          }
+        },
+        {
+          "week": "2025-W34",
+          "me": {
+            "value": 0.69,
+            "count": 577
+          },
+          "other": {
+            "value": 0.75,
+            "count": 533
+          }
+        },
+        {
+          "week": "2025-W35",
+          "me": {
+            "value": 1.32,
+            "count": 455
+          },
+          "other": {
+            "value": 0.0,
+            "count": 551
+          }
+        },
+        {
+          "week": "2025-W36",
+          "me": {
+            "value": 1.0,
+            "count": 499
+          },
+          "other": {
+            "value": 0.46,
+            "count": 437
+          }
+        },
+        {
+          "week": "2025-W37",
+          "me": {
+            "value": 0.83,
+            "count": 482
+          },
+          "other": {
+            "value": 0.45,
+            "count": 448
+          }
+        },
+        {
+          "week": "2025-W38",
+          "me": {
+            "value": 0.37,
+            "count": 544
+          },
+          "other": {
+            "value": 1.0,
+            "count": 499
+          }
+        },
+        {
           "week": "2025-W39",
           "me": {
-            "value": 2.64,
+            "value": 0.41,
             "count": 493
           },
           "other": {
-            "value": 1.04,
-            "count": 479
+            "value": 0.69,
+            "count": 433
           }
         },
         {
           "week": "2025-W40",
           "me": {
-            "value": 2.73,
-            "count": 440
+            "value": 0.53,
+            "count": 563
           },
           "other": {
-            "value": 1.64,
-            "count": 427
+            "value": 0.5,
+            "count": 597
           }
         },
         {
           "week": "2025-W41",
           "me": {
-            "value": null,
-            "count": 10,
-            "reason": "insufficient data"
+            "value": 1.18,
+            "count": 510
           },
           "other": {
-            "value": null,
-            "count": 23,
-            "reason": "insufficient data"
+            "value": 0.63,
+            "count": 635
           }
         },
         {
           "week": "2025-W42",
           "me": {
-            "value": 2.8,
-            "count": 500
+            "value": 0.91,
+            "count": 439
           },
           "other": {
-            "value": 1.24,
-            "count": 484
+            "value": 1.11,
+            "count": 451
           }
         },
         {
           "week": "2025-W43",
           "me": {
-            "value": 2.89,
-            "count": 519
+            "value": 1.25,
+            "count": 639
           },
           "other": {
-            "value": 1.51,
-            "count": 529
+            "value": 2.68,
+            "count": 635
           }
         },
         {
           "week": "2025-W44",
           "me": {
-            "value": null,
-            "count": 11,
-            "reason": "insufficient data"
+            "value": 2.33,
+            "count": 815
           },
           "other": {
-            "value": null,
-            "count": 17,
-            "reason": "insufficient data"
+            "value": 3.2,
+            "count": 813
           }
         },
         {
           "week": "2025-W45",
           "me": {
-            "value": 3.01,
-            "count": 564
+            "value": 3.48,
+            "count": 546
           },
           "other": {
-            "value": 1.28,
-            "count": 546
+            "value": 3.49,
+            "count": 516
           }
         },
         {
-          "week": "2025-W46",
+          "week": "2025-W47",
           "me": {
-            "value": 2.7,
-            "count": 593
+            "value": 0.75,
+            "count": 530
           },
           "other": {
-            "value": 1.57,
-            "count": 573
+            "value": 0.7,
+            "count": 431
+          }
+        },
+        {
+          "week": "2025-W48",
+          "me": {
+            "value": 0.75,
+            "count": 669
+          },
+          "other": {
+            "value": 0.5,
+            "count": 598
+          }
+        },
+        {
+          "week": "2025-W49",
+          "me": {
+            "value": 0.85,
+            "count": 591
+          },
+          "other": {
+            "value": 0.53,
+            "count": 564
+          }
+        },
+        {
+          "week": "2025-W50",
+          "me": {
+            "value": 1.01,
+            "count": 596
+          },
+          "other": {
+            "value": 0.85,
+            "count": 471
+          }
+        },
+        {
+          "week": "2025-W51",
+          "me": {
+            "value": 0.0,
+            "count": 498
+          },
+          "other": {
+            "value": 0.68,
+            "count": 438
+          }
+        },
+        {
+          "week": "2025-W52",
+          "me": {
+            "value": 0.65,
+            "count": 614
+          },
+          "other": {
+            "value": 0.64,
+            "count": 627
+          }
+        },
+        {
+          "week": "2026-W01",
+          "me": {
+            "value": 0.4,
+            "count": 502
+          },
+          "other": {
+            "value": 0.38,
+            "count": 522
+          }
+        },
+        {
+          "week": "2026-W02",
+          "me": {
+            "value": 1.26,
+            "count": 398
+          },
+          "other": {
+            "value": 0.45,
+            "count": 443
+          }
+        },
+        {
+          "week": "2026-W03",
+          "me": {
+            "value": 0.38,
+            "count": 528
+          },
+          "other": {
+            "value": 0.7,
+            "count": 430
+          }
+        },
+        {
+          "week": "2026-W04",
+          "me": {
+            "value": 0.9,
+            "count": 556
+          },
+          "other": {
+            "value": 0.2,
+            "count": 512
+          }
+        },
+        {
+          "week": "2026-W05",
+          "me": {
+            "value": 1.02,
+            "count": 488
+          },
+          "other": {
+            "value": 0.41,
+            "count": 489
           }
         }
       ]
@@ -485,105 +1276,288 @@
       "min_count": 300,
       "overall": {
         "me": {
-          "value": 8.15,
-          "count": 3130
+          "value": 7.51,
+          "count": 13649
         },
         "other": {
           "value": 6.17,
-          "count": 3078
+          "count": 13146
         }
       },
       "points": [
         {
+          "week": "2025-W32",
+          "me": {
+            "value": 6.6,
+            "count": 470
+          },
+          "other": {
+            "value": 4.83,
+            "count": 435
+          }
+        },
+        {
+          "week": "2025-W33",
+          "me": {
+            "value": 6.96,
+            "count": 647
+          },
+          "other": {
+            "value": 5.33,
+            "count": 638
+          }
+        },
+        {
+          "week": "2025-W34",
+          "me": {
+            "value": 6.93,
+            "count": 577
+          },
+          "other": {
+            "value": 6.75,
+            "count": 533
+          }
+        },
+        {
+          "week": "2025-W35",
+          "me": {
+            "value": 6.37,
+            "count": 455
+          },
+          "other": {
+            "value": 5.63,
+            "count": 551
+          }
+        },
+        {
+          "week": "2025-W36",
+          "me": {
+            "value": 7.62,
+            "count": 499
+          },
+          "other": {
+            "value": 5.49,
+            "count": 437
+          }
+        },
+        {
+          "week": "2025-W37",
+          "me": {
+            "value": 6.64,
+            "count": 482
+          },
+          "other": {
+            "value": 7.59,
+            "count": 448
+          }
+        },
+        {
+          "week": "2025-W38",
+          "me": {
+            "value": 6.8,
+            "count": 544
+          },
+          "other": {
+            "value": 6.01,
+            "count": 499
+          }
+        },
+        {
           "week": "2025-W39",
           "me": {
-            "value": 6.49,
+            "value": 6.9,
             "count": 493
           },
           "other": {
-            "value": 5.43,
-            "count": 479
+            "value": 5.54,
+            "count": 433
           }
         },
         {
           "week": "2025-W40",
           "me": {
-            "value": 7.73,
-            "count": 440
+            "value": 6.39,
+            "count": 563
           },
           "other": {
-            "value": 5.39,
-            "count": 427
+            "value": 6.03,
+            "count": 597
           }
         },
         {
           "week": "2025-W41",
           "me": {
-            "value": null,
-            "count": 10,
-            "reason": "insufficient data"
+            "value": 6.08,
+            "count": 510
           },
           "other": {
-            "value": null,
-            "count": 23,
-            "reason": "insufficient data"
+            "value": 6.14,
+            "count": 635
           }
         },
         {
           "week": "2025-W42",
           "me": {
-            "value": 9.4,
-            "count": 500
+            "value": 8.43,
+            "count": 439
           },
           "other": {
-            "value": 6.2,
-            "count": 484
+            "value": 5.54,
+            "count": 451
           }
         },
         {
           "week": "2025-W43",
           "me": {
-            "value": 8.86,
-            "count": 519
+            "value": 8.92,
+            "count": 639
           },
           "other": {
-            "value": 6.43,
-            "count": 529
+            "value": 7.24,
+            "count": 635
           }
         },
         {
           "week": "2025-W44",
           "me": {
-            "value": null,
-            "count": 11,
-            "reason": "insufficient data"
+            "value": 9.45,
+            "count": 815
           },
           "other": {
-            "value": null,
-            "count": 17,
-            "reason": "insufficient data"
+            "value": 7.26,
+            "count": 813
           }
         },
         {
           "week": "2025-W45",
           "me": {
-            "value": 8.69,
-            "count": 564
+            "value": 9.52,
+            "count": 546
           },
           "other": {
-            "value": 6.23,
-            "count": 546
+            "value": 7.36,
+            "count": 516
           }
         },
         {
-          "week": "2025-W46",
+          "week": "2025-W47",
           "me": {
-            "value": 7.93,
-            "count": 593
+            "value": 6.79,
+            "count": 530
           },
           "other": {
-            "value": 7.33,
-            "count": 573
+            "value": 7.19,
+            "count": 431
+          }
+        },
+        {
+          "week": "2025-W48",
+          "me": {
+            "value": 9.27,
+            "count": 669
+          },
+          "other": {
+            "value": 5.69,
+            "count": 598
+          }
+        },
+        {
+          "week": "2025-W49",
+          "me": {
+            "value": 7.61,
+            "count": 591
+          },
+          "other": {
+            "value": 6.03,
+            "count": 564
+          }
+        },
+        {
+          "week": "2025-W50",
+          "me": {
+            "value": 9.9,
+            "count": 596
+          },
+          "other": {
+            "value": 7.86,
+            "count": 471
+          }
+        },
+        {
+          "week": "2025-W51",
+          "me": {
+            "value": 8.84,
+            "count": 498
+          },
+          "other": {
+            "value": 5.25,
+            "count": 438
+          }
+        },
+        {
+          "week": "2025-W52",
+          "me": {
+            "value": 8.63,
+            "count": 614
+          },
+          "other": {
+            "value": 6.86,
+            "count": 627
+          }
+        },
+        {
+          "week": "2026-W01",
+          "me": {
+            "value": 5.38,
+            "count": 502
+          },
+          "other": {
+            "value": 4.98,
+            "count": 522
+          }
+        },
+        {
+          "week": "2026-W02",
+          "me": {
+            "value": 6.78,
+            "count": 398
+          },
+          "other": {
+            "value": 6.32,
+            "count": 443
+          }
+        },
+        {
+          "week": "2026-W03",
+          "me": {
+            "value": 8.33,
+            "count": 528
+          },
+          "other": {
+            "value": 5.81,
+            "count": 430
+          }
+        },
+        {
+          "week": "2026-W04",
+          "me": {
+            "value": 5.58,
+            "count": 556
+          },
+          "other": {
+            "value": 6.05,
+            "count": 512
+          }
+        },
+        {
+          "week": "2026-W05",
+          "me": {
+            "value": 4.3,
+            "count": 488
+          },
+          "other": {
+            "value": 4.5,
+            "count": 489
           }
         }
       ]
@@ -598,105 +1572,288 @@
       "min_count": 300,
       "overall": {
         "me": {
-          "value": 1.15,
-          "count": 3130
+          "value": 1.11,
+          "count": 13649
         },
         "other": {
-          "value": 1.33,
-          "count": 3078
+          "value": 0.89,
+          "count": 13146
         }
       },
       "points": [
         {
+          "week": "2025-W32",
+          "me": {
+            "value": 0.85,
+            "count": 470
+          },
+          "other": {
+            "value": 1.15,
+            "count": 435
+          }
+        },
+        {
+          "week": "2025-W33",
+          "me": {
+            "value": 0.93,
+            "count": 647
+          },
+          "other": {
+            "value": 0.31,
+            "count": 638
+          }
+        },
+        {
+          "week": "2025-W34",
+          "me": {
+            "value": 1.04,
+            "count": 577
+          },
+          "other": {
+            "value": 1.31,
+            "count": 533
+          }
+        },
+        {
+          "week": "2025-W35",
+          "me": {
+            "value": 0.88,
+            "count": 455
+          },
+          "other": {
+            "value": 1.09,
+            "count": 551
+          }
+        },
+        {
+          "week": "2025-W36",
+          "me": {
+            "value": 1.4,
+            "count": 499
+          },
+          "other": {
+            "value": 0.92,
+            "count": 437
+          }
+        },
+        {
+          "week": "2025-W37",
+          "me": {
+            "value": 1.24,
+            "count": 482
+          },
+          "other": {
+            "value": 0.67,
+            "count": 448
+          }
+        },
+        {
+          "week": "2025-W38",
+          "me": {
+            "value": 1.29,
+            "count": 544
+          },
+          "other": {
+            "value": 1.0,
+            "count": 499
+          }
+        },
+        {
           "week": "2025-W39",
           "me": {
-            "value": 1.22,
+            "value": 0.81,
             "count": 493
           },
           "other": {
-            "value": 1.88,
-            "count": 479
+            "value": 1.39,
+            "count": 433
           }
         },
         {
           "week": "2025-W40",
           "me": {
-            "value": 1.14,
-            "count": 440
+            "value": 1.24,
+            "count": 563
           },
           "other": {
-            "value": 1.17,
-            "count": 427
+            "value": 0.84,
+            "count": 597
           }
         },
         {
           "week": "2025-W41",
           "me": {
-            "value": null,
-            "count": 10,
-            "reason": "insufficient data"
+            "value": 0.78,
+            "count": 510
           },
           "other": {
-            "value": null,
-            "count": 23,
-            "reason": "insufficient data"
+            "value": 0.79,
+            "count": 635
           }
         },
         {
           "week": "2025-W42",
           "me": {
-            "value": 1.2,
-            "count": 500
+            "value": 0.68,
+            "count": 439
           },
           "other": {
-            "value": 1.45,
-            "count": 484
+            "value": 1.11,
+            "count": 451
           }
         },
         {
           "week": "2025-W43",
           "me": {
-            "value": 1.16,
-            "count": 519
+            "value": 0.63,
+            "count": 639
           },
           "other": {
-            "value": 1.32,
-            "count": 529
+            "value": 0.47,
+            "count": 635
           }
         },
         {
           "week": "2025-W44",
           "me": {
-            "value": null,
-            "count": 11,
-            "reason": "insufficient data"
+            "value": 0.61,
+            "count": 815
           },
           "other": {
-            "value": null,
-            "count": 17,
-            "reason": "insufficient data"
+            "value": 0.62,
+            "count": 813
           }
         },
         {
           "week": "2025-W45",
           "me": {
-            "value": 1.06,
-            "count": 564
+            "value": 1.28,
+            "count": 546
           },
           "other": {
-            "value": 1.1,
-            "count": 546
+            "value": 0.58,
+            "count": 516
           }
         },
         {
-          "week": "2025-W46",
+          "week": "2025-W47",
           "me": {
-            "value": 1.01,
-            "count": 593
+            "value": 1.13,
+            "count": 530
           },
           "other": {
-            "value": 1.22,
-            "count": 573
+            "value": 0.93,
+            "count": 431
+          }
+        },
+        {
+          "week": "2025-W48",
+          "me": {
+            "value": 1.64,
+            "count": 669
+          },
+          "other": {
+            "value": 1.34,
+            "count": 598
+          }
+        },
+        {
+          "week": "2025-W49",
+          "me": {
+            "value": 2.2,
+            "count": 591
+          },
+          "other": {
+            "value": 0.89,
+            "count": 564
+          }
+        },
+        {
+          "week": "2025-W50",
+          "me": {
+            "value": 2.18,
+            "count": 596
+          },
+          "other": {
+            "value": 1.91,
+            "count": 471
+          }
+        },
+        {
+          "week": "2025-W51",
+          "me": {
+            "value": 0.6,
+            "count": 498
+          },
+          "other": {
+            "value": 0.91,
+            "count": 438
+          }
+        },
+        {
+          "week": "2025-W52",
+          "me": {
+            "value": 1.3,
+            "count": 614
+          },
+          "other": {
+            "value": 0.64,
+            "count": 627
+          }
+        },
+        {
+          "week": "2026-W01",
+          "me": {
+            "value": 1.0,
+            "count": 502
+          },
+          "other": {
+            "value": 0.57,
+            "count": 522
+          }
+        },
+        {
+          "week": "2026-W02",
+          "me": {
+            "value": 0.5,
+            "count": 398
+          },
+          "other": {
+            "value": 0.68,
+            "count": 443
+          }
+        },
+        {
+          "week": "2026-W03",
+          "me": {
+            "value": 0.95,
+            "count": 528
+          },
+          "other": {
+            "value": 0.93,
+            "count": 430
+          }
+        },
+        {
+          "week": "2026-W04",
+          "me": {
+            "value": 1.44,
+            "count": 556
+          },
+          "other": {
+            "value": 0.98,
+            "count": 512
+          }
+        },
+        {
+          "week": "2026-W05",
+          "me": {
+            "value": 0.82,
+            "count": 488
+          },
+          "other": {
+            "value": 0.82,
+            "count": 489
           }
         }
       ]
@@ -711,17 +1868,138 @@
       "min_count": 3,
       "overall": {
         "me": {
-          "value": 35.6,
-          "count": 21
+          "value": 54.5,
+          "count": 104
         },
         "other": {
-          "value": 64.4,
-          "count": 38
+          "value": 45.5,
+          "count": 87
         }
       },
       "points": [
         {
+          "week": "2025-W32",
+          "me": {
+            "value": 85.7,
+            "count": 6
+          },
+          "other": {
+            "value": 14.3,
+            "count": 1
+          }
+        },
+        {
+          "week": "2025-W33",
+          "me": {
+            "value": 50.0,
+            "count": 4
+          },
+          "other": {
+            "value": 50.0,
+            "count": 4
+          }
+        },
+        {
+          "week": "2025-W34",
+          "me": {
+            "value": 87.5,
+            "count": 7
+          },
+          "other": {
+            "value": 12.5,
+            "count": 1
+          }
+        },
+        {
+          "week": "2025-W35",
+          "me": {
+            "value": 71.4,
+            "count": 5
+          },
+          "other": {
+            "value": 28.6,
+            "count": 2
+          }
+        },
+        {
+          "week": "2025-W36",
+          "me": {
+            "value": 57.1,
+            "count": 4
+          },
+          "other": {
+            "value": 42.9,
+            "count": 3
+          }
+        },
+        {
+          "week": "2025-W37",
+          "me": {
+            "value": 75.0,
+            "count": 6
+          },
+          "other": {
+            "value": 25.0,
+            "count": 2
+          }
+        },
+        {
+          "week": "2025-W38",
+          "me": {
+            "value": 16.7,
+            "count": 1
+          },
+          "other": {
+            "value": 83.3,
+            "count": 5
+          }
+        },
+        {
           "week": "2025-W39",
+          "me": {
+            "value": 50.0,
+            "count": 3
+          },
+          "other": {
+            "value": 50.0,
+            "count": 3
+          }
+        },
+        {
+          "week": "2025-W40",
+          "me": {
+            "value": 28.6,
+            "count": 2
+          },
+          "other": {
+            "value": 71.4,
+            "count": 5
+          }
+        },
+        {
+          "week": "2025-W41",
+          "me": {
+            "value": 12.5,
+            "count": 1
+          },
+          "other": {
+            "value": 87.5,
+            "count": 7
+          }
+        },
+        {
+          "week": "2025-W42",
+          "me": {
+            "value": 42.9,
+            "count": 3
+          },
+          "other": {
+            "value": 57.1,
+            "count": 4
+          }
+        },
+        {
+          "week": "2025-W43",
           "me": {
             "value": 55.6,
             "count": 5
@@ -732,7 +2010,18 @@
           }
         },
         {
-          "week": "2025-W40",
+          "week": "2025-W44",
+          "me": {
+            "value": 10.0,
+            "count": 1
+          },
+          "other": {
+            "value": 90.0,
+            "count": 9
+          }
+        },
+        {
+          "week": "2025-W45",
           "me": {
             "value": 37.5,
             "count": 3
@@ -743,73 +2032,124 @@
           }
         },
         {
-          "week": "2025-W41",
+          "week": "2025-W47",
           "me": {
-            "value": null,
-            "count": 0,
-            "reason": "insufficient data"
-          },
-          "other": {
-            "value": null,
-            "count": 1,
-            "reason": "insufficient data"
-          }
-        },
-        {
-          "week": "2025-W42",
-          "me": {
-            "value": 40.0,
+            "value": 57.1,
             "count": 4
           },
           "other": {
-            "value": 60.0,
+            "value": 42.9,
+            "count": 3
+          }
+        },
+        {
+          "week": "2025-W48",
+          "me": {
+            "value": 75.0,
+            "count": 6
+          },
+          "other": {
+            "value": 25.0,
+            "count": 2
+          }
+        },
+        {
+          "week": "2025-W49",
+          "me": {
+            "value": 85.7,
+            "count": 6
+          },
+          "other": {
+            "value": 14.3,
+            "count": 1
+          }
+        },
+        {
+          "week": "2025-W50",
+          "me": {
+            "value": 75.0,
+            "count": 6
+          },
+          "other": {
+            "value": 25.0,
+            "count": 2
+          }
+        },
+        {
+          "week": "2025-W51",
+          "me": {
+            "value": 87.5,
+            "count": 7
+          },
+          "other": {
+            "value": 12.5,
+            "count": 1
+          }
+        },
+        {
+          "week": "2025-W52",
+          "me": {
+            "value": 50.0,
+            "count": 4
+          },
+          "other": {
+            "value": 50.0,
+            "count": 4
+          }
+        },
+        {
+          "week": "2026-W01",
+          "me": {
+            "value": 71.4,
+            "count": 5
+          },
+          "other": {
+            "value": 28.6,
+            "count": 2
+          }
+        },
+        {
+          "week": "2026-W02",
+          "me": {
+            "value": 25.0,
+            "count": 2
+          },
+          "other": {
+            "value": 75.0,
             "count": 6
           }
         },
         {
-          "week": "2025-W43",
+          "week": "2026-W03",
           "me": {
-            "value": 22.2,
-            "count": 2
-          },
-          "other": {
-            "value": 77.8,
-            "count": 7
-          }
-        },
-        {
-          "week": "2025-W44",
-          "me": {
-            "value": null,
-            "count": 0,
-            "reason": "insufficient data"
-          },
-          "other": {
-            "value": null,
-            "count": 1,
-            "reason": "insufficient data"
-          }
-        },
-        {
-          "week": "2025-W45",
-          "me": {
-            "value": 50.0,
+            "value": 71.4,
             "count": 5
           },
           "other": {
-            "value": 50.0,
-            "count": 5
+            "value": 28.6,
+            "count": 2
           }
         },
         {
-          "week": "2025-W46",
+          "week": "2026-W04",
           "me": {
-            "value": 18.2,
-            "count": 2
+            "value": 50.0,
+            "count": 4
           },
           "other": {
-            "value": 81.8,
-            "count": 9
+            "value": 50.0,
+            "count": 4
+          }
+        },
+        {
+          "week": "2026-W05",
+          "me": {
+            "value": 44.4,
+            "count": 4
+          },
+          "other": {
+            "value": 55.6,
+            "count": 5
           }
         }
       ]
@@ -824,105 +2164,288 @@
       "min_count": 3,
       "overall": {
         "me": {
-          "value": 139.0,
-          "count": 291
+          "value": 84.0,
+          "count": 1635
         },
         "other": {
-          "value": 213.0,
-          "count": 274
+          "value": 93.0,
+          "count": 1658
         }
       },
       "points": [
         {
-          "week": "2025-W39",
+          "week": "2025-W32",
           "me": {
-            "value": 133.0,
-            "count": 45
+            "value": 55.0,
+            "count": 63
           },
           "other": {
-            "value": 242.0,
-            "count": 46
+            "value": 102.0,
+            "count": 66
+          }
+        },
+        {
+          "week": "2025-W33",
+          "me": {
+            "value": 44.0,
+            "count": 78
+          },
+          "other": {
+            "value": 104.0,
+            "count": 79
+          }
+        },
+        {
+          "week": "2025-W34",
+          "me": {
+            "value": 43.0,
+            "count": 72
+          },
+          "other": {
+            "value": 95.0,
+            "count": 77
+          }
+        },
+        {
+          "week": "2025-W35",
+          "me": {
+            "value": 58.0,
+            "count": 66
+          },
+          "other": {
+            "value": 67.0,
+            "count": 69
+          }
+        },
+        {
+          "week": "2025-W36",
+          "me": {
+            "value": 50.0,
+            "count": 55
+          },
+          "other": {
+            "value": 92.0,
+            "count": 56
+          }
+        },
+        {
+          "week": "2025-W37",
+          "me": {
+            "value": 42.0,
+            "count": 67
+          },
+          "other": {
+            "value": 86.0,
+            "count": 70
+          }
+        },
+        {
+          "week": "2025-W38",
+          "me": {
+            "value": 420.0,
+            "count": 59
+          },
+          "other": {
+            "value": 62.0,
+            "count": 58
+          }
+        },
+        {
+          "week": "2025-W39",
+          "me": {
+            "value": 511.0,
+            "count": 48
+          },
+          "other": {
+            "value": 57.0,
+            "count": 48
           }
         },
         {
           "week": "2025-W40",
           "me": {
-            "value": 109.0,
-            "count": 41
+            "value": 524.0,
+            "count": 70
           },
           "other": {
-            "value": 220.0,
-            "count": 38
+            "value": 65.0,
+            "count": 70
           }
         },
         {
           "week": "2025-W41",
           "me": {
-            "value": null,
-            "count": 1,
-            "reason": "insufficient data"
+            "value": 500.0,
+            "count": 78
           },
           "other": {
-            "value": null,
-            "count": 1,
-            "reason": "insufficient data"
+            "value": 81.0,
+            "count": 75
           }
         },
         {
           "week": "2025-W42",
           "me": {
-            "value": 155.0,
-            "count": 46
+            "value": 406.0,
+            "count": 56
           },
           "other": {
-            "value": 209.0,
-            "count": 43
+            "value": 51.0,
+            "count": 55
           }
         },
         {
           "week": "2025-W43",
           "me": {
-            "value": 119.5,
-            "count": 50
+            "value": 37.5,
+            "count": 76
           },
           "other": {
-            "value": 201.0,
-            "count": 46
+            "value": 63.0,
+            "count": 77
           }
         },
         {
           "week": "2025-W44",
           "me": {
-            "value": null,
-            "count": 1,
-            "reason": "insufficient data"
+            "value": 46.0,
+            "count": 93
           },
           "other": {
-            "value": null,
-            "count": 1,
-            "reason": "insufficient data"
+            "value": 31.0,
+            "count": 93
           }
         },
         {
           "week": "2025-W45",
           "me": {
-            "value": 148.0,
-            "count": 51
+            "value": 53.0,
+            "count": 63
           },
           "other": {
-            "value": 199.0,
-            "count": 51
+            "value": 38.0,
+            "count": 61
           }
         },
         {
-          "week": "2025-W46",
+          "week": "2025-W47",
           "me": {
-            "value": 139.5,
+            "value": 66.0,
+            "count": 57
+          },
+          "other": {
+            "value": 156.0,
+            "count": 56
+          }
+        },
+        {
+          "week": "2025-W48",
+          "me": {
+            "value": 58.0,
+            "count": 68
+          },
+          "other": {
+            "value": 205.0,
+            "count": 70
+          }
+        },
+        {
+          "week": "2025-W49",
+          "me": {
+            "value": 60.0,
+            "count": 60
+          },
+          "other": {
+            "value": 225.0,
+            "count": 64
+          }
+        },
+        {
+          "week": "2025-W50",
+          "me": {
+            "value": 63.5,
             "count": 56
           },
           "other": {
-            "value": 212.0,
+            "value": 191.0,
+            "count": 60
+          }
+        },
+        {
+          "week": "2025-W51",
+          "me": {
+            "value": 59.0,
+            "count": 59
+          },
+          "other": {
+            "value": 176.0,
+            "count": 63
+          }
+        },
+        {
+          "week": "2025-W52",
+          "me": {
+            "value": 84.0,
+            "count": 70
+          },
+          "other": {
+            "value": 91.0,
+            "count": 71
+          }
+        },
+        {
+          "week": "2026-W01",
+          "me": {
+            "value": 92.0,
+            "count": 65
+          },
+          "other": {
+            "value": 95.0,
+            "count": 69
+          }
+        },
+        {
+          "week": "2026-W02",
+          "me": {
+            "value": 114.5,
+            "count": 62
+          },
+          "other": {
+            "value": 111.5,
+            "count": 60
+          }
+        },
+        {
+          "week": "2026-W03",
+          "me": {
+            "value": 117.5,
             "count": 48
+          },
+          "other": {
+            "value": 112.0,
+            "count": 50
+          }
+        },
+        {
+          "week": "2026-W04",
+          "me": {
+            "value": 114.0,
+            "count": 75
+          },
+          "other": {
+            "value": 126.0,
+            "count": 73
+          }
+        },
+        {
+          "week": "2026-W05",
+          "me": {
+            "value": 109.0,
+            "count": 71
+          },
+          "other": {
+            "value": 88.5,
+            "count": 68
           }
         }
       ]
@@ -937,105 +2460,288 @@
       "min_count": 10,
       "overall": {
         "me": {
-          "value": 0.3,
-          "count": 313
+          "value": 4.9,
+          "count": 1829
         },
         "other": {
-          "value": 0.6,
-          "count": 314
+          "value": 7.0,
+          "count": 1877
         }
       },
       "points": [
         {
-          "week": "2025-W39",
+          "week": "2025-W32",
           "me": {
-            "value": 0.0,
-            "count": 50
+            "value": 1.4,
+            "count": 70
           },
           "other": {
-            "value": 0.0,
-            "count": 50
+            "value": 2.9,
+            "count": 69
+          }
+        },
+        {
+          "week": "2025-W33",
+          "me": {
+            "value": 5.7,
+            "count": 87
+          },
+          "other": {
+            "value": 7.8,
+            "count": 90
+          }
+        },
+        {
+          "week": "2025-W34",
+          "me": {
+            "value": 9.2,
+            "count": 87
+          },
+          "other": {
+            "value": 1.3,
+            "count": 79
+          }
+        },
+        {
+          "week": "2025-W35",
+          "me": {
+            "value": 1.4,
+            "count": 72
+          },
+          "other": {
+            "value": 4.1,
+            "count": 74
+          }
+        },
+        {
+          "week": "2025-W36",
+          "me": {
+            "value": 1.7,
+            "count": 60
+          },
+          "other": {
+            "value": 3.3,
+            "count": 61
+          }
+        },
+        {
+          "week": "2025-W37",
+          "me": {
+            "value": 2.7,
+            "count": 75
+          },
+          "other": {
+            "value": 2.7,
+            "count": 74
+          }
+        },
+        {
+          "week": "2025-W38",
+          "me": {
+            "value": 3.2,
+            "count": 62
+          },
+          "other": {
+            "value": 11.3,
+            "count": 71
+          }
+        },
+        {
+          "week": "2025-W39",
+          "me": {
+            "value": 1.9,
+            "count": 52
+          },
+          "other": {
+            "value": 15.0,
+            "count": 60
           }
         },
         {
           "week": "2025-W40",
           "me": {
-            "value": 0.0,
-            "count": 44
+            "value": 1.4,
+            "count": 73
           },
           "other": {
-            "value": 2.3,
-            "count": 44
+            "value": 15.7,
+            "count": 89
           }
         },
         {
           "week": "2025-W41",
           "me": {
-            "value": null,
-            "count": 1,
-            "reason": "insufficient data"
+            "value": 1.2,
+            "count": 80
           },
           "other": {
-            "value": null,
-            "count": 2,
-            "reason": "insufficient data"
+            "value": 15.5,
+            "count": 97
           }
         },
         {
           "week": "2025-W42",
           "me": {
-            "value": 0.0,
-            "count": 50
+            "value": 3.3,
+            "count": 61
           },
           "other": {
-            "value": 0.0,
-            "count": 49
+            "value": 13.2,
+            "count": 68
           }
         },
         {
           "week": "2025-W43",
           "me": {
-            "value": 0.0,
-            "count": 52
+            "value": 9.0,
+            "count": 89
           },
           "other": {
-            "value": 1.9,
-            "count": 54
+            "value": 11.0,
+            "count": 91
           }
         },
         {
           "week": "2025-W44",
           "me": {
-            "value": null,
-            "count": 1,
-            "reason": "insufficient data"
+            "value": 13.8,
+            "count": 109
           },
           "other": {
-            "value": null,
-            "count": 2,
-            "reason": "insufficient data"
+            "value": 12.8,
+            "count": 117
           }
         },
         {
           "week": "2025-W45",
           "me": {
-            "value": 0.0,
-            "count": 56
+            "value": 10.8,
+            "count": 74
           },
           "other": {
-            "value": 0.0,
-            "count": 56
+            "value": 9.6,
+            "count": 73
           }
         },
         {
-          "week": "2025-W46",
+          "week": "2025-W47",
           "me": {
+            "value": 9.0,
+            "count": 67
+          },
+          "other": {
             "value": 1.7,
-            "count": 59
+            "count": 60
+          }
+        },
+        {
+          "week": "2025-W48",
+          "me": {
+            "value": 1.3,
+            "count": 75
           },
           "other": {
             "value": 0.0,
-            "count": 57
+            "count": 72
+          }
+        },
+        {
+          "week": "2025-W49",
+          "me": {
+            "value": 10.8,
+            "count": 74
+          },
+          "other": {
+            "value": 3.0,
+            "count": 67
+          }
+        },
+        {
+          "week": "2025-W50",
+          "me": {
+            "value": 3.1,
+            "count": 64
+          },
+          "other": {
+            "value": 0.0,
+            "count": 62
+          }
+        },
+        {
+          "week": "2025-W51",
+          "me": {
+            "value": 4.3,
+            "count": 69
+          },
+          "other": {
+            "value": 5.9,
+            "count": 68
+          }
+        },
+        {
+          "week": "2025-W52",
+          "me": {
+            "value": 3.9,
+            "count": 77
+          },
+          "other": {
+            "value": 7.4,
+            "count": 81
+          }
+        },
+        {
+          "week": "2026-W01",
+          "me": {
+            "value": 4.1,
+            "count": 73
+          },
+          "other": {
+            "value": 2.7,
+            "count": 73
+          }
+        },
+        {
+          "week": "2026-W02",
+          "me": {
+            "value": 5.9,
+            "count": 68
+          },
+          "other": {
+            "value": 1.5,
+            "count": 67
+          }
+        },
+        {
+          "week": "2026-W03",
+          "me": {
+            "value": 1.9,
+            "count": 54
+          },
+          "other": {
+            "value": 5.5,
+            "count": 55
+          }
+        },
+        {
+          "week": "2026-W04",
+          "me": {
+            "value": 1.2,
+            "count": 80
+          },
+          "other": {
+            "value": 6.1,
+            "count": 82
+          }
+        },
+        {
+          "week": "2026-W05",
+          "me": {
+            "value": 2.6,
+            "count": 77
+          },
+          "other": {
+            "value": 5.2,
+            "count": 77
           }
         }
       ]
@@ -1050,31 +2756,108 @@
       "min_count": null,
       "overall": {
         "me": {
-          "value": 0,
-          "count": 21
+          "value": 1,
+          "count": 104
         },
         "other": {
-          "value": 4,
-          "count": 38
+          "value": 12,
+          "count": 87
         }
       },
       "points": [
         {
-          "week": "2025-W39",
+          "week": "2025-W32",
+          "me": {
+            "value": 0,
+            "count": 6
+          },
+          "other": {
+            "value": 0,
+            "count": 1
+          }
+        },
+        {
+          "week": "2025-W33",
+          "me": {
+            "value": 0,
+            "count": 4
+          },
+          "other": {
+            "value": 0,
+            "count": 4
+          }
+        },
+        {
+          "week": "2025-W34",
+          "me": {
+            "value": 0,
+            "count": 7
+          },
+          "other": {
+            "value": 0,
+            "count": 1
+          }
+        },
+        {
+          "week": "2025-W35",
           "me": {
             "value": 0,
             "count": 5
           },
           "other": {
-            "value": 1,
+            "value": 0,
+            "count": 2
+          }
+        },
+        {
+          "week": "2025-W36",
+          "me": {
+            "value": 0,
             "count": 4
+          },
+          "other": {
+            "value": 0,
+            "count": 3
+          }
+        },
+        {
+          "week": "2025-W37",
+          "me": {
+            "value": 0,
+            "count": 6
+          },
+          "other": {
+            "value": 1,
+            "count": 2
+          }
+        },
+        {
+          "week": "2025-W38",
+          "me": {
+            "value": 0,
+            "count": 1
+          },
+          "other": {
+            "value": 0,
+            "count": 5
+          }
+        },
+        {
+          "week": "2025-W39",
+          "me": {
+            "value": 0,
+            "count": 3
+          },
+          "other": {
+            "value": 0,
+            "count": 3
           }
         },
         {
           "week": "2025-W40",
           "me": {
             "value": 0,
-            "count": 3
+            "count": 2
           },
           "other": {
             "value": 0,
@@ -1085,40 +2868,84 @@
           "week": "2025-W41",
           "me": {
             "value": 0,
-            "count": 0
+            "count": 1
           },
           "other": {
-            "value": 0,
-            "count": 1
+            "value": 1,
+            "count": 7
           }
         },
         {
           "week": "2025-W42",
           "me": {
             "value": 0,
-            "count": 4
+            "count": 3
           },
           "other": {
             "value": 1,
-            "count": 6
+            "count": 4
           }
         },
         {
           "week": "2025-W43",
           "me": {
             "value": 0,
-            "count": 2
+            "count": 5
           },
           "other": {
-            "value": 0,
-            "count": 7
+            "value": 2,
+            "count": 4
           }
         },
         {
           "week": "2025-W44",
           "me": {
             "value": 0,
-            "count": 0
+            "count": 1
+          },
+          "other": {
+            "value": 3,
+            "count": 9
+          }
+        },
+        {
+          "week": "2025-W45",
+          "me": {
+            "value": 0,
+            "count": 3
+          },
+          "other": {
+            "value": 2,
+            "count": 5
+          }
+        },
+        {
+          "week": "2025-W47",
+          "me": {
+            "value": 0,
+            "count": 4
+          },
+          "other": {
+            "value": 1,
+            "count": 3
+          }
+        },
+        {
+          "week": "2025-W48",
+          "me": {
+            "value": 0,
+            "count": 6
+          },
+          "other": {
+            "value": 0,
+            "count": 2
+          }
+        },
+        {
+          "week": "2025-W49",
+          "me": {
+            "value": 0,
+            "count": 6
           },
           "other": {
             "value": 0,
@@ -1126,25 +2953,91 @@
           }
         },
         {
-          "week": "2025-W45",
+          "week": "2025-W50",
           "me": {
             "value": 0,
-            "count": 5
+            "count": 6
           },
           "other": {
-            "value": 1,
-            "count": 5
+            "value": 0,
+            "count": 2
           }
         },
         {
-          "week": "2025-W46",
+          "week": "2025-W51",
           "me": {
             "value": 0,
+            "count": 7
+          },
+          "other": {
+            "value": 0,
+            "count": 1
+          }
+        },
+        {
+          "week": "2025-W52",
+          "me": {
+            "value": 0,
+            "count": 4
+          },
+          "other": {
+            "value": 0,
+            "count": 4
+          }
+        },
+        {
+          "week": "2026-W01",
+          "me": {
+            "value": 0,
+            "count": 5
+          },
+          "other": {
+            "value": 0,
+            "count": 2
+          }
+        },
+        {
+          "week": "2026-W02",
+          "me": {
+            "value": 1,
             "count": 2
           },
           "other": {
+            "value": 0,
+            "count": 6
+          }
+        },
+        {
+          "week": "2026-W03",
+          "me": {
+            "value": 0,
+            "count": 5
+          },
+          "other": {
+            "value": 0,
+            "count": 2
+          }
+        },
+        {
+          "week": "2026-W04",
+          "me": {
+            "value": 0,
+            "count": 4
+          },
+          "other": {
+            "value": 0,
+            "count": 4
+          }
+        },
+        {
+          "week": "2026-W05",
+          "me": {
+            "value": 0,
+            "count": 4
+          },
+          "other": {
             "value": 1,
-            "count": 9
+            "count": 5
           }
         }
       ]
@@ -1153,36 +3046,36 @@
   "episodes": [
     {
       "episode_id": "ep-0001",
-      "start": "2025-09-22T02:22:46-07:00",
-      "end": "2025-09-22T02:32:45-07:00",
-      "week": "2025-W39",
-      "initiator": "other",
+      "start": "2025-08-04T20:29:09-07:00",
+      "end": "2025-08-04T21:04:13-07:00",
+      "week": "2025-W32",
+      "initiator": "me",
       "messages": {
-        "me": 3,
-        "other": 3
+        "me": 10,
+        "other": 10
       },
       "words": {
-        "me": 28,
-        "other": 16
+        "me": 53,
+        "other": 53
       },
-      "late_night_start": true,
-      "pooled": true,
+      "late_night_start": false,
+      "pooled": false,
       "scored": false,
       "selection": null
     },
     {
       "episode_id": "ep-0002",
-      "start": "2025-09-23T12:31:53-07:00",
-      "end": "2025-09-23T13:17:53-07:00",
-      "week": "2025-W39",
+      "start": "2025-08-05T12:28:50-07:00",
+      "end": "2025-08-05T12:48:58-07:00",
+      "week": "2025-W32",
       "initiator": "me",
       "messages": {
-        "me": 8,
-        "other": 8
+        "me": 11,
+        "other": 12
       },
       "words": {
-        "me": 78,
-        "other": 75
+        "me": 64,
+        "other": 68
       },
       "late_night_start": false,
       "pooled": false,
@@ -1191,36 +3084,36 @@
     },
     {
       "episode_id": "ep-0003",
-      "start": "2025-09-24T08:03:29-07:00",
-      "end": "2025-09-24T08:39:38-07:00",
-      "week": "2025-W39",
-      "initiator": "me",
+      "start": "2025-08-07T09:32:46-07:00",
+      "end": "2025-08-07T10:01:18-07:00",
+      "week": "2025-W32",
+      "initiator": "other",
       "messages": {
-        "me": 6,
-        "other": 6
+        "me": 11,
+        "other": 9
       },
       "words": {
-        "me": 61,
-        "other": 58
+        "me": 67,
+        "other": 31
       },
       "late_night_start": false,
-      "pooled": false,
+      "pooled": true,
       "scored": false,
       "selection": null
     },
     {
       "episode_id": "ep-0004",
-      "start": "2025-09-24T15:13:28-07:00",
-      "end": "2025-09-24T15:43:55-07:00",
-      "week": "2025-W39",
+      "start": "2025-08-08T09:28:17-07:00",
+      "end": "2025-08-08T09:49:39-07:00",
+      "week": "2025-W32",
       "initiator": "me",
       "messages": {
-        "me": 7,
-        "other": 7
+        "me": 9,
+        "other": 9
       },
       "words": {
-        "me": 70,
-        "other": 74
+        "me": 62,
+        "other": 43
       },
       "late_night_start": false,
       "pooled": false,
@@ -1229,13 +3122,2198 @@
     },
     {
       "episode_id": "ep-0005",
-      "start": "2025-09-25T10:13:39-07:00",
-      "end": "2025-09-25T10:58:33-07:00",
-      "week": "2025-W39",
+      "start": "2025-08-08T23:07:45-07:00",
+      "end": "2025-08-08T23:50:59-07:00",
+      "week": "2025-W32",
+      "initiator": "me",
+      "messages": {
+        "me": 13,
+        "other": 15
+      },
+      "words": {
+        "me": 62,
+        "other": 91
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0006",
+      "start": "2025-08-10T09:36:42-07:00",
+      "end": "2025-08-10T10:05:53-07:00",
+      "week": "2025-W32",
+      "initiator": "me",
+      "messages": {
+        "me": 12,
+        "other": 14
+      },
+      "words": {
+        "me": 87,
+        "other": 98
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0007",
+      "start": "2025-08-10T11:17:47-07:00",
+      "end": "2025-08-10T11:51:31-07:00",
+      "week": "2025-W32",
+      "initiator": "me",
+      "messages": {
+        "me": 12,
+        "other": 11
+      },
+      "words": {
+        "me": 75,
+        "other": 51
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0008",
+      "start": "2025-08-11T07:27:05-07:00",
+      "end": "2025-08-11T08:04:34-07:00",
+      "week": "2025-W33",
       "initiator": "other",
+      "messages": {
+        "me": 14,
+        "other": 15
+      },
+      "words": {
+        "me": 88,
+        "other": 105
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0009",
+      "start": "2025-08-12T07:01:31-07:00",
+      "end": "2025-08-12T07:28:26-07:00",
+      "week": "2025-W33",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 10
+      },
+      "words": {
+        "me": 58,
+        "other": 59
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0010",
+      "start": "2025-08-12T08:48:26-07:00",
+      "end": "2025-08-12T09:26:03-07:00",
+      "week": "2025-W33",
+      "initiator": "other",
+      "messages": {
+        "me": 16,
+        "other": 15
+      },
+      "words": {
+        "me": 184,
+        "other": 125
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0011",
+      "start": "2025-08-13T17:31:25-07:00",
+      "end": "2025-08-13T18:06:10-07:00",
+      "week": "2025-W33",
+      "initiator": "other",
+      "messages": {
+        "me": 13,
+        "other": 12
+      },
+      "words": {
+        "me": 73,
+        "other": 61
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0012",
+      "start": "2025-08-14T11:08:53-07:00",
+      "end": "2025-08-14T11:52:18-07:00",
+      "week": "2025-W33",
+      "initiator": "me",
+      "messages": {
+        "me": 13,
+        "other": 16
+      },
+      "words": {
+        "me": 58,
+        "other": 92
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0013",
+      "start": "2025-08-16T22:48:54-07:00",
+      "end": "2025-08-16T23:23:09-07:00",
+      "week": "2025-W33",
+      "initiator": "other",
+      "messages": {
+        "me": 14,
+        "other": 16
+      },
+      "words": {
+        "me": 80,
+        "other": 90
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0014",
+      "start": "2025-08-17T00:23:09-07:00",
+      "end": "2025-08-17T00:52:23-07:00",
+      "week": "2025-W33",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 11
+      },
+      "words": {
+        "me": 47,
+        "other": 66
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0015",
+      "start": "2025-08-17T21:34:44-07:00",
+      "end": "2025-08-17T21:58:17-07:00",
+      "week": "2025-W33",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 7
+      },
+      "words": {
+        "me": 59,
+        "other": 40
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0016",
+      "start": "2025-08-18T09:11:34-07:00",
+      "end": "2025-08-18T09:29:46-07:00",
+      "week": "2025-W34",
+      "initiator": "me",
+      "messages": {
+        "me": 7,
+        "other": 8
+      },
+      "words": {
+        "me": 36,
+        "other": 56
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0017",
+      "start": "2025-08-19T17:12:49-07:00",
+      "end": "2025-08-19T17:46:53-07:00",
+      "week": "2025-W34",
+      "initiator": "me",
+      "messages": {
+        "me": 13,
+        "other": 14
+      },
+      "words": {
+        "me": 92,
+        "other": 73
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0018",
+      "start": "2025-08-19T19:34:33-07:00",
+      "end": "2025-08-19T20:16:56-07:00",
+      "week": "2025-W34",
+      "initiator": "me",
+      "messages": {
+        "me": 16,
+        "other": 13
+      },
+      "words": {
+        "me": 97,
+        "other": 80
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0019",
+      "start": "2025-08-19T22:43:05-07:00",
+      "end": "2025-08-19T22:59:54-07:00",
+      "week": "2025-W34",
+      "initiator": "me",
+      "messages": {
+        "me": 10,
+        "other": 8
+      },
+      "words": {
+        "me": 53,
+        "other": 34
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0020",
+      "start": "2025-08-20T15:41:49-07:00",
+      "end": "2025-08-20T16:33:29-07:00",
+      "week": "2025-W34",
+      "initiator": "other",
+      "messages": {
+        "me": 16,
+        "other": 14
+      },
+      "words": {
+        "me": 73,
+        "other": 114
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0021",
+      "start": "2025-08-20T20:11:05-07:00",
+      "end": "2025-08-20T20:50:37-07:00",
+      "week": "2025-W34",
+      "initiator": "me",
+      "messages": {
+        "me": 18,
+        "other": 13
+      },
+      "words": {
+        "me": 107,
+        "other": 69
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0022",
+      "start": "2025-08-20T21:26:37-07:00",
+      "end": "2025-08-20T22:07:27-07:00",
+      "week": "2025-W34",
+      "initiator": "me",
+      "messages": {
+        "me": 12,
+        "other": 14
+      },
+      "words": {
+        "me": 68,
+        "other": 79
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0023",
+      "start": "2025-08-23T15:43:34-07:00",
+      "end": "2025-08-23T16:02:27-07:00",
+      "week": "2025-W34",
+      "initiator": "me",
       "messages": {
         "me": 8,
         "other": 8
+      },
+      "words": {
+        "me": 51,
+        "other": 28
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0024",
+      "start": "2025-08-25T07:23:56-07:00",
+      "end": "2025-08-25T07:47:33-07:00",
+      "week": "2025-W35",
+      "initiator": "me",
+      "messages": {
+        "me": 10,
+        "other": 11
+      },
+      "words": {
+        "me": 58,
+        "other": 55
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0025",
+      "start": "2025-08-27T13:19:56-07:00",
+      "end": "2025-08-27T13:55:50-07:00",
+      "week": "2025-W35",
+      "initiator": "me",
+      "messages": {
+        "me": 11,
+        "other": 12
+      },
+      "words": {
+        "me": 52,
+        "other": 71
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0026",
+      "start": "2025-08-29T09:12:52-07:00",
+      "end": "2025-08-29T09:55:58-07:00",
+      "week": "2025-W35",
+      "initiator": "me",
+      "messages": {
+        "me": 12,
+        "other": 11
+      },
+      "words": {
+        "me": 67,
+        "other": 83
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0027",
+      "start": "2025-08-29T13:42:30-07:00",
+      "end": "2025-08-29T14:10:45-07:00",
+      "week": "2025-W35",
+      "initiator": "me",
+      "messages": {
+        "me": 12,
+        "other": 11
+      },
+      "words": {
+        "me": 58,
+        "other": 79
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0028",
+      "start": "2025-08-30T23:36:29-07:00",
+      "end": "2025-08-31T00:01:09-07:00",
+      "week": "2025-W35",
+      "initiator": "other",
+      "messages": {
+        "me": 11,
+        "other": 13
+      },
+      "words": {
+        "me": 59,
+        "other": 92
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0029",
+      "start": "2025-08-31T00:59:09-07:00",
+      "end": "2025-08-31T01:21:59-07:00",
+      "week": "2025-W35",
+      "initiator": "other",
+      "messages": {
+        "me": 7,
+        "other": 10
+      },
+      "words": {
+        "me": 37,
+        "other": 78
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0030",
+      "start": "2025-08-31T23:31:46-07:00",
+      "end": "2025-08-31T23:59:09-07:00",
+      "week": "2025-W35",
+      "initiator": "me",
+      "messages": {
+        "me": 16,
+        "other": 17
+      },
+      "words": {
+        "me": 124,
+        "other": 93
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0031",
+      "start": "2025-09-02T09:12:06-07:00",
+      "end": "2025-09-02T09:31:50-07:00",
+      "week": "2025-W36",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 9
+      },
+      "words": {
+        "me": 135,
+        "other": 75
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0032",
+      "start": "2025-09-03T18:30:54-07:00",
+      "end": "2025-09-03T19:15:46-07:00",
+      "week": "2025-W36",
+      "initiator": "other",
+      "messages": {
+        "me": 15,
+        "other": 14
+      },
+      "words": {
+        "me": 103,
+        "other": 83
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0033",
+      "start": "2025-09-03T20:25:46-07:00",
+      "end": "2025-09-03T20:54:41-07:00",
+      "week": "2025-W36",
+      "initiator": "me",
+      "messages": {
+        "me": 11,
+        "other": 10
+      },
+      "words": {
+        "me": 70,
+        "other": 62
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0034",
+      "start": "2025-09-04T11:07:25-07:00",
+      "end": "2025-09-04T11:26:50-07:00",
+      "week": "2025-W36",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 9
+      },
+      "words": {
+        "me": 56,
+        "other": 48
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0035",
+      "start": "2025-09-04T18:02:39-07:00",
+      "end": "2025-09-04T18:17:48-07:00",
+      "week": "2025-W36",
+      "initiator": "other",
+      "messages": {
+        "me": 6,
+        "other": 6
+      },
+      "words": {
+        "me": 31,
+        "other": 43
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0036",
+      "start": "2025-09-04T20:43:04-07:00",
+      "end": "2025-09-04T21:11:14-07:00",
+      "week": "2025-W36",
+      "initiator": "me",
+      "messages": {
+        "me": 10,
+        "other": 11
+      },
+      "words": {
+        "me": 65,
+        "other": 67
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0037",
+      "start": "2025-09-05T11:24:46-07:00",
+      "end": "2025-09-05T11:41:27-07:00",
+      "week": "2025-W36",
+      "initiator": "other",
+      "messages": {
+        "me": 8,
+        "other": 9
+      },
+      "words": {
+        "me": 39,
+        "other": 59
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0038",
+      "start": "2025-09-10T02:26:05-07:00",
+      "end": "2025-09-10T02:28:56-07:00",
+      "week": "2025-W37",
+      "initiator": "other",
+      "messages": {
+        "me": 4,
+        "other": 4
+      },
+      "words": {
+        "me": 21,
+        "other": 17
+      },
+      "late_night_start": true,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0039",
+      "start": "2025-09-10T15:34:11-07:00",
+      "end": "2025-09-10T16:02:55-07:00",
+      "week": "2025-W37",
+      "initiator": "me",
+      "messages": {
+        "me": 11,
+        "other": 10
+      },
+      "words": {
+        "me": 69,
+        "other": 57
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0040",
+      "start": "2025-09-11T07:17:22-07:00",
+      "end": "2025-09-11T07:37:39-07:00",
+      "week": "2025-W37",
+      "initiator": "other",
+      "messages": {
+        "me": 9,
+        "other": 9
+      },
+      "words": {
+        "me": 56,
+        "other": 58
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0041",
+      "start": "2025-09-12T13:13:56-07:00",
+      "end": "2025-09-12T13:33:34-07:00",
+      "week": "2025-W37",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 11
+      },
+      "words": {
+        "me": 46,
+        "other": 79
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0042",
+      "start": "2025-09-12T18:12:24-07:00",
+      "end": "2025-09-12T18:52:06-07:00",
+      "week": "2025-W37",
+      "initiator": "me",
+      "messages": {
+        "me": 13,
+        "other": 14
+      },
+      "words": {
+        "me": 67,
+        "other": 68
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0043",
+      "start": "2025-09-13T11:02:58-07:00",
+      "end": "2025-09-13T11:33:30-07:00",
+      "week": "2025-W37",
+      "initiator": "me",
+      "messages": {
+        "me": 13,
+        "other": 12
+      },
+      "words": {
+        "me": 79,
+        "other": 80
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0044",
+      "start": "2025-09-13T15:32:17-07:00",
+      "end": "2025-09-13T15:52:15-07:00",
+      "week": "2025-W37",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 7
+      },
+      "words": {
+        "me": 41,
+        "other": 22
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0045",
+      "start": "2025-09-14T18:21:10-07:00",
+      "end": "2025-09-14T19:01:31-07:00",
+      "week": "2025-W37",
+      "initiator": "me",
+      "messages": {
+        "me": 16,
+        "other": 16
+      },
+      "words": {
+        "me": 103,
+        "other": 67
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0046",
+      "start": "2025-09-15T18:27:14-07:00",
+      "end": "2025-09-15T19:53:10-07:00",
+      "week": "2025-W38",
+      "initiator": "other",
+      "messages": {
+        "me": 10,
+        "other": 11
+      },
+      "words": {
+        "me": 70,
+        "other": 67
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0047",
+      "start": "2025-09-16T19:24:16-07:00",
+      "end": "2025-09-16T21:13:07-07:00",
+      "week": "2025-W38",
+      "initiator": "other",
+      "messages": {
+        "me": 16,
+        "other": 17
+      },
+      "words": {
+        "me": 114,
+        "other": 89
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0048",
+      "start": "2025-09-19T19:24:18-07:00",
+      "end": "2025-09-19T21:04:18-07:00",
+      "week": "2025-W38",
+      "initiator": "me",
+      "messages": {
+        "me": 13,
+        "other": 15
+      },
+      "words": {
+        "me": 130,
+        "other": 162
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0049",
+      "start": "2025-09-20T13:24:53-07:00",
+      "end": "2025-09-20T15:35:32-07:00",
+      "week": "2025-W38",
+      "initiator": "other",
+      "messages": {
+        "me": 13,
+        "other": 17
+      },
+      "words": {
+        "me": 85,
+        "other": 96
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0050",
+      "start": "2025-09-20T17:50:40-07:00",
+      "end": "2025-09-20T19:19:43-07:00",
+      "week": "2025-W38",
+      "initiator": "other",
+      "messages": {
+        "me": 10,
+        "other": 8
+      },
+      "words": {
+        "me": 69,
+        "other": 28
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0051",
+      "start": "2025-09-21T15:37:18-07:00",
+      "end": "2025-09-21T17:05:38-07:00",
+      "week": "2025-W38",
+      "initiator": "other",
+      "messages": {
+        "me": 12,
+        "other": 13
+      },
+      "words": {
+        "me": 76,
+        "other": 57
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0052",
+      "start": "2025-09-22T13:28:43-07:00",
+      "end": "2025-09-22T14:57:23-07:00",
+      "week": "2025-W39",
+      "initiator": "other",
+      "messages": {
+        "me": 12,
+        "other": 14
+      },
+      "words": {
+        "me": 108,
+        "other": 84
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0053",
+      "start": "2025-09-24T09:45:03-07:00",
+      "end": "2025-09-24T10:35:34-07:00",
+      "week": "2025-W39",
+      "initiator": "other",
+      "messages": {
+        "me": 6,
+        "other": 8
+      },
+      "words": {
+        "me": 31,
+        "other": 36
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0054",
+      "start": "2025-09-24T22:46:13-07:00",
+      "end": "2025-09-25T00:54:35-07:00",
+      "week": "2025-W39",
+      "initiator": "me",
+      "messages": {
+        "me": 15,
+        "other": 13
+      },
+      "words": {
+        "me": 140,
+        "other": 121
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0055",
+      "start": "2025-09-25T23:33:40-07:00",
+      "end": "2025-09-26T00:41:59-07:00",
+      "week": "2025-W39",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 10
+      },
+      "words": {
+        "me": 47,
+        "other": 68
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0056",
+      "start": "2025-09-26T22:38:10-07:00",
+      "end": "2025-09-26T23:41:05-07:00",
+      "week": "2025-W39",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 7
+      },
+      "words": {
+        "me": 74,
+        "other": 40
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0057",
+      "start": "2025-09-27T22:46:29-07:00",
+      "end": "2025-09-28T00:32:37-07:00",
+      "week": "2025-W39",
+      "initiator": "other",
+      "messages": {
+        "me": 13,
+        "other": 17
+      },
+      "words": {
+        "me": 93,
+        "other": 84
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0058",
+      "start": "2025-09-30T09:16:12-07:00",
+      "end": "2025-09-30T11:01:22-07:00",
+      "week": "2025-W40",
+      "initiator": "me",
+      "messages": {
+        "me": 12,
+        "other": 12
+      },
+      "words": {
+        "me": 48,
+        "other": 59
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0059",
+      "start": "2025-10-01T15:16:51-07:00",
+      "end": "2025-10-01T16:57:22-07:00",
+      "week": "2025-W40",
+      "initiator": "other",
+      "messages": {
+        "me": 11,
+        "other": 13
+      },
+      "words": {
+        "me": 35,
+        "other": 83
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0060",
+      "start": "2025-10-02T18:10:39-07:00",
+      "end": "2025-10-02T19:49:26-07:00",
+      "week": "2025-W40",
+      "initiator": "other",
+      "messages": {
+        "me": 10,
+        "other": 12
+      },
+      "words": {
+        "me": 57,
+        "other": 65
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0061",
+      "start": "2025-10-04T12:18:54-07:00",
+      "end": "2025-10-04T14:18:35-07:00",
+      "week": "2025-W40",
+      "initiator": "me",
+      "messages": {
+        "me": 14,
+        "other": 13
+      },
+      "words": {
+        "me": 150,
+        "other": 130
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0062",
+      "start": "2025-10-04T17:05:13-07:00",
+      "end": "2025-10-04T19:29:46-07:00",
+      "week": "2025-W40",
+      "initiator": "other",
+      "messages": {
+        "me": 16,
+        "other": 20
+      },
+      "words": {
+        "me": 110,
+        "other": 117
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0063",
+      "start": "2025-10-04T20:12:46-07:00",
+      "end": "2025-10-04T22:09:31-07:00",
+      "week": "2025-W40",
+      "initiator": "other",
+      "messages": {
+        "me": 11,
+        "other": 15
+      },
+      "words": {
+        "me": 92,
+        "other": 67
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0064",
+      "start": "2025-10-05T08:28:02-07:00",
+      "end": "2025-10-05T10:21:37-07:00",
+      "week": "2025-W40",
+      "initiator": "other",
+      "messages": {
+        "me": 12,
+        "other": 16
+      },
+      "words": {
+        "me": 71,
+        "other": 76
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0065",
+      "start": "2025-10-07T02:10:33-07:00",
+      "end": "2025-10-07T02:25:41-07:00",
+      "week": "2025-W41",
+      "initiator": "other",
+      "messages": {
+        "me": 4,
+        "other": 4
+      },
+      "words": {
+        "me": 14,
+        "other": 15
+      },
+      "late_night_start": true,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0066",
+      "start": "2025-10-08T18:49:53-07:00",
+      "end": "2025-10-08T21:31:48-07:00",
+      "week": "2025-W41",
+      "initiator": "other",
+      "messages": {
+        "me": 15,
+        "other": 18
+      },
+      "words": {
+        "me": 80,
+        "other": 100
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0067",
+      "start": "2025-10-09T13:09:38-07:00",
+      "end": "2025-10-09T14:54:52-07:00",
+      "week": "2025-W41",
+      "initiator": "other",
+      "messages": {
+        "me": 11,
+        "other": 13
+      },
+      "words": {
+        "me": 61,
+        "other": 72
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0068",
+      "start": "2025-10-09T19:17:03-07:00",
+      "end": "2025-10-09T21:22:42-07:00",
+      "week": "2025-W41",
+      "initiator": "other",
+      "messages": {
+        "me": 12,
+        "other": 14
+      },
+      "words": {
+        "me": 76,
+        "other": 71
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0069",
+      "start": "2025-10-10T09:11:16-07:00",
+      "end": "2025-10-10T11:12:45-07:00",
+      "week": "2025-W41",
+      "initiator": "other",
+      "messages": {
+        "me": 12,
+        "other": 20
+      },
+      "words": {
+        "me": 59,
+        "other": 111
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0070",
+      "start": "2025-10-10T12:27:45-07:00",
+      "end": "2025-10-10T14:01:55-07:00",
+      "week": "2025-W41",
+      "initiator": "other",
+      "messages": {
+        "me": 11,
+        "other": 11
+      },
+      "words": {
+        "me": 51,
+        "other": 81
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0071",
+      "start": "2025-10-10T23:12:27-07:00",
+      "end": "2025-10-11T01:24:29-07:00",
+      "week": "2025-W41",
+      "initiator": "other",
+      "messages": {
+        "me": 13,
+        "other": 16
+      },
+      "words": {
+        "me": 106,
+        "other": 88
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0072",
+      "start": "2025-10-12T20:47:26-07:00",
+      "end": "2025-10-12T22:34:28-07:00",
+      "week": "2025-W41",
+      "initiator": "me",
+      "messages": {
+        "me": 10,
+        "other": 14
+      },
+      "words": {
+        "me": 63,
+        "other": 97
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0073",
+      "start": "2025-10-13T21:02:32-07:00",
+      "end": "2025-10-13T22:33:17-07:00",
+      "week": "2025-W42",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 12
+      },
+      "words": {
+        "me": 52,
+        "other": 72
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0074",
+      "start": "2025-10-14T09:50:08-07:00",
+      "end": "2025-10-14T11:52:35-07:00",
+      "week": "2025-W42",
+      "initiator": "me",
+      "messages": {
+        "me": 13,
+        "other": 13
+      },
+      "words": {
+        "me": 75,
+        "other": 53
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0075",
+      "start": "2025-10-14T15:10:26-07:00",
+      "end": "2025-10-14T15:49:42-07:00",
+      "week": "2025-W42",
+      "initiator": "other",
+      "messages": {
+        "me": 9,
+        "other": 10
+      },
+      "words": {
+        "me": 77,
+        "other": 58
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0076",
+      "start": "2025-10-15T01:36:41-07:00",
+      "end": "2025-10-15T01:57:53-07:00",
+      "week": "2025-W42",
+      "initiator": "other",
+      "messages": {
+        "me": 4,
+        "other": 4
+      },
+      "words": {
+        "me": 35,
+        "other": 18
+      },
+      "late_night_start": true,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0077",
+      "start": "2025-10-16T23:21:51-07:00",
+      "end": "2025-10-17T00:42:18-07:00",
+      "week": "2025-W42",
+      "initiator": "other",
+      "messages": {
+        "me": 8,
+        "other": 9
+      },
+      "words": {
+        "me": 29,
+        "other": 64
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0078",
+      "start": "2025-10-17T19:43:33-07:00",
+      "end": "2025-10-17T21:04:48-07:00",
+      "week": "2025-W42",
+      "initiator": "other",
+      "messages": {
+        "me": 11,
+        "other": 11
+      },
+      "words": {
+        "me": 70,
+        "other": 56
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0079",
+      "start": "2025-10-19T18:03:52-07:00",
+      "end": "2025-10-19T19:46:33-07:00",
+      "week": "2025-W42",
+      "initiator": "me",
+      "messages": {
+        "me": 14,
+        "other": 20
+      },
+      "words": {
+        "me": 101,
+        "other": 130
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0080",
+      "start": "2025-10-20T07:26:33-07:00",
+      "end": "2025-10-20T08:11:01-07:00",
+      "week": "2025-W43",
+      "initiator": "me",
+      "messages": {
+        "me": 13,
+        "other": 13
+      },
+      "words": {
+        "me": 76,
+        "other": 76
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0081",
+      "start": "2025-10-20T17:10:55-07:00",
+      "end": "2025-10-20T17:57:54-07:00",
+      "week": "2025-W43",
+      "initiator": "me",
+      "messages": {
+        "me": 16,
+        "other": 14
+      },
+      "words": {
+        "me": 133,
+        "other": 125
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0082",
+      "start": "2025-10-21T03:27:57-07:00",
+      "end": "2025-10-21T03:38:56-07:00",
+      "week": "2025-W43",
+      "initiator": "other",
+      "messages": {
+        "me": 6,
+        "other": 8
+      },
+      "words": {
+        "me": 40,
+        "other": 47
+      },
+      "late_night_start": true,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0083",
+      "start": "2025-10-21T22:33:09-07:00",
+      "end": "2025-10-21T23:08:15-07:00",
+      "week": "2025-W43",
+      "initiator": "other",
+      "messages": {
+        "me": 17,
+        "other": 14
+      },
+      "words": {
+        "me": 96,
+        "other": 79
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0084",
+      "start": "2025-10-22T08:05:27-07:00",
+      "end": "2025-10-22T08:53:59-07:00",
+      "week": "2025-W43",
+      "initiator": "other",
+      "messages": {
+        "me": 12,
+        "other": 13
+      },
+      "words": {
+        "me": 84,
+        "other": 71
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0085",
+      "start": "2025-10-22T15:09:25-07:00",
+      "end": "2025-10-22T15:35:51-07:00",
+      "week": "2025-W43",
+      "initiator": "me",
+      "messages": {
+        "me": 8,
+        "other": 9
+      },
+      "words": {
+        "me": 39,
+        "other": 52
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0086",
+      "start": "2025-10-22T17:02:51-07:00",
+      "end": "2025-10-22T18:16:48-07:00",
+      "week": "2025-W43",
+      "initiator": "me",
+      "messages": {
+        "me": 17,
+        "other": 18
+      },
+      "words": {
+        "me": 98,
+        "other": 100
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0087",
+      "start": "2025-10-22T23:32:02-07:00",
+      "end": "2025-10-22T23:52:24-07:00",
+      "week": "2025-W43",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 11
+      },
+      "words": {
+        "me": 57,
+        "other": 55
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0088",
+      "start": "2025-10-24T01:02:45-07:00",
+      "end": "2025-10-24T01:13:10-07:00",
+      "week": "2025-W43",
+      "initiator": "other",
+      "messages": {
+        "me": 3,
+        "other": 5
+      },
+      "words": {
+        "me": 16,
+        "other": 30
+      },
+      "late_night_start": true,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0089",
+      "start": "2025-10-28T01:13:01-07:00",
+      "end": "2025-10-28T01:33:47-07:00",
+      "week": "2025-W44",
+      "initiator": "other",
+      "messages": {
+        "me": 10,
+        "other": 11
+      },
+      "words": {
+        "me": 74,
+        "other": 66
+      },
+      "late_night_start": true,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0090",
+      "start": "2025-10-28T23:14:59-07:00",
+      "end": "2025-10-29T00:13:16-07:00",
+      "week": "2025-W44",
+      "initiator": "other",
+      "messages": {
+        "me": 13,
+        "other": 17
+      },
+      "words": {
+        "me": 91,
+        "other": 97
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0091",
+      "start": "2025-10-29T03:21:01-07:00",
+      "end": "2025-10-29T03:31:14-07:00",
+      "week": "2025-W44",
+      "initiator": "other",
+      "messages": {
+        "me": 4,
+        "other": 6
+      },
+      "words": {
+        "me": 17,
+        "other": 37
+      },
+      "late_night_start": true,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0092",
+      "start": "2025-10-29T09:03:30-07:00",
+      "end": "2025-10-29T09:51:44-07:00",
+      "week": "2025-W44",
+      "initiator": "other",
+      "messages": {
+        "me": 16,
+        "other": 13
+      },
+      "words": {
+        "me": 75,
+        "other": 73
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0093",
+      "start": "2025-10-29T23:34:00-07:00",
+      "end": "2025-10-30T00:20:42-07:00",
+      "week": "2025-W44",
+      "initiator": "me",
+      "messages": {
+        "me": 15,
+        "other": 12
+      },
+      "words": {
+        "me": 99,
+        "other": 66
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0094",
+      "start": "2025-10-30T11:48:59-07:00",
+      "end": "2025-10-30T12:19:47-07:00",
+      "week": "2025-W44",
+      "initiator": "other",
+      "messages": {
+        "me": 14,
+        "other": 12
+      },
+      "words": {
+        "me": 100,
+        "other": 69
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0095",
+      "start": "2025-10-31T22:00:53-07:00",
+      "end": "2025-10-31T23:01:51-07:00",
+      "week": "2025-W44",
+      "initiator": "other",
+      "messages": {
+        "me": 18,
+        "other": 18
+      },
+      "words": {
+        "me": 104,
+        "other": 83
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0096",
+      "start": "2025-11-01T11:41:47-07:00",
+      "end": "2025-11-01T12:07:29-07:00",
+      "week": "2025-W44",
+      "initiator": "other",
+      "messages": {
+        "me": 12,
+        "other": 12
+      },
+      "words": {
+        "me": 78,
+        "other": 91
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0097",
+      "start": "2025-11-01T17:39:39-07:00",
+      "end": "2025-11-01T17:55:28-07:00",
+      "week": "2025-W44",
+      "initiator": "other",
+      "messages": {
+        "me": 10,
+        "other": 11
+      },
+      "words": {
+        "me": 66,
+        "other": 62
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0098",
+      "start": "2025-11-02T01:44:06-07:00",
+      "end": "2025-11-02T01:14:43-08:00",
+      "week": "2025-W44",
+      "initiator": "other",
+      "messages": {
+        "me": 17,
+        "other": 19
+      },
+      "words": {
+        "me": 111,
+        "other": 169
+      },
+      "late_night_start": true,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0099",
+      "start": "2025-11-03T01:29:21-08:00",
+      "end": "2025-11-03T01:43:08-08:00",
+      "week": "2025-W45",
+      "initiator": "other",
+      "messages": {
+        "me": 7,
+        "other": 6
+      },
+      "words": {
+        "me": 50,
+        "other": 47
+      },
+      "late_night_start": true,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0100",
+      "start": "2025-11-04T07:35:02-08:00",
+      "end": "2025-11-04T07:58:26-08:00",
+      "week": "2025-W45",
+      "initiator": "other",
+      "messages": {
+        "me": 9,
+        "other": 7
+      },
+      "words": {
+        "me": 48,
+        "other": 41
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0101",
+      "start": "2025-11-04T20:22:57-08:00",
+      "end": "2025-11-04T20:42:29-08:00",
+      "week": "2025-W45",
+      "initiator": "me",
+      "messages": {
+        "me": 11,
+        "other": 10
+      },
+      "words": {
+        "me": 75,
+        "other": 68
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0102",
+      "start": "2025-11-06T09:41:13-08:00",
+      "end": "2025-11-06T10:29:38-08:00",
+      "week": "2025-W45",
+      "initiator": "other",
+      "messages": {
+        "me": 14,
+        "other": 15
+      },
+      "words": {
+        "me": 113,
+        "other": 76
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0103",
+      "start": "2025-11-06T17:40:40-08:00",
+      "end": "2025-11-06T18:04:55-08:00",
+      "week": "2025-W45",
+      "initiator": "me",
+      "messages": {
+        "me": 14,
+        "other": 10
+      },
+      "words": {
+        "me": 76,
+        "other": 56
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0104",
+      "start": "2025-11-08T13:09:56-08:00",
+      "end": "2025-11-08T13:27:01-08:00",
+      "week": "2025-W45",
+      "initiator": "me",
+      "messages": {
+        "me": 11,
+        "other": 11
+      },
+      "words": {
+        "me": 57,
+        "other": 71
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0105",
+      "start": "2025-11-09T02:02:41-08:00",
+      "end": "2025-11-09T02:10:44-08:00",
+      "week": "2025-W45",
+      "initiator": "other",
+      "messages": {
+        "me": 6,
+        "other": 7
+      },
+      "words": {
+        "me": 46,
+        "other": 47
+      },
+      "late_night_start": true,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0106",
+      "start": "2025-11-09T19:11:21-08:00",
+      "end": "2025-11-09T19:57:38-08:00",
+      "week": "2025-W45",
+      "initiator": "other",
+      "messages": {
+        "me": 14,
+        "other": 16
+      },
+      "words": {
+        "me": 81,
+        "other": 110
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0107",
+      "start": "2025-11-17T01:03:28-08:00",
+      "end": "2025-11-17T01:05:51-08:00",
+      "week": "2025-W47",
+      "initiator": "other",
+      "messages": {
+        "me": 4,
+        "other": 4
+      },
+      "words": {
+        "me": 20,
+        "other": 15
+      },
+      "late_night_start": true,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0108",
+      "start": "2025-11-17T15:05:07-08:00",
+      "end": "2025-11-17T16:06:33-08:00",
+      "week": "2025-W47",
+      "initiator": "me",
+      "messages": {
+        "me": 14,
+        "other": 14
+      },
+      "words": {
+        "me": 84,
+        "other": 68
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0109",
+      "start": "2025-11-18T15:13:41-08:00",
+      "end": "2025-11-18T16:10:58-08:00",
+      "week": "2025-W47",
+      "initiator": "me",
+      "messages": {
+        "me": 17,
+        "other": 16
+      },
+      "words": {
+        "me": 126,
+        "other": 100
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0110",
+      "start": "2025-11-20T12:44:40-08:00",
+      "end": "2025-11-20T13:36:28-08:00",
+      "week": "2025-W47",
+      "initiator": "other",
+      "messages": {
+        "me": 12,
+        "other": 11
+      },
+      "words": {
+        "me": 67,
+        "other": 67
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0111",
+      "start": "2025-11-20T23:04:55-08:00",
+      "end": "2025-11-20T23:33:09-08:00",
+      "week": "2025-W47",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 4
+      },
+      "words": {
+        "me": 53,
+        "other": 22
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0112",
+      "start": "2025-11-23T17:26:47-08:00",
+      "end": "2025-11-23T18:21:56-08:00",
+      "week": "2025-W47",
+      "initiator": "other",
+      "messages": {
+        "me": 13,
+        "other": 12
+      },
+      "words": {
+        "me": 77,
+        "other": 68
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0113",
+      "start": "2025-11-23T21:44:32-08:00",
+      "end": "2025-11-23T22:17:18-08:00",
+      "week": "2025-W47",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 8
+      },
+      "words": {
+        "me": 103,
+        "other": 91
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0114",
+      "start": "2025-11-24T08:25:42-08:00",
+      "end": "2025-11-24T09:09:22-08:00",
+      "week": "2025-W48",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 10
+      },
+      "words": {
+        "me": 46,
+        "other": 48
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0115",
+      "start": "2025-11-24T12:29:42-08:00",
+      "end": "2025-11-24T13:38:25-08:00",
+      "week": "2025-W48",
+      "initiator": "me",
+      "messages": {
+        "me": 16,
+        "other": 16
+      },
+      "words": {
+        "me": 103,
+        "other": 110
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0116",
+      "start": "2025-11-27T17:14:52-08:00",
+      "end": "2025-11-27T18:03:43-08:00",
+      "week": "2025-W48",
+      "initiator": "me",
+      "messages": {
+        "me": 11,
+        "other": 10
+      },
+      "words": {
+        "me": 67,
+        "other": 66
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0117",
+      "start": "2025-11-27T18:36:43-08:00",
+      "end": "2025-11-27T18:55:41-08:00",
+      "week": "2025-W48",
+      "initiator": "me",
+      "messages": {
+        "me": 8,
+        "other": 5
+      },
+      "words": {
+        "me": 156,
+        "other": 76
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0118",
+      "start": "2025-11-27T21:05:35-08:00",
+      "end": "2025-11-27T21:51:09-08:00",
+      "week": "2025-W48",
+      "initiator": "other",
+      "messages": {
+        "me": 9,
+        "other": 10
+      },
+      "words": {
+        "me": 46,
+        "other": 60
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0119",
+      "start": "2025-11-27T22:31:09-08:00",
+      "end": "2025-11-27T22:49:47-08:00",
+      "week": "2025-W48",
+      "initiator": "me",
+      "messages": {
+        "me": 8,
+        "other": 6
+      },
+      "words": {
+        "me": 42,
+        "other": 34
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0120",
+      "start": "2025-11-27T23:30:31-08:00",
+      "end": "2025-11-28T00:18:03-08:00",
+      "week": "2025-W48",
+      "initiator": "me",
+      "messages": {
+        "me": 12,
+        "other": 13
       },
       "words": {
         "me": 82,
@@ -1247,18 +5325,18 @@
       "selection": null
     },
     {
-      "episode_id": "ep-0006",
-      "start": "2025-09-25T15:06:47-07:00",
-      "end": "2025-09-25T15:35:57-07:00",
-      "week": "2025-W39",
-      "initiator": "me",
+      "episode_id": "ep-0121",
+      "start": "2025-11-29T12:24:34-08:00",
+      "end": "2025-11-29T13:39:02-08:00",
+      "week": "2025-W48",
+      "initiator": "other",
       "messages": {
-        "me": 5,
-        "other": 5
+        "me": 13,
+        "other": 12
       },
       "words": {
-        "me": 51,
-        "other": 53
+        "me": 127,
+        "other": 124
       },
       "late_night_start": false,
       "pooled": false,
@@ -1266,37 +5344,18 @@
       "selection": null
     },
     {
-      "episode_id": "ep-0007",
-      "start": "2025-09-25T20:33:23-07:00",
-      "end": "2025-09-25T21:17:01-07:00",
-      "week": "2025-W39",
-      "initiator": "me",
+      "episode_id": "ep-0122",
+      "start": "2025-12-02T20:49:28-08:00",
+      "end": "2025-12-02T21:24:26-08:00",
+      "week": "2025-W49",
+      "initiator": "other",
       "messages": {
         "me": 7,
-        "other": 7
+        "other": 9
       },
       "words": {
-        "me": 69,
-        "other": 67
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0008",
-      "start": "2025-09-25T22:14:34-07:00",
-      "end": "2025-09-25T22:32:15-07:00",
-      "week": "2025-W39",
-      "initiator": "other",
-      "messages": {
-        "me": 3,
-        "other": 3
-      },
-      "words": {
-        "me": 24,
-        "other": 24
+        "me": 41,
+        "other": 57
       },
       "late_night_start": false,
       "pooled": true,
@@ -1304,94 +5363,18 @@
       "selection": null
     },
     {
-      "episode_id": "ep-0009",
-      "start": "2025-09-27T08:39:51-07:00",
-      "end": "2025-09-27T08:56:12-07:00",
-      "week": "2025-W39",
-      "initiator": "other",
-      "messages": {
-        "me": 3,
-        "other": 4
-      },
-      "words": {
-        "me": 30,
-        "other": 32
-      },
-      "late_night_start": false,
-      "pooled": true,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0010",
-      "start": "2025-09-30T20:35:57-07:00",
-      "end": "2025-09-30T21:18:48-07:00",
-      "week": "2025-W40",
-      "initiator": "other",
-      "messages": {
-        "me": 8,
-        "other": 8
-      },
-      "words": {
-        "me": 79,
-        "other": 77
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0011",
-      "start": "2025-10-01T15:07:57-07:00",
-      "end": "2025-10-01T15:36:22-07:00",
-      "week": "2025-W40",
-      "initiator": "other",
-      "messages": {
-        "me": 5,
-        "other": 5
-      },
-      "words": {
-        "me": 51,
-        "other": 53
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0012",
-      "start": "2025-10-01T22:14:47-07:00",
-      "end": "2025-10-01T22:59:14-07:00",
-      "week": "2025-W40",
-      "initiator": "other",
-      "messages": {
-        "me": 8,
-        "other": 8
-      },
-      "words": {
-        "me": 82,
-        "other": 76
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0013",
-      "start": "2025-10-03T08:23:01-07:00",
-      "end": "2025-10-03T08:55:09-07:00",
-      "week": "2025-W40",
+      "episode_id": "ep-0123",
+      "start": "2025-12-03T15:50:01-08:00",
+      "end": "2025-12-03T16:53:54-08:00",
+      "week": "2025-W49",
       "initiator": "me",
       "messages": {
-        "me": 5,
-        "other": 5
+        "me": 16,
+        "other": 13
       },
       "words": {
-        "me": 48,
-        "other": 53
+        "me": 95,
+        "other": 100
       },
       "late_night_start": false,
       "pooled": false,
@@ -1399,321 +5382,131 @@
       "selection": null
     },
     {
-      "episode_id": "ep-0014",
-      "start": "2025-10-03T18:32:04-07:00",
-      "end": "2025-10-03T19:02:17-07:00",
-      "week": "2025-W40",
+      "episode_id": "ep-0124",
+      "start": "2025-12-04T07:05:38-08:00",
+      "end": "2025-12-04T08:30:06-08:00",
+      "week": "2025-W49",
       "initiator": "me",
       "messages": {
-        "me": 7,
-        "other": 7
-      },
-      "words": {
-        "me": 72,
-        "other": 71
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0015",
-      "start": "2025-10-04T15:16:25-07:00",
-      "end": "2025-10-04T15:37:59-07:00",
-      "week": "2025-W40",
-      "initiator": "me",
-      "messages": {
-        "me": 4,
-        "other": 3
-      },
-      "words": {
-        "me": 34,
-        "other": 26
-      },
-      "late_night_start": false,
-      "pooled": true,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0016",
-      "start": "2025-10-04T18:20:05-07:00",
-      "end": "2025-10-04T18:34:34-07:00",
-      "week": "2025-W40",
-      "initiator": "other",
-      "messages": {
-        "me": 3,
-        "other": 4
-      },
-      "words": {
-        "me": 27,
-        "other": 31
-      },
-      "late_night_start": false,
-      "pooled": true,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0017",
-      "start": "2025-10-05T15:40:05-07:00",
-      "end": "2025-10-05T15:55:23-07:00",
-      "week": "2025-W40",
-      "initiator": "other",
-      "messages": {
-        "me": 5,
-        "other": 4
-      },
-      "words": {
-        "me": 47,
-        "other": 40
-      },
-      "late_night_start": false,
-      "pooled": true,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0018",
-      "start": "2025-10-11T20:22:51-07:00",
-      "end": "2025-10-11T20:26:23-07:00",
-      "week": "2025-W41",
-      "initiator": "other",
-      "messages": {
-        "me": 1,
-        "other": 2
-      },
-      "words": {
-        "me": 10,
-        "other": 23
-      },
-      "late_night_start": false,
-      "pooled": true,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0019",
-      "start": "2025-10-13T08:13:14-07:00",
-      "end": "2025-10-13T09:07:24-07:00",
-      "week": "2025-W42",
-      "initiator": "me",
-      "messages": {
-        "me": 8,
-        "other": 8
-      },
-      "words": {
-        "me": 81,
-        "other": 82
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0020",
-      "start": "2025-10-13T18:09:21-07:00",
-      "end": "2025-10-13T18:54:55-07:00",
-      "week": "2025-W42",
-      "initiator": "me",
-      "messages": {
-        "me": 8,
-        "other": 8
-      },
-      "words": {
-        "me": 81,
-        "other": 79
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0021",
-      "start": "2025-10-13T20:31:18-07:00",
-      "end": "2025-10-13T21:02:26-07:00",
-      "week": "2025-W42",
-      "initiator": "other",
-      "messages": {
-        "me": 5,
-        "other": 5
-      },
-      "words": {
-        "me": 50,
-        "other": 54
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0022",
-      "start": "2025-10-15T12:05:59-07:00",
-      "end": "2025-10-15T12:33:45-07:00",
-      "week": "2025-W42",
-      "initiator": "other",
-      "messages": {
-        "me": 6,
-        "other": 6
-      },
-      "words": {
-        "me": 60,
-        "other": 63
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0023",
-      "start": "2025-10-17T10:05:09-07:00",
-      "end": "2025-10-17T10:42:04-07:00",
-      "week": "2025-W42",
-      "initiator": "me",
-      "messages": {
-        "me": 6,
-        "other": 6
-      },
-      "words": {
-        "me": 61,
-        "other": 58
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0024",
-      "start": "2025-10-17T15:31:25-07:00",
-      "end": "2025-10-17T15:46:06-07:00",
-      "week": "2025-W42",
-      "initiator": "me",
-      "messages": {
-        "me": 4,
-        "other": 3
-      },
-      "words": {
-        "me": 36,
-        "other": 30
-      },
-      "late_night_start": false,
-      "pooled": true,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0025",
-      "start": "2025-10-17T18:25:19-07:00",
-      "end": "2025-10-17T18:36:22-07:00",
-      "week": "2025-W42",
-      "initiator": "other",
-      "messages": {
-        "me": 3,
-        "other": 4
-      },
-      "words": {
-        "me": 30,
-        "other": 36
-      },
-      "late_night_start": false,
-      "pooled": true,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0026",
-      "start": "2025-10-17T20:20:48-07:00",
-      "end": "2025-10-17T20:39:04-07:00",
-      "week": "2025-W42",
-      "initiator": "other",
-      "messages": {
-        "me": 5,
-        "other": 4
-      },
-      "words": {
-        "me": 47,
-        "other": 37
-      },
-      "late_night_start": false,
-      "pooled": true,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0027",
-      "start": "2025-10-18T02:04:25-07:00",
-      "end": "2025-10-18T02:19:37-07:00",
-      "week": "2025-W42",
-      "initiator": "other",
-      "messages": {
-        "me": 3,
-        "other": 3
-      },
-      "words": {
-        "me": 28,
+        "me": 13,
         "other": 16
-      },
-      "late_night_start": true,
-      "pooled": true,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0028",
-      "start": "2025-10-19T12:17:54-07:00",
-      "end": "2025-10-19T12:27:30-07:00",
-      "week": "2025-W42",
-      "initiator": "other",
-      "messages": {
-        "me": 3,
-        "other": 3
-      },
-      "words": {
-        "me": 26,
-        "other": 29
-      },
-      "late_night_start": false,
-      "pooled": true,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0029",
-      "start": "2025-10-21T10:16:14-07:00",
-      "end": "2025-10-21T10:49:51-07:00",
-      "week": "2025-W43",
-      "initiator": "me",
-      "messages": {
-        "me": 6,
-        "other": 6
-      },
-      "words": {
-        "me": 57,
-        "other": 64
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0030",
-      "start": "2025-10-22T12:35:15-07:00",
-      "end": "2025-10-22T13:18:35-07:00",
-      "week": "2025-W43",
-      "initiator": "other",
-      "messages": {
-        "me": 8,
-        "other": 8
       },
       "words": {
         "me": 84,
+        "other": 89
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0125",
+      "start": "2025-12-04T18:31:48-08:00",
+      "end": "2025-12-04T19:41:46-08:00",
+      "week": "2025-W49",
+      "initiator": "me",
+      "messages": {
+        "me": 13,
+        "other": 13
+      },
+      "words": {
+        "me": 79,
+        "other": 92
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0126",
+      "start": "2025-12-06T12:00:31-08:00",
+      "end": "2025-12-06T12:37:51-08:00",
+      "week": "2025-W49",
+      "initiator": "me",
+      "messages": {
+        "me": 11,
+        "other": 13
+      },
+      "words": {
+        "me": 65,
+        "other": 78
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0127",
+      "start": "2025-12-06T22:03:26-08:00",
+      "end": "2025-12-06T22:29:47-08:00",
+      "week": "2025-W49",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 5
+      },
+      "words": {
+        "me": 134,
+        "other": 87
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0128",
+      "start": "2025-12-07T22:11:43-08:00",
+      "end": "2025-12-07T23:23:53-08:00",
+      "week": "2025-W49",
+      "initiator": "me",
+      "messages": {
+        "me": 15,
+        "other": 12
+      },
+      "words": {
+        "me": 93,
+        "other": 61
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0129",
+      "start": "2025-12-08T11:01:24-08:00",
+      "end": "2025-12-08T11:57:03-08:00",
+      "week": "2025-W50",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 8
+      },
+      "words": {
+        "me": 53,
+        "other": 41
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0130",
+      "start": "2025-12-10T15:00:47-08:00",
+      "end": "2025-12-10T15:36:47-08:00",
+      "week": "2025-W50",
+      "initiator": "me",
+      "messages": {
+        "me": 12,
+        "other": 9
+      },
+      "words": {
+        "me": 132,
         "other": 77
       },
       "late_night_start": false,
@@ -1722,18 +5515,18 @@
       "selection": null
     },
     {
-      "episode_id": "ep-0031",
-      "start": "2025-10-22T20:23:14-07:00",
-      "end": "2025-10-22T21:09:16-07:00",
-      "week": "2025-W43",
+      "episode_id": "ep-0131",
+      "start": "2025-12-10T21:04:24-08:00",
+      "end": "2025-12-10T21:58:47-08:00",
+      "week": "2025-W50",
       "initiator": "me",
       "messages": {
-        "me": 7,
-        "other": 7
+        "me": 9,
+        "other": 11
       },
       "words": {
-        "me": 72,
-        "other": 64
+        "me": 56,
+        "other": 70
       },
       "late_night_start": false,
       "pooled": false,
@@ -1741,18 +5534,18 @@
       "selection": null
     },
     {
-      "episode_id": "ep-0032",
-      "start": "2025-10-23T22:04:13-07:00",
-      "end": "2025-10-23T22:48:43-07:00",
-      "week": "2025-W43",
-      "initiator": "other",
+      "episode_id": "ep-0132",
+      "start": "2025-12-11T15:33:18-08:00",
+      "end": "2025-12-11T16:03:42-08:00",
+      "week": "2025-W50",
+      "initiator": "me",
       "messages": {
         "me": 8,
-        "other": 8
+        "other": 5
       },
       "words": {
-        "me": 79,
-        "other": 83
+        "me": 131,
+        "other": 73
       },
       "late_night_start": false,
       "pooled": false,
@@ -1760,207 +5553,112 @@
       "selection": null
     },
     {
-      "episode_id": "ep-0033",
-      "start": "2025-10-24T20:31:26-07:00",
-      "end": "2025-10-24T21:01:57-07:00",
-      "week": "2025-W43",
-      "initiator": "other",
+      "episode_id": "ep-0133",
+      "start": "2025-12-13T13:45:32-08:00",
+      "end": "2025-12-13T14:21:45-08:00",
+      "week": "2025-W50",
+      "initiator": "me",
       "messages": {
-        "me": 8,
-        "other": 8
-      },
-      "words": {
-        "me": 81,
-        "other": 79
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0034",
-      "start": "2025-10-25T20:20:46-07:00",
-      "end": "2025-10-25T20:49:39-07:00",
-      "week": "2025-W43",
-      "initiator": "other",
-      "messages": {
-        "me": 6,
-        "other": 6
-      },
-      "words": {
-        "me": 58,
-        "other": 62
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0035",
-      "start": "2025-10-25T22:24:53-07:00",
-      "end": "2025-10-25T22:36:23-07:00",
-      "week": "2025-W43",
-      "initiator": "other",
-      "messages": {
-        "me": 3,
-        "other": 3
-      },
-      "words": {
-        "me": 27,
-        "other": 31
-      },
-      "late_night_start": false,
-      "pooled": true,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0036",
-      "start": "2025-10-26T12:00:05-07:00",
-      "end": "2025-10-26T12:18:18-07:00",
-      "week": "2025-W43",
-      "initiator": "other",
-      "messages": {
-        "me": 3,
-        "other": 4
-      },
-      "words": {
-        "me": 32,
-        "other": 34
-      },
-      "late_night_start": false,
-      "pooled": true,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0037",
-      "start": "2025-10-26T15:22:49-07:00",
-      "end": "2025-10-26T15:39:38-07:00",
-      "week": "2025-W43",
-      "initiator": "other",
-      "messages": {
-        "me": 3,
-        "other": 4
-      },
-      "words": {
-        "me": 29,
-        "other": 35
-      },
-      "late_night_start": false,
-      "pooled": true,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0038",
-      "start": "2025-10-27T12:04:57-07:00",
-      "end": "2025-10-27T12:11:45-07:00",
-      "week": "2025-W44",
-      "initiator": "other",
-      "messages": {
-        "me": 1,
-        "other": 2
-      },
-      "words": {
         "me": 11,
-        "other": 17
+        "other": 12
+      },
+      "words": {
+        "me": 84,
+        "other": 87
       },
       "late_night_start": false,
-      "pooled": true,
+      "pooled": false,
       "scored": false,
       "selection": null
     },
     {
-      "episode_id": "ep-0039",
-      "start": "2025-11-03T08:26:06-08:00",
-      "end": "2025-11-03T09:11:11-08:00",
-      "week": "2025-W45",
+      "episode_id": "ep-0134",
+      "start": "2025-12-13T17:48:47-08:00",
+      "end": "2025-12-13T18:16:14-08:00",
+      "week": "2025-W50",
+      "initiator": "other",
+      "messages": {
+        "me": 11,
+        "other": 9
+      },
+      "words": {
+        "me": 47,
+        "other": 57
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0135",
+      "start": "2025-12-14T08:10:09-08:00",
+      "end": "2025-12-14T09:11:25-08:00",
+      "week": "2025-W50",
+      "initiator": "other",
+      "messages": {
+        "me": 11,
+        "other": 10
+      },
+      "words": {
+        "me": 59,
+        "other": 41
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0136",
+      "start": "2025-12-14T20:39:53-08:00",
+      "end": "2025-12-14T21:05:25-08:00",
+      "week": "2025-W50",
       "initiator": "me",
       "messages": {
         "me": 7,
         "other": 7
       },
       "words": {
-        "me": 66,
-        "other": 65
+        "me": 34,
+        "other": 25
       },
       "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0040",
-      "start": "2025-11-04T18:19:26-08:00",
-      "end": "2025-11-04T19:07:37-08:00",
-      "week": "2025-W45",
-      "initiator": "other",
-      "messages": {
-        "me": 8,
-        "other": 8
-      },
-      "words": {
-        "me": 80,
-        "other": 81
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0041",
-      "start": "2025-11-04T22:00:27-08:00",
-      "end": "2025-11-04T22:38:55-08:00",
-      "week": "2025-W45",
-      "initiator": "me",
-      "messages": {
-        "me": 8,
-        "other": 8
-      },
-      "words": {
-        "me": 80,
-        "other": 79
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0042",
-      "start": "2025-11-05T02:23:28-08:00",
-      "end": "2025-11-05T02:33:36-08:00",
-      "week": "2025-W45",
-      "initiator": "other",
-      "messages": {
-        "me": 3,
-        "other": 3
-      },
-      "words": {
-        "me": 28,
-        "other": 16
-      },
-      "late_night_start": true,
       "pooled": true,
       "scored": false,
       "selection": null
     },
     {
-      "episode_id": "ep-0043",
-      "start": "2025-11-05T22:25:05-08:00",
-      "end": "2025-11-05T23:01:30-08:00",
-      "week": "2025-W45",
+      "episode_id": "ep-0137",
+      "start": "2025-12-15T07:48:25-08:00",
+      "end": "2025-12-15T08:21:23-08:00",
+      "week": "2025-W51",
       "initiator": "me",
       "messages": {
-        "me": 6,
-        "other": 6
+        "me": 9,
+        "other": 9
       },
       "words": {
-        "me": 61,
+        "me": 60,
+        "other": 41
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0138",
+      "start": "2025-12-15T21:06:59-08:00",
+      "end": "2025-12-15T21:35:00-08:00",
+      "week": "2025-W51",
+      "initiator": "me",
+      "messages": {
+        "me": 9,
+        "other": 12
+      },
+      "words": {
+        "me": 60,
         "other": 59
       },
       "late_night_start": false,
@@ -1969,132 +5667,18 @@
       "selection": null
     },
     {
-      "episode_id": "ep-0044",
-      "start": "2025-11-06T12:04:06-08:00",
-      "end": "2025-11-06T12:38:37-08:00",
-      "week": "2025-W45",
+      "episode_id": "ep-0139",
+      "start": "2025-12-16T07:20:02-08:00",
+      "end": "2025-12-16T07:38:19-08:00",
+      "week": "2025-W51",
       "initiator": "me",
       "messages": {
-        "me": 7,
-        "other": 7
-      },
-      "words": {
-        "me": 72,
-        "other": 72
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0045",
-      "start": "2025-11-06T20:39:44-08:00",
-      "end": "2025-11-06T21:16:07-08:00",
-      "week": "2025-W45",
-      "initiator": "me",
-      "messages": {
-        "me": 7,
-        "other": 7
-      },
-      "words": {
-        "me": 68,
-        "other": 68
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0046",
-      "start": "2025-11-08T15:10:24-08:00",
-      "end": "2025-11-08T15:22:07-08:00",
-      "week": "2025-W45",
-      "initiator": "other",
-      "messages": {
-        "me": 3,
-        "other": 3
-      },
-      "words": {
-        "me": 29,
-        "other": 31
-      },
-      "late_night_start": false,
-      "pooled": true,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0047",
-      "start": "2025-11-08T18:12:02-08:00",
-      "end": "2025-11-08T18:24:58-08:00",
-      "week": "2025-W45",
-      "initiator": "other",
-      "messages": {
-        "me": 3,
+        "me": 6,
         "other": 4
-      },
-      "words": {
-        "me": 33,
-        "other": 31
-      },
-      "late_night_start": false,
-      "pooled": true,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0048",
-      "start": "2025-11-08T22:24:38-08:00",
-      "end": "2025-11-08T22:48:08-08:00",
-      "week": "2025-W45",
-      "initiator": "other",
-      "messages": {
-        "me": 5,
-        "other": 4
-      },
-      "words": {
-        "me": 47,
-        "other": 44
-      },
-      "late_night_start": false,
-      "pooled": true,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0049",
-      "start": "2025-11-10T08:38:59-08:00",
-      "end": "2025-11-10T09:11:24-08:00",
-      "week": "2025-W46",
-      "initiator": "other",
-      "messages": {
-        "me": 8,
-        "other": 8
-      },
-      "words": {
-        "me": 79,
-        "other": 82
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0050",
-      "start": "2025-11-10T18:06:00-08:00",
-      "end": "2025-11-10T18:38:02-08:00",
-      "week": "2025-W46",
-      "initiator": "me",
-      "messages": {
-        "me": 5,
-        "other": 5
       },
       "words": {
         "me": 48,
-        "other": 48
+        "other": 26
       },
       "late_night_start": false,
       "pooled": true,
@@ -2102,14 +5686,470 @@
       "selection": null
     },
     {
-      "episode_id": "ep-0051",
-      "start": "2025-11-10T22:26:52-08:00",
-      "end": "2025-11-10T22:59:10-08:00",
-      "week": "2025-W46",
+      "episode_id": "ep-0140",
+      "start": "2025-12-16T20:42:37-08:00",
+      "end": "2025-12-16T21:50:18-08:00",
+      "week": "2025-W51",
+      "initiator": "me",
+      "messages": {
+        "me": 13,
+        "other": 10
+      },
+      "words": {
+        "me": 66,
+        "other": 45
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0141",
+      "start": "2025-12-18T13:43:41-08:00",
+      "end": "2025-12-18T14:25:27-08:00",
+      "week": "2025-W51",
+      "initiator": "me",
+      "messages": {
+        "me": 13,
+        "other": 13
+      },
+      "words": {
+        "me": 82,
+        "other": 69
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0142",
+      "start": "2025-12-18T21:22:18-08:00",
+      "end": "2025-12-18T22:11:01-08:00",
+      "week": "2025-W51",
+      "initiator": "me",
+      "messages": {
+        "me": 11,
+        "other": 13
+      },
+      "words": {
+        "me": 52,
+        "other": 83
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0143",
+      "start": "2025-12-20T12:27:49-08:00",
+      "end": "2025-12-20T13:08:48-08:00",
+      "week": "2025-W51",
       "initiator": "other",
       "messages": {
-        "me": 6,
+        "me": 8,
+        "other": 10
+      },
+      "words": {
+        "me": 45,
+        "other": 69
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0144",
+      "start": "2025-12-21T09:08:24-08:00",
+      "end": "2025-12-21T09:55:38-08:00",
+      "week": "2025-W51",
+      "initiator": "me",
+      "messages": {
+        "me": 12,
+        "other": 12
+      },
+      "words": {
+        "me": 85,
+        "other": 46
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0145",
+      "start": "2025-12-22T09:08:04-08:00",
+      "end": "2025-12-22T09:36:29-08:00",
+      "week": "2025-W52",
+      "initiator": "me",
+      "messages": {
+        "me": 8,
+        "other": 5
+      },
+      "words": {
+        "me": 145,
+        "other": 92
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0146",
+      "start": "2025-12-22T21:27:55-08:00",
+      "end": "2025-12-22T22:02:55-08:00",
+      "week": "2025-W52",
+      "initiator": "other",
+      "messages": {
+        "me": 9,
+        "other": 11
+      },
+      "words": {
+        "me": 59,
+        "other": 54
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0147",
+      "start": "2025-12-24T15:05:40-08:00",
+      "end": "2025-12-24T15:44:11-08:00",
+      "week": "2025-W52",
+      "initiator": "me",
+      "messages": {
+        "me": 14,
+        "other": 10
+      },
+      "words": {
+        "me": 83,
+        "other": 62
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0148",
+      "start": "2025-12-24T16:54:11-08:00",
+      "end": "2025-12-24T17:38:41-08:00",
+      "week": "2025-W52",
+      "initiator": "other",
+      "messages": {
+        "me": 10,
+        "other": 12
+      },
+      "words": {
+        "me": 58,
+        "other": 76
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0149",
+      "start": "2025-12-25T20:06:17-08:00",
+      "end": "2025-12-25T20:47:02-08:00",
+      "week": "2025-W52",
+      "initiator": "me",
+      "messages": {
+        "me": 12,
+        "other": 14
+      },
+      "words": {
+        "me": 58,
+        "other": 85
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0150",
+      "start": "2025-12-26T07:00:24-08:00",
+      "end": "2025-12-26T08:03:39-08:00",
+      "week": "2025-W52",
+      "initiator": "me",
+      "messages": {
+        "me": 15,
+        "other": 19
+      },
+      "words": {
+        "me": 77,
+        "other": 106
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0151",
+      "start": "2025-12-27T23:27:41-08:00",
+      "end": "2025-12-28T00:11:35-08:00",
+      "week": "2025-W52",
+      "initiator": "other",
+      "messages": {
+        "me": 10,
+        "other": 11
+      },
+      "words": {
+        "me": 55,
+        "other": 60
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0152",
+      "start": "2025-12-28T08:12:16-08:00",
+      "end": "2025-12-28T08:49:54-08:00",
+      "week": "2025-W52",
+      "initiator": "other",
+      "messages": {
+        "me": 11,
+        "other": 13
+      },
+      "words": {
+        "me": 79,
+        "other": 92
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0153",
+      "start": "2025-12-29T13:49:43-08:00",
+      "end": "2025-12-29T14:38:15-08:00",
+      "week": "2026-W01",
+      "initiator": "me",
+      "messages": {
+        "me": 13,
+        "other": 12
+      },
+      "words": {
+        "me": 73,
+        "other": 67
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0154",
+      "start": "2025-12-29T23:35:33-08:00",
+      "end": "2025-12-30T00:21:15-08:00",
+      "week": "2026-W01",
+      "initiator": "other",
+      "messages": {
+        "me": 14,
+        "other": 14
+      },
+      "words": {
+        "me": 77,
+        "other": 76
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0155",
+      "start": "2025-12-30T11:49:23-08:00",
+      "end": "2025-12-30T12:47:52-08:00",
+      "week": "2026-W01",
+      "initiator": "me",
+      "messages": {
+        "me": 16,
+        "other": 13
+      },
+      "words": {
+        "me": 100,
+        "other": 96
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0156",
+      "start": "2025-12-30T20:13:22-08:00",
+      "end": "2025-12-30T20:50:15-08:00",
+      "week": "2026-W01",
+      "initiator": "other",
+      "messages": {
+        "me": 10,
+        "other": 11
+      },
+      "words": {
+        "me": 58,
+        "other": 66
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0157",
+      "start": "2026-01-01T17:36:04-08:00",
+      "end": "2026-01-01T18:28:48-08:00",
+      "week": "2026-W01",
+      "initiator": "me",
+      "messages": {
+        "me": 15,
+        "other": 19
+      },
+      "words": {
+        "me": 94,
+        "other": 126
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0158",
+      "start": "2026-01-03T13:20:04-08:00",
+      "end": "2026-01-03T13:45:54-08:00",
+      "week": "2026-W01",
+      "initiator": "me",
+      "messages": {
+        "me": 8,
         "other": 6
+      },
+      "words": {
+        "me": 43,
+        "other": 32
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0159",
+      "start": "2026-01-03T21:29:22-08:00",
+      "end": "2026-01-03T21:54:35-08:00",
+      "week": "2026-W01",
+      "initiator": "me",
+      "messages": {
+        "me": 10,
+        "other": 9
+      },
+      "words": {
+        "me": 57,
+        "other": 59
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0160",
+      "start": "2026-01-05T15:24:17-08:00",
+      "end": "2026-01-05T16:09:53-08:00",
+      "week": "2026-W02",
+      "initiator": "other",
+      "messages": {
+        "me": 14,
+        "other": 12
+      },
+      "words": {
+        "me": 54,
+        "other": 77
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0161",
+      "start": "2026-01-06T09:24:35-08:00",
+      "end": "2026-01-06T09:55:50-08:00",
+      "week": "2026-W02",
+      "initiator": "other",
+      "messages": {
+        "me": 9,
+        "other": 9
+      },
+      "words": {
+        "me": 47,
+        "other": 50
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0162",
+      "start": "2026-01-06T19:25:45-08:00",
+      "end": "2026-01-06T20:14:52-08:00",
+      "week": "2026-W02",
+      "initiator": "other",
+      "messages": {
+        "me": 11,
+        "other": 9
+      },
+      "words": {
+        "me": 67,
+        "other": 53
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0163",
+      "start": "2026-01-09T01:32:20-08:00",
+      "end": "2026-01-09T01:38:10-08:00",
+      "week": "2026-W02",
+      "initiator": "me",
+      "messages": {
+        "me": 4,
+        "other": 3
+      },
+      "words": {
+        "me": 21,
+        "other": 10
+      },
+      "late_night_start": true,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0164",
+      "start": "2026-01-09T07:16:27-08:00",
+      "end": "2026-01-09T08:02:40-08:00",
+      "week": "2026-W02",
+      "initiator": "other",
+      "messages": {
+        "me": 10,
+        "other": 11
       },
       "words": {
         "me": 59,
@@ -2121,94 +6161,18 @@
       "selection": null
     },
     {
-      "episode_id": "ep-0052",
-      "start": "2025-11-11T10:24:54-08:00",
-      "end": "2025-11-11T10:57:37-08:00",
-      "week": "2025-W46",
+      "episode_id": "ep-0165",
+      "start": "2026-01-09T12:05:04-08:00",
+      "end": "2026-01-09T12:47:51-08:00",
+      "week": "2026-W02",
       "initiator": "other",
       "messages": {
-        "me": 6,
-        "other": 6
+        "me": 9,
+        "other": 8
       },
       "words": {
-        "me": 60,
-        "other": 58
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0053",
-      "start": "2025-11-11T12:07:21-08:00",
-      "end": "2025-11-11T12:57:17-08:00",
-      "week": "2025-W46",
-      "initiator": "other",
-      "messages": {
-        "me": 7,
-        "other": 7
-      },
-      "words": {
-        "me": 72,
-        "other": 72
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0054",
-      "start": "2025-11-11T15:13:05-08:00",
-      "end": "2025-11-11T15:37:00-08:00",
-      "week": "2025-W46",
-      "initiator": "other",
-      "messages": {
-        "me": 5,
-        "other": 5
-      },
-      "words": {
-        "me": 51,
-        "other": 52
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0055",
-      "start": "2025-11-12T10:12:56-08:00",
-      "end": "2025-11-12T11:02:00-08:00",
-      "week": "2025-W46",
-      "initiator": "other",
-      "messages": {
-        "me": 7,
-        "other": 7
-      },
-      "words": {
-        "me": 72,
-        "other": 71
-      },
-      "late_night_start": false,
-      "pooled": false,
-      "scored": false,
-      "selection": null
-    },
-    {
-      "episode_id": "ep-0056",
-      "start": "2025-11-12T15:01:27-08:00",
-      "end": "2025-11-12T15:22:15-08:00",
-      "week": "2025-W46",
-      "initiator": "me",
-      "messages": {
-        "me": 4,
-        "other": 3
-      },
-      "words": {
-        "me": 38,
-        "other": 35
+        "me": 47,
+        "other": 49
       },
       "late_night_start": false,
       "pooled": true,
@@ -2216,36 +6180,74 @@
       "selection": null
     },
     {
-      "episode_id": "ep-0057",
-      "start": "2025-11-13T01:04:47-08:00",
-      "end": "2025-11-13T01:15:19-08:00",
-      "week": "2025-W46",
+      "episode_id": "ep-0166",
+      "start": "2026-01-10T15:19:44-08:00",
+      "end": "2026-01-10T15:53:12-08:00",
+      "week": "2026-W02",
       "initiator": "other",
       "messages": {
-        "me": 3,
-        "other": 3
+        "me": 8,
+        "other": 10
       },
       "words": {
         "me": 29,
-        "other": 16
+        "other": 49
       },
-      "late_night_start": true,
+      "late_night_start": false,
       "pooled": true,
       "scored": false,
       "selection": null
     },
     {
-      "episode_id": "ep-0058",
-      "start": "2025-11-14T08:39:37-08:00",
-      "end": "2025-11-14T08:45:48-08:00",
-      "week": "2025-W46",
-      "initiator": "other",
+      "episode_id": "ep-0167",
+      "start": "2026-01-11T20:42:58-08:00",
+      "end": "2026-01-11T21:30:57-08:00",
+      "week": "2026-W02",
+      "initiator": "me",
       "messages": {
-        "me": 3,
-        "other": 4
+        "me": 13,
+        "other": 13
       },
       "words": {
-        "me": 37,
+        "me": 74,
+        "other": 94
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0168",
+      "start": "2026-01-12T07:45:04-08:00",
+      "end": "2026-01-12T08:38:41-08:00",
+      "week": "2026-W03",
+      "initiator": "me",
+      "messages": {
+        "me": 12,
+        "other": 12
+      },
+      "words": {
+        "me": 72,
+        "other": 66
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0169",
+      "start": "2026-01-14T11:26:18-08:00",
+      "end": "2026-01-14T11:52:42-08:00",
+      "week": "2026-W03",
+      "initiator": "me",
+      "messages": {
+        "me": 8,
+        "other": 7
+      },
+      "words": {
+        "me": 54,
         "other": 37
       },
       "late_night_start": false,
@@ -2254,21 +6256,420 @@
       "selection": null
     },
     {
-      "episode_id": "ep-0059",
-      "start": "2025-11-15T20:06:39-08:00",
-      "end": "2025-11-15T20:33:48-08:00",
-      "week": "2025-W46",
+      "episode_id": "ep-0170",
+      "start": "2026-01-14T15:45:18-08:00",
+      "end": "2026-01-14T16:26:55-08:00",
+      "week": "2026-W03",
       "initiator": "other",
       "messages": {
-        "me": 5,
-        "other": 4
+        "me": 7,
+        "other": 9
       },
       "words": {
-        "me": 48,
-        "other": 41
+        "me": 52,
+        "other": 49
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0171",
+      "start": "2026-01-14T17:15:24-08:00",
+      "end": "2026-01-14T17:59:02-08:00",
+      "week": "2026-W03",
+      "initiator": "other",
+      "messages": {
+        "me": 11,
+        "other": 12
+      },
+      "words": {
+        "me": 69,
+        "other": 95
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0172",
+      "start": "2026-01-15T23:02:08-08:00",
+      "end": "2026-01-15T23:25:49-08:00",
+      "week": "2026-W03",
+      "initiator": "me",
+      "messages": {
+        "me": 7,
+        "other": 7
+      },
+      "words": {
+        "me": 47,
+        "other": 32
       },
       "late_night_start": false,
       "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0173",
+      "start": "2026-01-16T19:29:33-08:00",
+      "end": "2026-01-16T19:54:18-08:00",
+      "week": "2026-W03",
+      "initiator": "me",
+      "messages": {
+        "me": 8,
+        "other": 6
+      },
+      "words": {
+        "me": 150,
+        "other": 75
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0174",
+      "start": "2026-01-17T07:28:57-08:00",
+      "end": "2026-01-17T08:13:54-08:00",
+      "week": "2026-W03",
+      "initiator": "me",
+      "messages": {
+        "me": 12,
+        "other": 13
+      },
+      "words": {
+        "me": 84,
+        "other": 76
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0175",
+      "start": "2026-01-19T07:35:31-08:00",
+      "end": "2026-01-19T07:50:55-08:00",
+      "week": "2026-W04",
+      "initiator": "other",
+      "messages": {
+        "me": 7,
+        "other": 6
+      },
+      "words": {
+        "me": 44,
+        "other": 29
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0176",
+      "start": "2026-01-19T19:50:56-08:00",
+      "end": "2026-01-19T20:38:01-08:00",
+      "week": "2026-W04",
+      "initiator": "me",
+      "messages": {
+        "me": 11,
+        "other": 11
+      },
+      "words": {
+        "me": 61,
+        "other": 63
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0177",
+      "start": "2026-01-20T11:34:10-08:00",
+      "end": "2026-01-20T12:12:22-08:00",
+      "week": "2026-W04",
+      "initiator": "other",
+      "messages": {
+        "me": 13,
+        "other": 13
+      },
+      "words": {
+        "me": 80,
+        "other": 78
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0178",
+      "start": "2026-01-20T13:00:49-08:00",
+      "end": "2026-01-20T14:08:07-08:00",
+      "week": "2026-W04",
+      "initiator": "me",
+      "messages": {
+        "me": 13,
+        "other": 16
+      },
+      "words": {
+        "me": 64,
+        "other": 85
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0179",
+      "start": "2026-01-21T22:01:28-08:00",
+      "end": "2026-01-21T22:54:23-08:00",
+      "week": "2026-W04",
+      "initiator": "me",
+      "messages": {
+        "me": 13,
+        "other": 14
+      },
+      "words": {
+        "me": 97,
+        "other": 63
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0180",
+      "start": "2026-01-22T11:16:06-08:00",
+      "end": "2026-01-22T12:01:33-08:00",
+      "week": "2026-W04",
+      "initiator": "other",
+      "messages": {
+        "me": 9,
+        "other": 8
+      },
+      "words": {
+        "me": 60,
+        "other": 37
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0181",
+      "start": "2026-01-23T09:30:39-08:00",
+      "end": "2026-01-23T10:01:31-08:00",
+      "week": "2026-W04",
+      "initiator": "me",
+      "messages": {
+        "me": 10,
+        "other": 11
+      },
+      "words": {
+        "me": 74,
+        "other": 72
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0182",
+      "start": "2026-01-24T12:26:32-08:00",
+      "end": "2026-01-24T13:33:00-08:00",
+      "week": "2026-W04",
+      "initiator": "other",
+      "messages": {
+        "me": 14,
+        "other": 17
+      },
+      "words": {
+        "me": 76,
+        "other": 85
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0183",
+      "start": "2026-01-26T09:17:59-08:00",
+      "end": "2026-01-26T09:51:19-08:00",
+      "week": "2026-W05",
+      "initiator": "me",
+      "messages": {
+        "me": 8,
+        "other": 10
+      },
+      "words": {
+        "me": 61,
+        "other": 44
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0184",
+      "start": "2026-01-26T10:29:19-08:00",
+      "end": "2026-01-26T11:21:32-08:00",
+      "week": "2026-W05",
+      "initiator": "other",
+      "messages": {
+        "me": 13,
+        "other": 13
+      },
+      "words": {
+        "me": 77,
+        "other": 67
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0185",
+      "start": "2026-01-26T13:18:40-08:00",
+      "end": "2026-01-26T13:48:08-08:00",
+      "week": "2026-W05",
+      "initiator": "other",
+      "messages": {
+        "me": 9,
+        "other": 10
+      },
+      "words": {
+        "me": 60,
+        "other": 45
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0186",
+      "start": "2026-01-26T14:26:08-08:00",
+      "end": "2026-01-26T15:15:58-08:00",
+      "week": "2026-W05",
+      "initiator": "me",
+      "messages": {
+        "me": 12,
+        "other": 12
+      },
+      "words": {
+        "me": 68,
+        "other": 69
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0187",
+      "start": "2026-01-26T23:30:07-08:00",
+      "end": "2026-01-27T00:33:33-08:00",
+      "week": "2026-W05",
+      "initiator": "other",
+      "messages": {
+        "me": 14,
+        "other": 15
+      },
+      "words": {
+        "me": 77,
+        "other": 102
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0188",
+      "start": "2026-01-27T17:44:45-08:00",
+      "end": "2026-01-27T18:26:26-08:00",
+      "week": "2026-W05",
+      "initiator": "other",
+      "messages": {
+        "me": 9,
+        "other": 8
+      },
+      "words": {
+        "me": 49,
+        "other": 40
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0189",
+      "start": "2026-01-29T13:44:34-08:00",
+      "end": "2026-01-29T14:07:15-08:00",
+      "week": "2026-W05",
+      "initiator": "me",
+      "messages": {
+        "me": 6,
+        "other": 8
+      },
+      "words": {
+        "me": 34,
+        "other": 48
+      },
+      "late_night_start": false,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0190",
+      "start": "2026-01-31T01:42:04-08:00",
+      "end": "2026-01-31T01:48:32-08:00",
+      "week": "2026-W05",
+      "initiator": "other",
+      "messages": {
+        "me": 4,
+        "other": 4
+      },
+      "words": {
+        "me": 12,
+        "other": 16
+      },
+      "late_night_start": true,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0191",
+      "start": "2026-02-01T13:21:50-08:00",
+      "end": "2026-02-01T13:48:05-08:00",
+      "week": "2026-W05",
+      "initiator": "me",
+      "messages": {
+        "me": 8,
+        "other": 9
+      },
+      "words": {
+        "me": 50,
+        "other": 58
+      },
+      "late_night_start": false,
+      "pooled": false,
       "scored": false,
       "selection": null
     }
@@ -2305,17 +6706,18 @@
   "disclaimer": "Experimental self-reflection, not a clinical or diagnostic tool",
   "run_meta": {
     "run_id": "sample-deterministic",
-    "created_at": "2026-10-28T18:57:18.630812-07:00",
-    "finished_at": "2026-10-28T18:57:18.650966-07:00",
-    "duration_s": 0.02,
+    "created_at": "2026-10-28T20:29:06.927264-07:00",
+    "finished_at": "2026-10-28T20:29:07.157832-07:00",
+    "duration_s": 0.231,
     "mode": "deterministic_only",
     "llm_opt_in": false,
     "source": "demo",
     "provider": null,
     "model": null,
+    "provider_note": null,
     "reasoning_effort": null,
     "prompt_version": "rubric-v1",
-    "synthesis_prompt_version": "synthesis-v2",
+    "synthesis_prompt_version": "synthesis-v3",
     "extractor_version": "features-v1",
     "backend_version": "0.1.0",
     "cache_hits": 0,

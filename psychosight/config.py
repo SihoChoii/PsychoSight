@@ -13,7 +13,7 @@ from . import __version__, defaults
 BACKEND_VERSION = __version__
 SCHEMA_VERSION = "1.0.0"
 PROMPT_VERSION = "rubric-v1"
-SYNTHESIS_PROMPT_VERSION = "synthesis-v2"
+SYNTHESIS_PROMPT_VERSION = "synthesis-v3"
 EXTRACTOR_VERSION = "features-v1"
 
 TURN_GAP_S = 30
@@ -33,7 +33,7 @@ ITEM_MIN_EPISODES = 3
 ITEM_MIN_AGREEMENT = 0.7
 HIGH_CONFIDENCE_AGREEMENT = 0.8
 MAX_LLM_CALLS = 200
-LLM_CONCURRENCY = 8  # parallel episodes; override with PSYCHOSIGHT_LLM_CONCURRENCY
+LLM_CONCURRENCY = 12  # parallel episodes; override with PSYCHOSIGHT_LLM_CONCURRENCY
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8765
@@ -61,7 +61,8 @@ OPT_IN_TEXT = (
     "(an external AI service). The excerpts include messages from BOTH sides: your messages and the other "
     "person's messages, which are sent as context. Up to 40 short episodes are sent; nothing else from your "
     "Messages library leaves this computer. DeepSeek processes the excerpts under its own terms. Evidence "
-    "quotes from the analysis are saved in the local report until you delete it. If you do not opt in, you "
+    "quotes from the analysis are saved in the local report until you delete it. The demo conversation is synthetic: "
+    "its excerpts are fictional messages written for the demo. If you do not opt in, you "
     "still get a local-only report without the AI sections."
 )
 
@@ -207,8 +208,25 @@ def chat_db_path() -> Path:
     return Path(_env("PSYCHOSIGHT_CHAT_DB") or (Path.home() / "Library" / "Messages" / "chat.db")).expanduser()
 
 
+MOCK_NOTE_NO_KEY = ("not real model: offline mock scores for the synthetic demo, because no DeepSeek key was found "
+                    "(copy .env.example to .env and add the key to run the real model)")
+MOCK_NOTE_FORCED = "not real model: offline mock scores for the synthetic demo (PSYCHOSIGHT_DEMO_PROVIDER=mock)"
+
+
 def demo_provider_name() -> str:
-    return (_env("PSYCHOSIGHT_DEMO_PROVIDER") or "mock").lower()
+    """Provider for the synthetic demo: the real DeepSeek model whenever a key is configured, else the offline mock.
+    PSYCHOSIGHT_DEMO_PROVIDER=mock|deepseek overrides (tests and CI pin mock)."""
+    forced = (_env("PSYCHOSIGHT_DEMO_PROVIDER") or "").lower()
+    if forced in ("mock", "deepseek"):
+        return forced
+    return "deepseek" if llm_settings().configured else "mock"
+
+
+def demo_provider_note() -> Optional[str]:
+    """User-visible label when the demo does not use the real model (None when it does)."""
+    if demo_provider_name() != "mock":
+        return None
+    return MOCK_NOTE_FORCED if (_env("PSYCHOSIGHT_DEMO_PROVIDER") or "").lower() == "mock" else MOCK_NOTE_NO_KEY
 
 
 def llm_concurrency() -> int:

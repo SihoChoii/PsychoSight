@@ -132,6 +132,8 @@ def run_analysis(
             "duration_s": round(time.monotonic() - t0, 3), "mode": run_mode, "llm_opt_in": bool(llm_opt_in is True),
             "source": data.source, "provider": provider.name if (provider and run_mode == "full") else None,
             "model": provider.model if (provider and run_mode == "full") else None,
+            "provider_note": (config.demo_provider_note() or config.MOCK_NOTE_FORCED)
+            if (provider and run_mode == "full" and provider.name == "mock") else None,
             "reasoning_effort": provider.reasoning_effort if (provider and run_mode == "full") else None,
             "prompt_version": config.PROMPT_VERSION, "synthesis_prompt_version": config.SYNTHESIS_PROMPT_VERSION,
             "extractor_version": config.EXTRACTOR_VERSION, "backend_version": config.BACKEND_VERSION,

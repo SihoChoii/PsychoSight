@@ -234,6 +234,7 @@
         "source": {"enum": ["demo", "chat.db"]},
         "provider": {"enum": [null, "deepseek", "mock"]},
         "model": {"type": ["string", "null"]},
+        "provider_note": {"type": ["string", "null"], "description": "Set when the LLM sections came from the offline mock (starts with 'not real model'); null for the real model."},
         "reasoning_effort": {"type": ["string", "null"]},
         "prompt_version": {"type": "string"},
         "synthesis_prompt_version": {"type": "string"},
