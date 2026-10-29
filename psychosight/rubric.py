@@ -371,7 +371,7 @@ def score_one(provider: Provider, ep: Episode, run_idx: int, store: Store, stats
 
 def score_episodes(provider: Provider, episodes: List[Episode], store: Store, llm_opt_in: bool,
                    progress: Optional[Callable[[int, int], None]] = None,
-                   concurrency: int = config.LLM_CONCURRENCY,
+                   concurrency: Optional[int] = None,
                    budget: Optional[CallBudget] = None) -> ScoringResult:
     require_opt_in(llm_opt_in)
     result = ScoringResult()
@@ -384,7 +384,7 @@ def score_episodes(provider: Provider, episodes: List[Episode], store: Store, ll
     def work(ep: Episode) -> Tuple[str, List[Optional[dict]]]:
         return ep.id, [score_one(provider, ep, r, store, result.stats, budget) for r in (0, 1)]
 
-    workers = 1 if provider.name == "mock" else max(1, concurrency)
+    workers = 1 if provider.name == "mock" else max(1, concurrency or config.llm_concurrency())
     with ThreadPoolExecutor(max_workers=workers) as pool:
         for eid, runs in pool.map(work, episodes):
             result.runs[eid] = runs

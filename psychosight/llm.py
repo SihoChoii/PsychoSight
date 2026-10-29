@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import threading
 import time
 from dataclasses import dataclass, field
 from typing import Callable, List, Optional
@@ -116,6 +117,8 @@ class DeepSeekProvider(Provider):
         self.reasoning_effort = self.settings.reasoning_effort
         self._sleep = sleep
         self._max_attempts = max_attempts
+        self._usage_lock = threading.Lock()
+        self.usage_totals: dict = {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "reasoning_tokens": 0}
         self._client = httpx.Client(
             base_url=self.settings.base_url, transport=transport, timeout=self.settings.timeout_s,
             headers={"Authorization": f"Bearer {self.settings.api_key}", "Content-Type": "application/json"},
@@ -165,6 +168,20 @@ class DeepSeekProvider(Provider):
             body["max_tokens"] = s.max_tokens
         return body
 
+    def _add_usage(self, usage) -> None:
+        """Token counts only (numbers, never text), for cost reporting in logs. Malformed values count as 0."""
+        def num(d, k) -> int:
+            v = d.get(k) if isinstance(d, dict) else None
+            return int(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else 0
+
+        usage = usage if isinstance(usage, dict) else {}
+        with self._usage_lock:
+            t = self.usage_totals
+            t["calls"] += 1
+            t["prompt_tokens"] += num(usage, "prompt_tokens")
+            t["completion_tokens"] += num(usage, "completion_tokens")
+            t["reasoning_tokens"] += num(usage.get("completion_tokens_details"), "reasoning_tokens")
+
     def complete(self, system: str, user: str, *, run_idx: int = 0) -> LLMResult:
         body = self._body(system, user)
         last = "no attempt"
@@ -191,6 +208,7 @@ class DeepSeekProvider(Provider):
                 content = _message_text(message)
                 usage = {k: v for k, v in (data.get("usage") or {}).items()
                          if isinstance(v, (int, float)) and not isinstance(v, bool)}
+                self._add_usage(data.get("usage"))
                 log.info("deepseek ok attempt=%d chars=%d", attempt + 1, len(content))
                 return LLMResult(content=content, usage=usage)
             if status in (400, 404, 422) and self._is_model_error(resp):

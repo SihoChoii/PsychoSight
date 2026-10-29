@@ -33,7 +33,7 @@ ITEM_MIN_EPISODES = 3
 ITEM_MIN_AGREEMENT = 0.7
 HIGH_CONFIDENCE_AGREEMENT = 0.8
 MAX_LLM_CALLS = 200
-LLM_CONCURRENCY = 4
+LLM_CONCURRENCY = 8  # parallel episodes; override with PSYCHOSIGHT_LLM_CONCURRENCY
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8765
@@ -188,7 +188,7 @@ def llm_settings() -> LLMSettings:
         thinking=_env("DEEPSEEK_THINKING") or "enabled",
         json_mode=(_env("DEEPSEEK_JSON_MODE") or "1") not in ("0", "false", "no"),
         send_temperature=(_env("DEEPSEEK_SEND_TEMPERATURE") or "1") not in ("0", "false", "no"),
-        timeout_s=float(_env("DEEPSEEK_TIMEOUT_S") or 180),
+        timeout_s=float(_env("DEEPSEEK_TIMEOUT_S") or 300),  # max-effort synthesis took ~110 s live
         max_tokens=int(max_tokens) if max_tokens else None,
     )
 
@@ -209,6 +209,10 @@ def chat_db_path() -> Path:
 
 def demo_provider_name() -> str:
     return (_env("PSYCHOSIGHT_DEMO_PROVIDER") or "mock").lower()
+
+
+def llm_concurrency() -> int:
+    return max(1, int(_env("PSYCHOSIGHT_LLM_CONCURRENCY") or LLM_CONCURRENCY))
 
 
 def port() -> int:

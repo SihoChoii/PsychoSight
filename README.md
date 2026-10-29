@@ -43,13 +43,14 @@ Any of these can also go in `.env`; a real environment variable wins over the fi
 | `DEEPSEEK_REASONING_EFFORT` | no | Default `max` (highest). `none` disables thinking. |
 | `DEEPSEEK_THINKING` | no | Default `enabled`. |
 | `DEEPSEEK_JSON_MODE`, `DEEPSEEK_SEND_TEMPERATURE` | no | Default `1`; set `0` if the model rejects `response_format` or `temperature`. |
-| `DEEPSEEK_TIMEOUT_S`, `DEEPSEEK_MAX_TOKENS` | no | Request timeout (default 180 s) and optional max tokens. |
+| `DEEPSEEK_TIMEOUT_S`, `DEEPSEEK_MAX_TOKENS` | no | Request timeout (default 300 s) and optional max tokens. |
 | `PSYCHOSIGHT_PORT` | no | Default `8765`. |
 | `PSYCHOSIGHT_STATIC_DIR` | no | UI directory; default `web/dist`, then `web/`. |
 | `PSYCHOSIGHT_DATA_DIR` | no | Local SQLite location; default `~/.psychosight/`. |
 | `PSYCHOSIGHT_CHAT_DB` | no | Default `~/Library/Messages/chat.db`. |
 | `PSYCHOSIGHT_DEMO_PROVIDER` | no | `mock` (default, offline) or `deepseek` to score the synthetic demo conversation with the real API. |
 | `PSYCHOSIGHT_MAX_LLM_CALLS` | no | Per-run call ceiling (default 200). |
+| `PSYCHOSIGHT_LLM_CONCURRENCY` | no | Episodes scored in parallel (default 8). |
 
 ### Run
 ```bash

@@ -147,6 +147,10 @@ def run_analysis(
         if save:
             store.save_report(rep, hashes={e.id: e.hash for e in episodes})
         prog("done", 1, 1)
+        usage = getattr(provider, "usage_totals", None) if run_mode == "full" else None
+        if usage:
+            log.info("run=%s token usage calls=%d prompt=%d completion=%d reasoning=%d", report_id, usage["calls"],
+                     usage["prompt_tokens"], usage["completion_tokens"], usage["reasoning_tokens"])
         log.info("run=%s done mode=%s episodes=%d scored=%d calls=%d cache_hits=%d", report_id, run_mode,
                  len(episodes), rub["episodes_scored"], stats.llm_calls, stats.cache_hits)
         return rep

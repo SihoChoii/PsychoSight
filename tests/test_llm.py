@@ -114,6 +114,7 @@ def test_request_body_and_reasoning_discarded():
     assert body["response_format"] == {"type": "json_object"}
     assert seen["auth"] == "Bearer sk-test-SECRET-KEY"
     assert "SECRET" not in repr(p.settings)
+    assert p.usage_totals == {"calls": 1, "prompt_tokens": 10, "completion_tokens": 5, "reasoning_tokens": 0}
 
 
 def test_model_rejected_lists_models():
