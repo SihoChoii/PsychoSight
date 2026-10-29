@@ -1,0 +1,32 @@
+.access-steps {
+  margin: var(--space-4) 0 0;
+  padding-left: 1.5rem;
+  max-width: 60ch;
+  display: grid;
+  gap: var(--space-3);
+}
+.access-note, .recovery-status { margin-top: var(--space-4); }
+.access-actions { max-width: 65ch; }
+.recovery-screen .decision-copy, .access-screen .decision-copy { overflow-wrap: anywhere; }
+.saved-recovery, .config-recovery { display: grid; gap: var(--space-3); justify-items: start; margin-block: var(--space-3); }
+.dialog {
+  width: min(480px, calc(100% - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--background);
+  color: var(--foreground);
+  border: var(--line-width) solid var(--control-line);
+  border-radius: var(--control-radius);
+  padding: var(--space-4);
+}
+.dialog::backdrop { background: color-mix(in srgb, var(--foreground) 24%, transparent); }
+.dialog h2 { font-size: 32px; letter-spacing: -0.03em; }
+.dialog p { margin: var(--space-3) 0 0; max-width: 40ch; overflow-wrap: anywhere; }
+.dialog .actions { margin-top: var(--space-4); }
+@media (max-width: 480px) {
+  .dialog { padding: var(--space-3); }
+  .dialog .actions > .button, .access-actions > .button { width: 100%; }
+}

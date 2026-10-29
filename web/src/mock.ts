@@ -14,6 +14,7 @@ import clampFixture from "./fixtures/date-range-clamped.json";
 import { MOCK_CATALOG, type MockConversation } from "./fixtures/conversations";
 import {
   deterministicSection,
+  detailStressSection,
   failedSection,
   insufficientSection,
   notRunSection,
@@ -22,7 +23,9 @@ import {
   stubSection,
   withNullOther,
 } from "./fixtures/experimental-samples";
+import { withRecoveryPreview } from "./fixtures/recovery-previews";
 import mockConfig from "./fixtures/mock-config.json";
+import { uiPreviewJob, uiPreviewReport } from "./fixtures/ui-previews";
 import { queryFlag } from "./mode";
 import type { AnalysisRequest, Config, DateRangeClamp, ExperimentalScores, Job, Report, SavedAnalysis } from "./types";
 
@@ -147,6 +150,7 @@ const DEMO_JOB = {
 
 function virtualReport(jobId: string): Report | null {
   if (removedVirtual.has(jobId)) return null;
+  if (jobId.startsWith("ui-")) return uiPreviewReport(jobId);
   const full = fullReport as unknown as Report;
   const deterministic = deterministicReport as unknown as Report;
   if (jobId === "sample-full") {
@@ -162,6 +166,7 @@ function virtualReport(jobId: string): Report | null {
     return withDateClamp(cloneReport(full, { id: jobId, mode: "full", ...DEMO_JOB }), DATE_CLAMP);
   }
   const experimental: Record<string, { mode: "full" | "deterministic_only"; source: Report; section: ExperimentalScores }> = {
+    "sample-exp-details": { mode: "full", source: full, section: detailStressSection },
     "sample-exp": { mode: "full", source: full, section: stubSection },
     "sample-exp-real": { mode: "full", source: full, section: realLikeSection },
     "sample-exp-det": { mode: "deterministic_only", source: deterministic, section: deterministicSection },
@@ -177,34 +182,9 @@ function virtualReport(jobId: string): Report | null {
 
 function previewJob(): Job {
   const freeze = queryFlag("freeze") || "scoring";
-  const base = {
-    job_id: "preview",
-    mode: "full",
-    conversation_id: "demo",
-    created_at: "2025-11-16T06:10:00.000Z",
-  };
-  if (freeze === "error") {
-    return {
-      ...base,
-      status: "error",
-      stage: "scoring",
-      progress: { current: 12, total: 40 },
-      error: { code: "LLM_UNAVAILABLE", message: "DEEPSEEK_MODEL is not set." },
-    };
-  }
-  const stage = ["loading", "sessionizing", "features", "scoring", "synthesis", "experimental", "done"].includes(freeze)
-    ? freeze
-    : "scoring";
-  if (stage === "done") {
-    return { ...base, status: "done", stage: "done", progress: { current: 1, total: 1 }, error: null };
-  }
-  if (stage === "scoring") {
-    return { ...base, status: "running", stage, progress: { current: 12, total: 40 }, error: null };
-  }
-  if (stage === "experimental") {
-    return { ...base, status: "running", stage, progress: { current: 4, total: 8 }, error: null };
-  }
-  return { ...base, status: "running", stage, progress: { current: 0, total: 1 }, error: null };
+  if (freeze === "transport-error") throw new ApiError("NETWORK_ERROR", "Synthetic preview: status could not be retrieved.", 0);
+  if (freeze === "missing") throw new ApiError("NOT_FOUND", "Synthetic preview: no analysis with id 'preview'.", 404);
+  return uiPreviewJob(freeze);
 }
 
 function jobView(job: MockJob): Job {
@@ -229,7 +209,7 @@ function requireJob(jobId: string): MockJob {
   return job;
 }
 
-export const mockApi: Client = {
+const baseMockApi: Client = {
   async getConfig() {
     return mockConfig as Config;
   },
@@ -321,14 +301,15 @@ export const mockApi: Client = {
     return { job_id: id, status: "queued" };
   },
 
-  async getAnalysis(jobId: string) {
+  async getAnalysis(jobId: string, signal?: AbortSignal) {
+    signal?.throwIfAborted();
     if (jobId === "preview") return previewJob();
     return jobView(requireJob(jobId));
   },
 
   async getReport(jobId: string) {
     const virtual = virtualReport(jobId);
-    if (jobId === "sample-full" || jobId === "sample-det" || jobId === "sample-clamped" || jobId.startsWith("sample-exp")) {
+    if (jobId === "sample-full" || jobId === "sample-det" || jobId === "sample-clamped" || jobId.startsWith("sample-exp") || jobId.startsWith("ui-")) {
       if (!virtual) throw new ApiError("NOT_FOUND", `No report with id '${jobId}'.`, 404);
       return virtual;
     }
@@ -359,7 +340,7 @@ export const mockApi: Client = {
   },
 
   async deleteAnalysis(jobId: string) {
-    if (jobId === "sample-full" || jobId === "sample-det" || jobId === "sample-clamped" || jobId.startsWith("sample-exp") || jobId === "preview") {
+    if (jobId === "sample-full" || jobId === "sample-det" || jobId === "sample-clamped" || jobId.startsWith("sample-exp") || jobId.startsWith("ui-") || jobId === "preview") {
       if (removedVirtual.has(jobId)) throw new ApiError("NOT_FOUND", `No analysis with id '${jobId}'.`, 404);
       removedVirtual.add(jobId);
       return { deleted: true, job_id: jobId };
@@ -389,3 +370,7 @@ export const mockApi: Client = {
     return { revealed: true, reason: null };
   },
 };
+
+// Deliberate preview opt-in, available only in the local development server.
+export const mockApi = import.meta.env.DEV && queryFlag("recovery")
+  ? withRecoveryPreview(baseMockApi, queryFlag("recovery")) : baseMockApi;

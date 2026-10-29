@@ -1,0 +1,33 @@
+.chart-block {
+  margin: var(--space-3) 0 0;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.chart-block .chart-description { margin-bottom: var(--space-3); }
+.chart-scale, .chart-instructions { color: var(--secondary); font-size: 14px; margin: var(--space-2) 0; }
+.chart-scale { font-family: var(--font-mono); }
+.chart-plot { min-width: 0; width: 100%; margin-top: var(--space-4); }
+.chart-plot svg { display: block; width: 100%; height: 240px; overflow: visible; touch-action: pan-y; }
+.chart-tick { fill: var(--secondary); font: 14px var(--font-mono); }
+.chart-tick-year { font-size: 12px; }
+.chart-empty { padding: var(--space-6) 0; border-block: var(--line-width) solid var(--line); }
+.chart-selection line { stroke: var(--foreground); stroke-width: 1; stroke-dasharray: 2 3; }
+.chart-inspector { padding: var(--space-3) 0; border-block: var(--line-width) solid var(--line); }
+.chart-inspector > p { font-family: var(--font-mono); font-size: 14px; margin: 0 0 var(--space-2); }
+.chart-inspector dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); margin: 0; }
+.chart-inspector dd { margin: var(--space-1) 0 0; }
+.chart-inspector button { margin-top: var(--space-2); }
+.chart-data { min-width: 0; max-width: 100%; margin-top: var(--space-3); }
+.chart-data[open] { width: 100%; }
+.chart-data summary { cursor: pointer; width: fit-content; padding: var(--space-2) 0; }
+.chart-table-scroll { max-width: 100%; max-height: min(60vh, 32rem); overflow: auto; margin-top: var(--space-2); }
+.chart-data table { border-collapse: collapse; width: 100%; font-size: 14px; text-align: left; }
+.chart-data caption { text-align: left; padding-bottom: var(--space-2); }
+.chart-data th, .chart-data td { padding: var(--space-3); border-bottom: var(--line-width) solid var(--line); vertical-align: top; }
+.chart-data th { font-weight: 500; }
+.chart-data thead th { min-width: 160px; }
+.chart-cell-basis { display: block; color: var(--secondary); margin-top: var(--space-1); }
+@media (max-width: 600px) {
+  .chart-inspector dl { grid-template-columns: 1fr; }
+}

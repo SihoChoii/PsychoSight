@@ -43,7 +43,7 @@ export interface Client {
   getConversations(query?: ConversationQuery): Promise<ConversationsFetch>;
   listAnalyses(): Promise<SavedAnalysis[]>;
   createAnalysis(body: AnalysisRequest): Promise<{ job_id: string; status: string }>;
-  getAnalysis(jobId: string): Promise<Job>;
+  getAnalysis(jobId: string, signal?: AbortSignal): Promise<Job>;
   getReport(jobId: string): Promise<Report>;
   deleteAnalysis(jobId: string): Promise<{ deleted: boolean; job_id: string }>;
   recheckDiskAccess(): Promise<DiskAccessRecheck>;
@@ -58,7 +58,8 @@ async function requestRaw(path: string, init?: RequestInit): Promise<{ data: unk
   let response: Response;
   try {
     response = await fetch(`${apiBase()}${path}`, { ...init, headers });
-  } catch {
+  } catch (error: unknown) {
+    if (isAbortError(error)) throw error;
     throw new ApiError("INTERNAL_ERROR", "The local API could not be reached.", 0);
   }
   const text = await response.text();
@@ -99,7 +100,7 @@ export const httpApi: Client = {
   },
   createAnalysis: (body) =>
     request<{ job_id: string; status: string }>("/analyses", { method: "POST", body: JSON.stringify(body) }),
-  getAnalysis: (jobId) => request<Job>(`/analyses/${encodeURIComponent(jobId)}`),
+  getAnalysis: (jobId, signal) => request<Job>(`/analyses/${encodeURIComponent(jobId)}`, { signal }),
   getReport: (jobId) => request<Report>(`/analyses/${encodeURIComponent(jobId)}/report`),
   deleteAnalysis: (jobId) =>
     request<{ deleted: boolean; job_id: string }>(`/analyses/${encodeURIComponent(jobId)}`, { method: "DELETE" }),
@@ -119,4 +120,8 @@ export function getClient(): Promise<Client> {
 
 export function resetClientForTests(): void {
   clientPromise = null;
+}
+
+export function isAbortError(error: unknown): boolean {
+  return typeof error === "object" && error !== null && "name" in error && error.name === "AbortError";
 }

@@ -65,7 +65,7 @@ describe("experimental scores section", () => {
     expect(screen.getByRole("heading", { name: "Interpersonal language" })).toBeInTheDocument();
     expect(screen.getByText(INSUFFICIENT_TEXT)).toBeInTheDocument();
     expect(screen.queryByText(/run lower/i)).not.toBeInTheDocument();
-    expect(screen.getAllByText(TREND_NOTE).length).toBeGreaterThan(0);
+    expect(screen.queryByText(TREND_NOTE)).not.toBeInTheDocument();
     expect(config.experimental_trend_note).toBe(TREND_NOTE);
 
     const openness = screen.getByRole("article", { name: "Openness (experimental language index)" });
@@ -345,8 +345,9 @@ describe("experimental progress", () => {
         }}
       />,
     );
-    expect(screen.getByText("Experimental scores. 4 of 8.")).toBeInTheDocument();
-    expect(screen.getByText("4/8")).toBeInTheDocument();
+    expect(screen.getByText("4 of 8 work units complete.")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar")).toHaveAttribute("value", "4");
+    expect(screen.getByRole("progressbar")).toHaveAttribute("max", "8");
     expect(screen.getByRole("listitem", { current: "step" })).toHaveTextContent("Experimental scores");
   });
 });

@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 export function DiskAccess({
   message,
   note,
@@ -15,11 +17,14 @@ export function DiskAccess({
   onReveal: () => void;
   onDemo: () => void;
 }) {
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => { heading.current?.focus(); }, []);
+
   return (
-    <section className="focus-task" aria-labelledby="page-title">
-      <h1 id="page-title" tabIndex={-1}>
+    <section className="focus-task access-screen" aria-labelledby="page-title">
+      <div className="task-heading"><h1 id="page-title" tabIndex={-1} ref={heading}>
         Full Disk Access
-      </h1>
+      </h1></div>
       <p className="decision-copy">{message}</p>
       <ol className="access-steps">
         <li>Choose Open Full Disk Access Settings.</li>
@@ -31,7 +36,7 @@ export function DiskAccess({
           {note}
         </p>
       ) : null}
-      <div className="actions">
+      <div className="actions access-actions" aria-busy={busy}>
         <button type="button" className="button" disabled={busy} onClick={onOpenSettings}>
           Open Full Disk Access Settings
         </button>

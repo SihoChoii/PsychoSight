@@ -1,4 +1,5 @@
-import type { ExpContribution, ExpEvidence, ExperimentalScores, ExpSpeakerScore } from "./types";
+import type { ExpContribution, ExpEvidence, ExperimentalScores, ExpSpeakerScore, ExpTrendPoint } from "./types";
+import { isoWeekDay, isoWeekKey } from "./charts/timeline";
 
 /** Contract string for an insufficient_data speaker or section. Not a /config field. */
 export const INSUFFICIENT_TEXT = "Not enough data (needs 20 episodes and 1,500 words)";
@@ -54,9 +55,34 @@ export function basisText(speaker: Pick<ExpSpeakerScore, "n_episodes" | "n_words
   return `based on ${episodes} episodes / ${words} words`;
 }
 
-export function quotesFor(section: ExperimentalScores, ids: string[]) {
-  const byId = new Map(section.quotes.map((quote) => [quote.id, quote]));
-  return ids.map((id) => byId.get(id)).filter((quote): quote is NonNullable<typeof quote> => !!quote);
+/** A missing/invalid score must never become a zero marker. Text uses supplied precision. */
+export function hasScore(speaker: ExpSpeakerScore | null): speaker is ExpSpeakerScore & { score: number; band: { lo: number; hi: number } } {
+  return !!speaker && speaker.status === "ok" && speaker.score !== null && Number.isFinite(speaker.score)
+    && speaker.score >= 0 && speaker.score <= 100 && !!speaker.band
+    && Number.isFinite(speaker.band.lo) && Number.isFinite(speaker.band.hi)
+    && speaker.band.lo >= 0 && speaker.band.hi <= 100 && speaker.band.lo <= speaker.band.hi;
+}
+
+/** Calendar slots preserve omitted weeks and explicit nulls. Domain belongs only to the trend. */
+export function experimentalTrend(points: ExpTrendPoint[]) {
+  const ordered = points.map((point) => ({ point, day: isoWeekDay(point.week) }))
+    .sort((a, b) => (a.day ?? 0) - (b.day ?? 0));
+  const slots: { week: string; point: ExpTrendPoint | null }[] = [];
+  let previous: number | null = null;
+  let min = Infinity, max = -Infinity;
+  for (const { point, day } of ordered) {
+    if (previous !== null && day !== null) for (let d = previous + 7; d < day; d += 7) {
+      slots.push({ week: isoWeekKey(d), point: null });
+    }
+    slots.push({ week: point.week, point });
+    previous = day;
+    if (point.score !== null && Number.isFinite(point.score)) {
+      min = Math.min(min, point.score); max = Math.max(max, point.score);
+    }
+  }
+  if (!Number.isFinite(min)) return { slots, domain: null };
+  if (min === max) { min = Math.max(0, min - 1); max = Math.min(100, max + 1); }
+  return { slots, domain: [min, max] as const };
 }
 
 export function sectionMessage(section: ExperimentalScores): string | null {

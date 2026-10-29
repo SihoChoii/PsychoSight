@@ -12,9 +12,10 @@ import {
   type ConversationQuery,
   type ConversationsFetch,
 } from "../conversation-adapter";
-import { formatCalendarDay, formatDay, modeLabel } from "../format";
-import type { ThemeName } from "../mode";
+import { formatCalendarDay, formatDay } from "../format";
 import type { Conversation, SavedAnalysis } from "../types";
+
+import { SavedReports, type SavedReportStatus } from "./SavedReports";
 
 export interface PickerSelection {
   conversationId: string;
@@ -36,7 +37,7 @@ async function defaultFetch(query: ConversationQuery): Promise<ConversationsFetc
 }
 
 function resultSummary(total: number, q: string): string {
-  if (q.trim() && total === 0) return "No conversations match.";
+  if (total === 0) return q.trim() ? "No conversations match." : "No conversations found.";
   if (q.trim()) return total === 1 ? "1 conversation matches." : `${total} conversations match.`;
   return total === 1 ? "1 conversation." : `${total} conversations.`;
 }
@@ -53,13 +54,15 @@ function spanCopy(conversation: Conversation): string {
 }
 
 function listDay(conversation: Conversation): string {
-  if (conversation.last_message_date) return conversation.last_message_date;
+  if (conversation.last_message_date) return formatCalendarDay(conversation.last_message_date) ?? "—";
   return formatDay(conversation.latest_date ?? conversation.last_message_at);
 }
 
 export function Picker({
-  theme,
   saved,
+  savedLoading,
+  savedError,
+  onRetrySaved,
   activeJobId,
   flash,
   onContinue,
@@ -68,7 +71,6 @@ export function Picker({
   debounceMs = 300,
   onCatalog,
 }: {
-  theme: ThemeName;
   saved: SavedAnalysis[];
   activeJobId: string | null;
   flash: string | null;
@@ -77,10 +79,11 @@ export function Picker({
   refreshKey?: number;
   debounceMs?: number;
   onCatalog?: (page: ConversationPage) => void;
-}) {
+} & SavedReportStatus) {
   const [searchText, setSearchText] = useState("");
   const [query, setQuery] = useState<ConversationQuery>({ limit: DEFAULT_PAGE_SIZE, offset: 0, q: "" });
-  const [page, setPage] = useState<ConversationPage | null>(null);
+  const [result, setResult] = useState<{ page: ConversationPage; query: ConversationQuery } | null>(null);
+  const page = result?.page ?? null;
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [attempt, setAttempt] = useState(0);
@@ -105,7 +108,7 @@ export function Picker({
       .then((result) => {
         if (stop) return;
         const next = interpretConversationsResponse(result.body, query, result.totalHeader);
-        setPage(next);
+        setResult({ page: next, query });
         setError(null);
         onCatalogRef.current?.(next);
       })
@@ -136,7 +139,7 @@ export function Picker({
         <h1 id="page-title" tabIndex={-1}>
           Conversations
         </h1>
-        <p className="decision-copy">Loading conversations.</p>
+        <p className="decision-copy" role="status">Loading conversations.</p>
       </section>
     );
   }
@@ -147,7 +150,7 @@ export function Picker({
         <h1 id="page-title" tabIndex={-1}>
           Conversations
         </h1>
-        <p className="decision-copy">Loading conversations.</p>
+        <p className="decision-copy" role="status">Loading conversations.</p>
       </section>
     );
   }
@@ -162,18 +165,19 @@ export function Picker({
           {error}
         </p>
         <div className="actions">
-          <button type="button" className="button" onClick={() => setAttempt((value) => value + 1)}>
-            Retry
+          <button type="button" className="button" disabled={loading} onClick={() => setAttempt((value) => value + 1)}>
+            {loading ? "Loading conversations" : "Retry"}
           </button>
         </div>
       </section>
     );
   }
 
-  const pageCount = Math.max(1, Math.ceil(page.total / query.limit));
-  const pageNumber = page.total === 0 ? 1 : Math.floor(query.offset / query.limit) + 1;
-  const summary = resultSummary(page.total, query.q);
-  const statusText = query.q.trim() && page.total === 0 ? summary : `Page ${pageNumber} of ${pageCount}. ${summary}`;
+  const displayedQuery = result?.query ?? query;
+  const pageCount = Math.max(1, Math.ceil(page.total / displayedQuery.limit));
+  const pageNumber = page.total === 0 ? 1 : Math.floor(displayedQuery.offset / displayedQuery.limit) + 1;
+  const summary = resultSummary(page.total, displayedQuery.q);
+  const statusText = page.total === 0 ? summary : `Page ${pageNumber} of ${pageCount}. ${summary}`;
   const bounds = selected ? dateBounds(selected) : { from: null, to: null };
   const describedBy = [selected ? "date-span" : null, dateError ? "date-error" : null].filter(Boolean).join(" ") || undefined;
 
@@ -203,217 +207,213 @@ export function Picker({
 
   return (
     <>
-      <section className="opening" aria-labelledby="page-title">
-        <h1 id="page-title" className="display-title" tabIndex={-1}>
-          Conversations
-        </h1>
-        <img className="hero-logo" src={`/logos/${theme}/psychosigh-logo.svg`} alt="" width={1200} height={340} />
-      </section>
-      {flash ? (
-        <p className="status-line" role="status">
-          {flash}
-        </p>
-      ) : null}
-      {activeJobId ? (
-        <p className="status-line">
-          <a href={`#/run/${encodeURIComponent(activeJobId)}`}>Analysis in progress</a>
-        </p>
-      ) : null}
-      {error ? (
-        <p className="field-error" role="alert">
-          {error}
-        </p>
-      ) : null}
-      <section className="section" aria-labelledby="choose-title">
-        <div className="section-heading">
-          <h2 id="choose-title">Choose a conversation</h2>
+      <div className="picker-screen">
+        <div className="task-heading">
+          <h1 id="page-title" tabIndex={-1}>
+            Conversations
+          </h1>
         </div>
-        <div className="list-tools">
-          <div className="field">
-            <label htmlFor="conversation-search">Search conversations</label>
-            <input
-              id="conversation-search"
-              type="search"
-              value={searchText}
-              maxLength={MAX_QUERY_LENGTH}
-              placeholder="Name or handle"
-              autoComplete="off"
-              onChange={(event) => setSearchText(event.target.value)}
-            />
-          </div>
-        </div>
-        <div
-          className="conversation-scroll"
-          tabIndex={0}
-          role="region"
-          aria-label="Conversation list"
-          aria-busy={loading}
-        >
-          <fieldset className="rows">
-            <legend className="sr-only">1:1 conversations</legend>
-            {page.conversations.length === 0 ? (
-              <p className="empty-list">No conversations match.</p>
-            ) : (
-              page.conversations.map((conversation) =>
-                conversation.supported ? (
-                  <label className="row" key={conversation.id}>
-                    <input
-                      type="radio"
-                      name="conversation"
-                      value={conversation.id}
-                      checked={selected?.id === conversation.id}
-                      onChange={() => choose(conversation)}
-                    />
-                    <span className="choice-label">{conversation.label}</span>
-                    <span className="meta">
-                      {typeof conversation.message_count === "number" ? `${conversation.message_count} messages` : "Insufficient data"}
-                    </span>
-                    <time className="meta" dateTime={conversation.last_message_at ?? conversation.latest_date ?? undefined}>
-                      {listDay(conversation)}
-                    </time>
-                    {conversation.is_demo ? <span className="row-note">Demo data</span> : null}
-                  </label>
-                ) : (
-                  <div className="row row-static" key={conversation.id}>
-                    <span className="choice-gap" aria-hidden="true" />
-                    <span className="choice-label">{conversation.label}</span>
-                    <span className="meta">
-                      {typeof conversation.message_count === "number" ? `${conversation.message_count} messages` : "Insufficient data"}
-                    </span>
-                    <time className="meta" dateTime={conversation.last_message_at ?? conversation.latest_date ?? undefined}>
-                      {listDay(conversation)}
-                    </time>
-                    <p className="row-note">Group chats are not supported.</p>
-                  </div>
-                ),
-              )
-            )}
-          </fieldset>
-        </div>
-        <nav className="pager" aria-label="Conversation pages">
-          <button
-            type="button"
-            className="button button-secondary"
-            disabled={pageNumber <= 1}
-            onClick={() => setQuery((prev) => ({ ...prev, offset: Math.max(0, prev.offset - prev.limit) }))}
-          >
-            Previous
-          </button>
-          <p className="pager-status" role="status" aria-live="polite" aria-atomic="true">
-            {statusText}
+        {flash ? (
+          <p className="status-line" role="status">
+            {flash}
           </p>
-          <button
-            type="button"
-            className="button button-secondary"
-            disabled={query.offset + query.limit >= page.total}
-            onClick={() => setQuery((prev) => ({ ...prev, offset: prev.offset + prev.limit }))}
-          >
-            Next
-          </button>
-          <div className="field page-size">
-            <label htmlFor="page-size">Conversations per page</label>
-            <select
-              id="page-size"
-              className="control"
-              value={String(query.limit)}
-              onChange={(event) => {
-                const limit = Number(event.target.value);
-                setQuery((prev) => ({ ...prev, limit, offset: 0 }));
-              }}
-            >
-              {PAGE_SIZE_OPTIONS.map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
-          </div>
-        </nav>
-        {selected ? (
-          <div className="form-column" id="date-range">
-            <h3 id="date-title">Date range</h3>
-            <p className="decision-copy">{selected.label}</p>
-            <p id="date-span" className="decision-copy">
-              {spanCopy(selected)}
-            </p>
-            <div className="field">
-              <label htmlFor="date-from">From</label>
-              <input
-                id="date-from"
-                type="date"
-                value={draft.from}
-                min={bounds.from ?? undefined}
-                max={bounds.to ?? undefined}
-                aria-describedby={describedBy}
-                onChange={(event) => {
-                  const value = event.target.value;
-                  setDraft((prev) => ({ ...prev, from: value, custom: true }));
-                  setDateError(null);
-                }}
-              />
+        ) : null}
+        {activeJobId ? (
+          <p className="status-line">
+            <a href={`#/run/${encodeURIComponent(activeJobId)}`}>Check analysis status</a>
+          </p>
+        ) : null}
+        <div className="picker-layout">
+          <section className="picker-catalog" aria-labelledby="choose-title">
+            <h2 id="choose-title" className="sr-only">Choose a conversation</h2>
+            <div className="list-tools">
+              <div className="field">
+                <div className="search-heading">
+                  <label htmlFor="conversation-search">Search conversations</label>
+                  <p className="result-status" role="status" aria-live="polite" aria-atomic="true">
+                    {loading ? "Updating conversations. Showing the previous results." : statusText}
+                  </p>
+                </div>
+                <input
+                  id="conversation-search"
+                  type="search"
+                  value={searchText}
+                  maxLength={MAX_QUERY_LENGTH}
+                  placeholder="Name or handle"
+                  autoComplete="off"
+                  onChange={(event) => setSearchText(event.target.value)}
+                />
+              </div>
             </div>
-            <div className="field">
-              <label htmlFor="date-to">To</label>
-              <input
-                id="date-to"
-                type="date"
-                value={draft.to}
-                min={bounds.from ?? undefined}
-                max={bounds.to ?? undefined}
-                aria-describedby={describedBy}
-                onChange={(event) => {
-                  const value = event.target.value;
-                  setDraft((prev) => ({ ...prev, to: value, custom: true }));
-                  setDateError(null);
-                }}
-              />
-            </div>
-            {dateError ? (
-              <p id="date-error" className="field-error" role="alert">
-                {dateError}
-              </p>
+            {error ? (
+              <div className="catalog-error">
+                <p className="field-error" role="alert">{error} Showing the last loaded conversations.</p>
+                <button type="button" className="button button-secondary" disabled={loading} onClick={() => setAttempt((value) => value + 1)}>
+                  {loading ? "Updating conversations" : "Retry"}
+                </button>
+              </div>
             ) : null}
-            <div className="actions">
-              <button type="button" className="button" onClick={submit}>
-                Continue
+            <div className="conversation-columns" aria-hidden="true">
+              <span>Conversation</span><span>Messages</span><span>Latest</span>
+            </div>
+            <div
+              className="conversation-scroll"
+              tabIndex={0}
+              role="region"
+              aria-label="Conversation list"
+              aria-busy={loading}
+            >
+              <fieldset className="rows">
+                <legend className="sr-only">1:1 conversations</legend>
+                {page.conversations.length === 0 ? (
+                  <p className="empty-list">{summary}</p>
+                ) : (
+                  page.conversations.map((conversation) =>
+                    conversation.supported ? (
+                      <label className="row" key={conversation.id}>
+                        <input
+                          type="radio"
+                          name="conversation"
+                          value={conversation.id}
+                          checked={selected?.id === conversation.id}
+                          onChange={() => choose(conversation)}
+                        />
+                        <span className="choice-label">{conversation.label}</span>
+                        <span className="meta">
+                          {typeof conversation.message_count === "number" ? `${conversation.message_count.toLocaleString("en-US")} messages` : "Insufficient data"}
+                        </span>
+                        <time className="meta" dateTime={conversation.last_message_at ?? conversation.latest_date ?? undefined}>
+                          {listDay(conversation)}
+                        </time>
+                        {conversation.is_demo ? <span className="row-note">Demo data</span> : null}
+                      </label>
+                    ) : (
+                      <div className="row row-static" key={conversation.id}>
+                        <span className="choice-gap" aria-hidden="true" />
+                        <span className="choice-label">{conversation.label}</span>
+                        <span className="meta">
+                          {typeof conversation.message_count === "number" ? `${conversation.message_count.toLocaleString("en-US")} messages` : "Insufficient data"}
+                        </span>
+                        <time className="meta" dateTime={conversation.last_message_at ?? conversation.latest_date ?? undefined}>
+                          {listDay(conversation)}
+                        </time>
+                        <p className="row-note">Group chats are not supported.</p>
+                      </div>
+                    ),
+                  )
+                )}
+              </fieldset>
+            </div>
+            <nav className="pager" aria-label="Conversation pages">
+              <button
+                type="button"
+                className="button button-secondary"
+                disabled={loading || Boolean(error) || pageNumber <= 1}
+                onClick={() => setQuery((prev) => ({ ...prev, offset: Math.max(0, prev.offset - prev.limit) }))}
+              >
+                Previous
               </button>
               <button
                 type="button"
                 className="button button-secondary"
-                disabled={!bounds.from || !bounds.to}
-                onClick={() => {
-                  setDraft({ from: bounds.from ?? "", to: bounds.to ?? "", custom: false });
-                  setDateError(null);
-                }}
+                disabled={loading || Boolean(error) || displayedQuery.offset + displayedQuery.limit >= page.total}
+                onClick={() => setQuery((prev) => ({ ...prev, offset: prev.offset + prev.limit }))}
               >
-                Reset to full range
+                Next
               </button>
-            </div>
-          </div>
-        ) : (
-          <p id="choose-hint" className="field-error">
-            Choose a 1:1 conversation.
-          </p>
-        )}
-      </section>
-      {saved.length > 0 ? (
-        <section className="section" aria-labelledby="saved-title">
-          <div className="section-heading">
-            <h2 id="saved-title">Saved reports</h2>
-          </div>
-          <div className="rows">
-            {saved.map((item) => (
-              <a className="row link-row" key={item.job_id} href={`#/report/${encodeURIComponent(item.job_id)}`}>
-                <span className="choice-label">{item.conversation_label}</span>
-                <span className="meta">{modeLabel(item.mode)}</span>
-                <time className="meta" dateTime={item.created_at}>
-                  {formatDay(item.created_at)}
-                </time>
-              </a>
-            ))}
-          </div>
-        </section>
-      ) : null}
+              <div className="field page-size">
+                <label htmlFor="page-size">Conversations per page</label>
+                <select
+                  id="page-size"
+                  className="control"
+                  value={String(query.limit)}
+                  onChange={(event) => {
+                    const limit = Number(event.target.value);
+                    setQuery((prev) => ({ ...prev, limit, offset: 0 }));
+                  }}
+                >
+                  {PAGE_SIZE_OPTIONS.map((size) => (
+                    <option key={size} value={size}>
+                      {size}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </nav>
+          </section>
+          {selected ? (
+            <section className="picker-selection" id="date-range" aria-labelledby="date-title">
+              <h2 id="date-title">Date range</h2>
+              <p className="decision-copy">{selected.label}</p>
+              <p id="date-span" className="decision-copy">
+                {spanCopy(selected)}
+              </p>
+              <div className="range-fields">
+                <div className="field">
+                  <label htmlFor="date-from">From</label>
+                  <input
+                    id="date-from"
+                    type="date"
+                    value={draft.from}
+                    min={bounds.from ?? undefined}
+                    max={bounds.to ?? undefined}
+                    aria-describedby={describedBy}
+                    aria-invalid={dateError ? true : undefined}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setDraft((prev) => ({ ...prev, from: value, custom: true }));
+                      setDateError(null);
+                    }}
+                  />
+                </div>
+                <div className="field">
+                  <label htmlFor="date-to">To</label>
+                  <input
+                    id="date-to"
+                    type="date"
+                    value={draft.to}
+                    min={bounds.from ?? undefined}
+                    max={bounds.to ?? undefined}
+                    aria-describedby={describedBy}
+                    aria-invalid={dateError ? true : undefined}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setDraft((prev) => ({ ...prev, to: value, custom: true }));
+                      setDateError(null);
+                    }}
+                  />
+                </div>
+              </div>
+              {dateError ? (
+                <p id="date-error" className="field-error" role="alert">
+                  {dateError}
+                </p>
+              ) : null}
+              <div className="actions">
+                <button type="button" className="button" onClick={submit}>
+                  Continue
+                </button>
+                <button
+                  type="button"
+                  className="button button-secondary"
+                  disabled={!bounds.from || !bounds.to}
+                  onClick={() => {
+                    setDraft({ from: bounds.from ?? "", to: bounds.to ?? "", custom: false });
+                    setDateError(null);
+                  }}
+                >
+                  Reset to full range
+                </button>
+              </div>
+            </section>
+          ) : (
+            <p id="choose-hint" className="field-error">
+              Choose a 1:1 conversation.
+            </p>
+          )}
+        </div>
+      </div>
+      <SavedReports saved={saved} savedLoading={savedLoading} savedError={savedError} onRetrySaved={onRetrySaved} />
     </>
   );
 }

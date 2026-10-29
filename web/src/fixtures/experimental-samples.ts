@@ -229,3 +229,30 @@ export const insufficientSection: ExperimentalScores = {
   })),
   quotes: [],
 };
+
+/** UI-only stress case: explicit/omitted weeks, precise inputs, missing evidence and speaker states. */
+export const detailStressSection: ExperimentalScores = (() => {
+  const section = structuredClone(realLikeSection);
+  const first = section.dimensions[0].per_speaker.me;
+  first.trend = [
+    { week: "2025-W40", score: 14, n_episodes: 4, n_words: 401, reason: null },
+    { week: "2025-W41", score: null, n_episodes: 2, n_words: 201, reason: "fewer than 300 words or 3 episodes this week" },
+    { week: "2025-W43", score: 21, n_episodes: 6, n_words: 601, reason: null },
+    { week: "2025-W44", score: 0, n_episodes: 3, n_words: 333, reason: null },
+  ];
+  first.contributions[0].value = 0.123456789;
+  first.contributions[0].quote_ids = ["xq_ui_long", "xq_missing"];
+  first.contributions[1].status = "no_data";
+  first.contributions[1].weight = 0;
+  first.contributions[1].value = null;
+  first.contributions[1].sub_score = null;
+  first.quote_ids = [...new Set([...first.quote_ids, "xq_ui_long", "xq_missing"])];
+  section.quotes.push({ id: "xq_ui_long", speaker: "me", episode_id: "ep-0001", marker_key: first.contributions[0].marker_key,
+    text: "A supplied synthetic quote, with punctuation and a newline.\n" + "longunbrokenword".repeat(16), ts: "2025-10-01T18:03:04-07:00" });
+  for (const [index, status] of [[1, "failed"], [2, "not_run"], [3, "insufficient_data"]] as const) {
+    const speaker = section.dimensions[index].per_speaker.me;
+    speaker.status = status; speaker.score = null; speaker.band = null; speaker.confidence = null;
+    speaker.reason = status === "failed" ? "Experimental scores could not be computed for this run." : status === "not_run" ? "AI scoring was not run for this report" : "fewer than 20 episodes for this person";
+  }
+  return section;
+})();

@@ -1,0 +1,108 @@
+/* Neutral experimental comparisons; canonical brand tokens remain the authority. */
+.exp-card { padding-block: var(--space-8); }
+.exp-card > h2 { margin: var(--space-5) 0 0; }
+.exp-banner, .exp-support, .exp-scale-note, .exp-how-copy { max-width: 75ch; }
+.exp-banner { margin: 0; padding: var(--space-3) 0 var(--space-3) var(--space-3); border-left: 1px solid var(--foreground); }
+.exp-toggle { display: flex; justify-content: space-between; align-items: center; gap: 24px; width: 100%; min-height: 56px; padding: 12px 0; border: 0; border-top: 1px solid var(--line); background: transparent; text-align: left; font: inherit; letter-spacing: inherit; }
+.exp-toggle-state { flex: none; white-space: nowrap; font: 16px var(--font-body); text-decoration: underline; text-underline-offset: 4px; }
+.exp-scale-note { margin: 24px 0; }
+.exp-family { margin-top: 40px; }
+.exp-family h3 { margin: 0 0 20px; }
+.exp-shape { margin-bottom: 24px; }
+.exp-dim { display: grid; grid-template-columns: minmax(220px, 0.85fr) minmax(0, 2.3fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); }
+.exp-dim h4 { margin: 0 0 12px; font-size: clamp(20px, 2vw, 28px); font-weight: 400; line-height: 1.2; letter-spacing: -0.02em; }
+.exp-evidence { margin: 0 0 8px; font: 14px/1.5 var(--font-mono); }
+.exp-note { margin: 0; color: var(--secondary); font-size: var(--body-size); line-height: var(--body-leading); }
+.exp-comparisons, .exp-speaker { min-width: 0; }
+.exp-speaker + .exp-speaker { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.exp-speaker-summary { display: grid; grid-template-columns: 108px minmax(100px, 1fr) 292px; align-items: center; gap: 20px; }
+.exp-who { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 16px; line-height: 1.4; }
+.exp-cue { width: 10px; height: 10px; display: inline-block; flex: none; box-sizing: border-box; }
+.exp-cue-me { background: var(--foreground); border-radius: 50%; }
+.exp-cue-other { border: 1.5px solid var(--foreground); background: var(--background); }
+.exp-why-toggle, .exp-how-toggle { min-height: 44px; padding: 8px 0; border: 0; background: transparent; text-align: left; text-decoration: underline; text-underline-offset: 4px; font-size: var(--body-size); line-height: 1.4; }
+.exp-score { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; margin: 0; }
+.exp-score-num { font: 32px/1.1 var(--font-mono); font-variant-numeric: tabular-nums; }
+.exp-band-text, .exp-basis, .exp-confidence, .exp-axis, .exp-contrib-meta, .exp-weight, .exp-trend-domain, .exp-trend-y, .exp-trend-x { font: 14px/1.5 var(--font-mono); font-variant-numeric: tabular-nums; }
+.exp-band-text, .exp-basis, .exp-axis, .exp-contrib-meta, .exp-trend-y, .exp-trend-x { color: var(--secondary); }
+.exp-basis, .exp-confidence { margin: 4px 0 0; }
+.exp-state { margin: 0; font-size: 16px; }
+.exp-bar { padding-inline: 5px; }
+.exp-track { position: relative; height: 22px; border-inline: 1px solid var(--control-line); }
+.exp-track::before { content: ""; position: absolute; left: 0; right: 0; top: 10px; border-top: 1px solid var(--secondary); }
+.exp-track-other::before { border-top-style: dashed; }
+.exp-band { position: absolute; top: 2px; bottom: 2px; background: color-mix(in srgb, var(--foreground) 18%, var(--background)); border-inline: 1px solid var(--secondary); }
+.exp-pin { position: absolute; top: 6px; width: 10px; height: 10px; transform: translateX(-50%); box-sizing: border-box; }
+.exp-pin-me { background: var(--foreground); border-radius: 50%; }
+.exp-pin-other { background: var(--background); border: 1.5px solid var(--foreground); }
+.exp-axis { display: flex; justify-content: space-between; margin-top: 4px; }
+.exp-no-mark { color: var(--secondary); text-align: center; }
+.exp-drilldown { margin-top: 24px; padding: 24px 0 8px; border-top: 1px solid var(--control-line); }
+.exp-detail-heading { margin: 0 0 24px; font-size: 18px; }
+.exp-drilldown h5 { margin: 0 0 12px; font-size: 18px; font-weight: 400; }
+.exp-weight-note, .exp-trend-note { margin: 0 0 16px; max-width: 65ch; color: var(--secondary); }
+.exp-contribs { margin: 0; padding: 0; list-style: none; }
+.exp-contribs > li { padding: 16px 0; border-top: 1px solid var(--line); }
+.exp-contrib-row { display: grid; grid-template-columns: minmax(0, 1fr) 156px 120px; gap: 12px 20px; align-items: start; }
+.exp-contrib-title, .exp-contrib-meta, .exp-direction, .exp-contrib-value, .exp-weight p { margin: 0; }
+.exp-contrib-meta { margin-top: 4px; }
+.exp-direction { font-size: 14px; }
+.exp-contrib-value { grid-column: 1 / -1; font: var(--body-size)/1.5 var(--font-mono); }
+.exp-weight-track { height: 8px; margin-top: 8px; border: 1px solid var(--control-line); }
+.exp-weight-track > span { display: block; height: 100%; background: var(--foreground); }
+.exp-quotes { margin-top: 16px; }
+.exp-quotes blockquote { margin: 16px 0 0; padding-left: 16px; border-left: 1px solid var(--foreground); }
+.exp-quote-text { white-space: pre-wrap; margin: 0; }
+.exp-quotes .quote-meta { margin: 8px 0 0; }
+.exp-additional-quotes, .exp-trend, .exp-citations { margin-top: 32px; }
+.exp-trend-domain { margin: 16px 0 8px; }
+.exp-trend-plot { max-width: 620px; display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 8px; }
+.exp-trend-y { display: flex; flex-direction: column; justify-content: space-between; text-align: right; }
+.exp-spark { display: block; width: 100%; height: auto; aspect-ratio: 320 / 140; border-block: 1px solid var(--line); }
+.exp-spark-line { fill: none; stroke: var(--foreground); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.exp-spark-other { stroke-dasharray: 4 3; }
+.exp-spark-dot { fill: var(--foreground); }
+.exp-spark-other-mark { fill: var(--background); stroke: var(--foreground); stroke-width: 1.5; }
+.exp-trend-gap { fill: var(--line); }
+.exp-trend-x { display: flex; justify-content: space-between; gap: 12px; margin: 8px 0 0 44px; max-width: 576px; }
+.exp-table-wrap { overflow-x: auto; margin-top: 16px; }
+.exp-table-wrap table { border-collapse: collapse; width: 100%; min-width: 400px; font-size: 14px; }
+.exp-table-wrap caption { text-align: left; margin-bottom: 12px; }
+.exp-table-wrap th, .exp-table-wrap td { border-bottom: 1px solid var(--line); padding: 10px 12px 10px 0; text-align: left; font-weight: 400; vertical-align: top; }
+.exp-table-wrap td { font-family: var(--font-mono); }
+.exp-table-wrap th[scope="row"] { white-space: nowrap; }
+.exp-citations p { margin: 0 0 12px; }
+.exp-citations ul { padding-left: 20px; margin: 0; }
+.exp-citations a { text-decoration: underline; text-underline-offset: 3px; }
+.exp-citations li + li { margin-top: 8px; }
+.exp-support { margin: 32px 0 0; }
+.exp-how { margin-top: 12px; }
+.exp-how-copy { margin: 16px 0 0; white-space: pre-wrap; }
+.exp-radar { max-width: 480px; }
+.exp-radar > p { font-size: 16px; margin-top: 16px; }
+.exp-radar svg { display: block; width: min(100%, 400px); height: auto; }
+.exp-radar-axis { stroke: var(--line); }
+.exp-radar-band { stroke: var(--foreground); stroke-width: 4; opacity: 0.35; }
+.exp-radar-band-other { stroke-dasharray: 3 3; }
+.exp-radar-me, .exp-radar-other { fill: none; stroke: var(--foreground); stroke-width: 1.5; }
+.exp-radar-other { stroke-dasharray: 4 3; }
+.exp-radar-label { fill: var(--foreground); font: 14px var(--font-mono); }
+.exp-card p, .exp-card h4, .exp-card li, .exp-card a { overflow-wrap: anywhere; }
+@media (max-width: 1199px) {
+  .exp-dim { grid-template-columns: minmax(180px, 0.8fr) minmax(0, 2fr); gap: 24px; }
+  .exp-speaker-summary { grid-template-columns: 100px minmax(0, 1fr); gap: 12px 20px; }
+  .exp-score-context { grid-column: 2; }
+  .exp-contrib-row { grid-template-columns: minmax(0, 1fr) 120px; }
+  .exp-direction { grid-column: 1; }
+  .exp-weight { grid-column: 2; grid-row: 1 / 3; }
+}
+@media (max-width: 700px) {
+  .exp-dim { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .exp-speaker-summary { grid-template-columns: 108px minmax(0, 1fr); }
+  .exp-bar { grid-column: 1 / -1; grid-row: 2; }
+  .exp-no-mark { display: none; }
+  .exp-score-context { grid-column: 2; grid-row: 1; }
+  .exp-contrib-row { grid-template-columns: minmax(0, 1fr); }
+  .exp-direction, .exp-weight, .exp-contrib-value { grid-column: 1; grid-row: auto; }
+  .exp-weight { max-width: 240px; }
+}

@@ -25,6 +25,21 @@ export interface Week {
   words: { me: number; other: number };
 }
 
+/** Existing wire index; optional only for legacy/partial report robustness. */
+export interface Episode {
+  episode_id: string;
+  start: string;
+  end: string;
+  week: string;
+  initiator: "me" | "other";
+  messages: { me: number; other: number };
+  words: { me: number; other: number };
+  late_night_start: boolean;
+  pooled: boolean;
+  scored: boolean;
+  selection: "random" | "top_signal" | null;
+}
+
 export interface Quote {
   quote_id: string;
   episode_id: string;
@@ -82,6 +97,7 @@ export interface Report {
   };
   weeks: Week[];
   series: Feature[];
+  episodes?: Episode[];
   rubric: {
     status: string;
     reason: string | null;

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { mockApi } from "./mock";
 import { Picker } from "./components/Picker";
@@ -23,7 +23,6 @@ function renderPicker(fetchConversations = vi.fn(serverFetch), debounceMs = 0) {
   const onContinue = vi.fn();
   render(
     <Picker
-      theme="black"
       saved={[]}
       activeJobId={null}
       flash={null}
@@ -36,7 +35,9 @@ function renderPicker(fetchConversations = vi.fn(serverFetch), debounceMs = 0) {
 }
 
 async function ready() {
-  return screen.findByRole("radio", { name: /Demo conversation/ });
+  const radio = await screen.findByRole("radio", { name: /Demo conversation/ });
+  await screen.findByLabelText("From");
+  return radio;
 }
 
 afterEach(() => {
@@ -288,5 +289,81 @@ describe("clamped date range", () => {
     const plain = { ...report, run_meta: { ...report.run_meta, date_range_clamped: null } } as Report;
     render(<ReportView report={plain} deleting={false} deleteError={null} trendNote={null} onDelete={vi.fn()} />);
     expect(screen.getAllByTestId("date-range-clamp")).toHaveLength(1);
+  });
+});
+
+
+describe("picker recovery and retained selection", () => {
+  it("distinguishes loading, initial failure/retry, and an empty catalog", async () => {
+    let resolve: (value: ConversationsFetch) => void = () => {};
+    const fetch = vi.fn<() => Promise<ConversationsFetch>>()
+      .mockRejectedValueOnce(new Error("Catalog unavailable."))
+      .mockImplementationOnce(() => new Promise((yes) => { resolve = yes; }));
+    renderPicker(fetch);
+    expect(screen.getByRole("status")).toHaveTextContent("Loading conversations.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Catalog unavailable.");
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    expect(screen.getByRole("button", { name: "Loading conversations" })).toBeDisabled();
+    await act(async () => resolve(buildServerPage([], { q: "", limit: 10, offset: 0 })));
+    expect(screen.getAllByText("No conversations found.")).toHaveLength(2);
+    expect(screen.queryByText("No conversations match.")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Continue" })).not.toBeInTheDocument();
+  });
+
+  it("keeps rows, the selected conversation and custom dates through refresh failure and retry", async () => {
+    let resolve: (value: ConversationsFetch) => void = () => {};
+    const fetch = vi.fn(serverFetch);
+    const onContinue = vi.fn();
+    const props = { saved: [], activeJobId: null, flash: null, onContinue, fetchConversations: fetch };
+    const view = render(<Picker {...props} refreshKey={0} />);
+    await ready();
+    fireEvent.change(screen.getByLabelText("From"), { target: { value: "2025-11-02" } });
+    fireEvent.change(screen.getByLabelText("To"), { target: { value: "2026-01-01" } });
+    fetch.mockImplementationOnce(() => new Promise((yes) => { resolve = yes; }));
+    view.rerender(<Picker {...props} refreshKey={1} />);
+    expect(screen.getByRole("status")).toHaveTextContent("Updating conversations. Showing the previous results.");
+    expect(screen.getByRole("region", { name: "Conversation list" })).toHaveAttribute("aria-busy", "true");
+    expect(screen.getByRole("radio", { name: /Demo conversation/ })).toBeChecked();
+    await act(async () => resolve(buildServerPage(MOCK_CATALOG, { q: "", limit: 10, offset: 0 })));
+    expect(screen.getByLabelText("From")).toHaveValue("2025-11-02");
+    fetch.mockRejectedValueOnce(new Error("Refresh failed."));
+    view.rerender(<Picker {...props} refreshKey={2} />);
+    expect(await screen.findByRole("alert")).toHaveTextContent("Refresh failed. Showing the last loaded conversations.");
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
+    expect(screen.getByLabelText("To")).toHaveValue("2026-01-01");
+    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+    expect(onContinue).toHaveBeenCalledWith(expect.objectContaining({ conversationId: "demo", dateFrom: "2025-11-02", dateTo: "2026-01-01" }));
+  });
+
+  it("ignores obsolete search responses and keeps the selection outside the returned page", async () => {
+    const fetch = vi.fn(serverFetch);
+    const { onContinue } = renderPicker(fetch);
+    await ready();
+    let oldResolve: (value: ConversationsFetch) => void = () => {};
+    fetch.mockImplementationOnce(() => new Promise((yes) => { oldResolve = yes; }));
+    fireEvent.change(screen.getByLabelText("Search conversations"), { target: { value: "Avery" } });
+    await waitFor(() => expect(fetch).toHaveBeenLastCalledWith(expect.objectContaining({ q: "Avery" })));
+    fireEvent.change(screen.getByLabelText("Search conversations"), { target: { value: "Bob" } });
+    expect(await screen.findByRole("radio", { name: /Bob Smith/ })).toBeInTheDocument();
+    await act(async () => oldResolve(buildServerPage(MOCK_CATALOG, { q: "Avery", limit: 10, offset: 0 })));
+    expect(screen.queryByRole("radio", { name: /Avery/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("1 conversation matches.");
+    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+    expect(onContinue).toHaveBeenCalledWith(expect.objectContaining({ conversationId: "demo" }));
+  });
+
+  it("associates range errors with both fields and clears them on correction", async () => {
+    renderPicker(); await ready();
+    fireEvent.change(screen.getByLabelText("From"), { target: { value: "2026-02-01" } });
+    fireEvent.change(screen.getByLabelText("To"), { target: { value: "2025-08-04" } });
+    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+    for (const label of ["From", "To"]) {
+      expect(screen.getByLabelText(label)).toHaveAttribute("aria-invalid", "true");
+      expect(screen.getByLabelText(label)).toHaveAttribute("aria-describedby", "date-span date-error");
+    }
+    fireEvent.change(screen.getByLabelText("To"), { target: { value: "2026-02-01" } });
+    expect(screen.getByLabelText("To")).not.toHaveAttribute("aria-invalid");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 });

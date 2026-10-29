@@ -1,0 +1,105 @@
+.report-intro { padding: 16px 0 0; }
+.report-intro h1 { margin-bottom: 8px; font-size: clamp(32px, 3vw, 40px); }
+.report-intro p { margin: 0 0 8px; }
+.report-meta { font-size: 16px; }
+.report-context, .report-applied { color: var(--secondary); }
+.report-provider-note { max-width: 80ch; white-space: pre-wrap; }
+.report-totals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); margin: 16px 0 0; padding: 16px 0; border-block: 1px solid var(--line); }
+.report-totals dt { font-size: 14px; }
+.report-totals dd { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin: var(--space-1) 0; font: 400 28px/1.2 var(--font-mono); letter-spacing: -0.04em; }
+.report-totals span { display: block; margin-top: 0; font: 400 14px/1.6 var(--font-body); letter-spacing: normal; color: var(--secondary); }
+.report-navigation { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); padding: 4px 0 8px; }
+.report-navigation button, .week-actions button { background: transparent; border: 0; padding: var(--space-2) 0; font-size: 14px; min-height: 44px; text-align: left; text-decoration: underline; text-underline-offset: 4px; }
+.week-actions button:disabled { color: var(--secondary); text-decoration: none; }
+.report-analysis { padding: 16px 0; border-top: 1px solid var(--line); }
+.report-section-heading { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: var(--space-3); margin-bottom: 8px; }
+.report-section-heading h2 { font-size: clamp(28px, 2.8vw, 40px); line-height: 1.1; letter-spacing: -0.04em; margin: 0; }
+.report-section-heading .speaker-legend { margin: 0; }
+.report-window { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); align-items: center; }
+.report-window label { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.report-window select { min-height: 44px; border: 1px solid var(--control-line); border-radius: var(--control-radius); background: var(--background); padding: var(--space-2); }
+.report-window p { margin: 0; font-size: 14px; color: var(--secondary); }
+.week-inspection { margin-top: var(--space-3); padding-block: var(--space-2); border-block: 1px solid var(--line); }
+.week-inspection-heading { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-2); }
+.week-inspection-heading > p { margin: 0; font-family: var(--font-mono); font-size: 14px; }
+.week-actions { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+.week-activity-values { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); margin: var(--space-2) 0; }
+.week-activity-values dt { color: var(--secondary); font-size: 14px; }
+.week-activity-values dd { margin: 0; }
+.weekly-activity .chart-plot { margin-top: var(--space-3); }
+.activity-bar-me { fill: var(--foreground); }
+.activity-bar-other { fill: var(--background); stroke: var(--iris); stroke-width: 1; stroke-dasharray: 3 2; }
+.report-feature-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8) var(--space-6); margin-top: 8px; }
+.report-feature-grid .chart-block { margin: 0; padding-top: 16px; border-top: 1px solid var(--line); }
+.report-feature-grid h3 { font-size: 22px; }
+.report-feature-grid .chart-description { min-height: 4.8em; }
+.overall-label { color: var(--secondary); font-size: 14px; margin: var(--space-3) 0 var(--space-2); }
+.overall { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); margin: 0 0 var(--space-3); }
+.overall dt { font-size: 14px; }
+.overall dd { margin: var(--space-1) 0 0; font-size: 16px; }
+.chart-inspector-hint { color: var(--secondary); font-size: 14px; margin: var(--space-3) 0; }
+.report-analysis .chart-description { margin-bottom: var(--space-3); }
+@media (max-width: 1000px) { .report-feature-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 700px) {
+  .report-totals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .report-intro { padding-top: var(--space-4); }
+  .report-window { align-items: start; }
+  .report-feature-grid .chart-description { min-height: 0; }
+}
+@media (max-width: 359px) { .overall { grid-template-columns: 1fr; } }
+
+.overall > div { min-width: 0; }
+.overall dd, .chart-inspector dd { overflow-wrap: anywhere; }
+.overall .chart-cell-basis, .chart-inspector .chart-cell-basis { font-size: 14px; }
+.report-feature-grid .overall { min-height: 7em; }
+.weekly-activity > .chart-instructions { margin-bottom: 0; }
+@media (max-width: 1000px) { .report-feature-grid .overall, .report-feature-grid .chart-description { min-height: 0; } }
+
+.report-activity-grid { display: grid; grid-template-columns: minmax(0, 1fr) 304px; gap: 32px; align-items: start; margin-top: 16px; }
+.report-activity-grid .week-inspection { margin: 0; border: 0; padding: 0; }
+.report-activity-grid .week-actions { gap: 8px 20px; }
+.report-activity-grid .week-activity-values { display: grid; gap: 12px; }
+.weekly-activity { min-width: 0; }
+.weekly-activity .chart-plot svg { height: 180px; }
+.weekly-activity > .chart-scale { margin-top: 0; }
+.report-analysis > .chart-description { max-width: none; font-size: 14px; margin: 0; }
+@media (max-width: 1000px) { .report-activity-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; } }
+
+.report-activity-aside { min-width: 0; }
+.report-activity-aside .chart-data { margin-top: 4px; }
+.report-activity-aside .chart-data summary { padding-block: 8px; }
+
+.episode-detail { margin-top: 12px; border-top: 1px solid var(--line); }
+.episode-detail { padding: 16px 0 12px; }
+.activity-disclosures { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 20px; }
+.episode-disclosure { min-height: 44px; padding: 8px 0; border: 0; background: transparent; font: inherit; }
+.episode-disclosure > span { margin-right: 4px; }
+.episode-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px 24px; margin-top: 8px; }
+.episode-heading h3 { margin: 0; font-size: 22px; }
+.episode-heading label { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.episode-heading select { min-height: 44px; max-width: 100%; background: var(--background); border: 1px solid var(--control-line); border-radius: var(--control-radius); padding: 8px; font-family: var(--font-mono); }
+.episode-note { color: var(--secondary); font-size: 14px; margin: 12px 0; max-width: 96ch; }
+.episode-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; margin-top: 16px; }
+.episode-diagram-scroll { max-width: 100%; max-height: 360px; overflow: auto; padding: 4px; }
+.episode-diagram { display: block; min-width: 760px; width: 100%; height: auto; }
+.episode-diagram text { fill: var(--secondary); font: 14px var(--font-mono); }
+.episode-grid { stroke: var(--line); stroke-width: 1; }
+.episode-range, .episode-end { stroke: var(--foreground); stroke-width: 2; }
+.episode-start { fill: var(--foreground); stroke: var(--foreground); }
+.episode-other .episode-range { stroke: var(--iris); stroke-dasharray: 5 3; }
+.episode-other .episode-end, .episode-other .episode-start { stroke: var(--iris); }
+.episode-other .episode-start { fill: var(--background); }
+.episode-highlight { fill: var(--foreground); opacity: 0.07; }
+.episode-interval[data-selected="true"] text { fill: var(--foreground); }
+.episode-inspector { min-width: 0; border-top: 1px solid var(--line); padding-top: 12px; }
+.episode-inspector h4 { margin: 0 0 12px; font: 400 18px var(--font-mono); }
+.episode-inspector dl { margin: 0; display: grid; gap: 12px; }
+.episode-inspector dt { font-size: 14px; color: var(--secondary); }
+.episode-inspector dd { margin: 0; overflow-wrap: anywhere; font-size: 16px; }
+.episode-inspector time, .episode-data time { font-family: var(--font-mono); }
+.episode-inspector .quotes { margin-top: 16px; }
+.episode-counts, .episode-data time, .episode-data th span { display: block; }
+.episode-data button { min-height: 44px; }
+.episode-reference { border: 0; border-radius: 0; background: transparent; color: var(--accent-text); padding: 8px 0; min-height: 44px; text-decoration: underline; text-underline-offset: 4px; font: inherit; }
+.episode-references { overflow-wrap: anywhere; }
+@media (max-width: 1100px) { .episode-layout { grid-template-columns: minmax(0, 1fr); } }

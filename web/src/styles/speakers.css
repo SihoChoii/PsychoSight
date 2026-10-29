@@ -1,0 +1,51 @@
+/* Me: solid + filled circle. Other: dashed + open square. */
+.speaker-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  list-style: none;
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  font-size: 14px;
+}
+
+.speaker-legend li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.speaker-legend svg { flex: none; color: var(--foreground); }
+.speaker-legend .speaker-other svg { color: var(--iris); }
+.speaker-legend-neutral .speaker-other svg { color: var(--foreground); }
+.speaker-line { stroke: currentColor; stroke-width: 1.5; }
+.speaker-other .speaker-line { stroke-dasharray: 5 4; }
+.speaker-circle { fill: currentColor; }
+.speaker-square { fill: var(--background); stroke: currentColor; stroke-width: 1.5; }
+.exp-card .speaker-legend { margin-top: var(--space-4); }
+
+path.series-me,
+line.series-me {
+  stroke: var(--foreground);
+  fill: none;
+  stroke-width: 1.5;
+}
+
+circle.series-me {
+  fill: var(--foreground);
+  stroke: none;
+}
+
+.series-other {
+  stroke: var(--iris);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+
+.series-other-mark {
+  fill: var(--background);
+  stroke: var(--iris);
+  stroke-width: 1.5;
+}
+

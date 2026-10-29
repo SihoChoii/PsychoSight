@@ -1,140 +1,160 @@
-import { useState } from "react";
-import { formatCalendarDay, formatCellLine, formatDay, formatTimestamp, orderedSeries, speakerLabel } from "../format";
-import type { DateRangePair, Quote, Report, RubricItem } from "../types";
+import { useMemo, useRef, useState } from "react";
+import { formatCalendarDay, formatDay } from "../format";
+import type { DateRangePair, Episode, Report } from "../types";
 import { DeleteDialog } from "./DeleteDialog";
 import { ExperimentalScores } from "./ExperimentalScores";
 import { TimelineChart } from "./TimelineChart";
+import { SpeakerLegend } from "./SpeakerLegend";
+import { buildReportCharts } from "../charts/models";
+import { nextWeekKey, windowWeeks, type ChartInspection, type DisplayWindow } from "../charts/inspection";
+import { indexEpisodes } from "../charts/episodes";
+import { EpisodeTimeline } from "./report/EpisodeTimeline";
+import { ReportOverview } from "./report/ReportOverview";
+import { ReportNavigation } from "./report/ReportNavigation";
+import { WeekInspector } from "./report/WeekInspector";
+import { ActivityData, WeeklyActivity } from "./report/WeeklyActivity";
+import { ScoredPatterns } from "./report/ScoredPatterns";
+import { Observations } from "./report/Observations";
 
-export function ReportView({
-  report,
-  deleting,
-  deleteError,
-  trendNote,
-  onDelete,
-}: {
+interface ReportViewProps {
   report: Report;
   deleting: boolean;
   deleteError: string | null;
   trendNote?: string | null;
   onDelete: () => void;
-}) {
+}
+
+export function ReportView(props: ReportViewProps) {
+  return <ReportContent key={props.report.report_id} {...props} />;
+}
+
+function ReportContent({ report, deleting, deleteError, trendNote, onDelete }: ReportViewProps) {
   const [confirming, setConfirming] = useState(false);
   const { header } = report;
-  const range =
-    header.date_from && header.date_to ? `${header.date_from} – ${header.date_to}` : "Insufficient data";
-  const quotes = new Map(report.quotes.map((quote) => [quote.quote_id, quote]));
+  const charts = useMemo(() => buildReportCharts(report), [report]);
+  const quotes = useMemo(() => new Map(report.quotes.map((quote) => [quote.quote_id, quote])), [report]);
+
+  const episodes = useMemo(() => indexEpisodes(report.episodes, report.quotes), [report]);
+  const episodeDisclosure = useRef<HTMLButtonElement>(null);
+  const [episodesExpanded, setEpisodesExpanded] = useState(false);
+  const [episodeId, setEpisodeId] = useState<string | null>(null);
+  const [displayWindow, setDisplayWindow] = useState<DisplayWindow>("all");
+  const [pinned, setPinned] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [announcement, setAnnouncement] = useState("");
+  const visibleWeeks = useMemo(() => windowWeeks(charts.timeline.weeks, displayWindow), [charts, displayWindow]);
+  const windowIndex = useMemo(() => new Map(visibleWeeks.map((week, index) => [week.key, index])), [visibleWeeks]);
+  const visibleFeatures = useMemo(() => charts.features.map((model) => ({ model,
+    rows: displayWindow === "all" ? model.rows : model.rows.filter((row) => windowIndex.has(row.week.key)),
+  })), [charts, displayWindow, windowIndex]);
+  const activityRows = useMemo(() => displayWindow === "all" ? charts.activityRows : charts.activityRows.filter((row) => windowIndex.has(row.week.key)), [charts, displayWindow, windowIndex]);
+  const selectedKey = preview ?? pinned;
+  const selected = selectedKey === null ? undefined : charts.timeline.byKey.get(selectedKey);
+  function pin(key: string | null) {
+    setPreview(null); setPinned(key); setEpisodeId(null);
+    const week = key === null ? undefined : charts.timeline.byKey.get(key);
+    setAnnouncement(week ? `Pinned ${week.key}, ${week.startDate} to ${week.endDate}. All weekly charts updated.` : "Week selection cleared.");
+  }
+  function move(key: string) {
+    const next = nextWeekKey(visibleWeeks, windowIndex, selectedKey, key);
+    if (next !== undefined) pin(next);
+  }
+  const inspection: ChartInspection = { selectedKey, pinnedKey: pinned,
+    preview: (key) => { setPreview(key); if ((key ?? pinned) !== selectedKey) setEpisodeId(null); }, pin,
+    keyDown: (event) => {
+      const next = nextWeekKey(visibleWeeks, windowIndex, selectedKey, event.key);
+      if (next !== undefined) { event.preventDefault(); pin(next); }
+    },
+  };
+  function changeWindow(next: DisplayWindow) {
+    const weeks = windowWeeks(charts.timeline.weeks, next);
+    const first = weeks[0], last = weeks.at(-1);
+    const pinnedWeek = pinned === null ? undefined : charts.timeline.byKey.get(pinned);
+    const outside = pinned !== null && (!pinnedWeek || !first || !last
+      || pinnedWeek.day < first.day || pinnedWeek.day > last.day);
+    setDisplayWindow(next); setPreview(null);
+    if (outside) { setPinned(null); setEpisodeId(null); }
+    setAnnouncement(`${outside ? "Week selection cleared because it is outside the display window. " : ""}Charts show ${first?.startDate ?? "no dates"} to ${last?.endDate ?? "no dates"}. Full report totals are unchanged.`);
+  }
+
+  function openEpisodes() {
+    setEpisodesExpanded(true);
+    if (selected) return;
+    const initial = [...visibleWeeks].reverse().find((week) => episodes.byWeek.has(week.key)) ?? visibleWeeks.at(-1);
+    if (initial) pin(initial.key);
+  }
+  function selectEpisode(episode: Episode) {
+    pin(episode.week); setEpisodeId(episode.episode_id);
+    setAnnouncement(`Episode ${episode.episode_id} selected in ${episode.week}. All weekly charts updated.`);
+  }
+  function showEpisode(episode: Episode) {
+    const outside = !windowIndex.has(episode.week);
+    if (outside) setDisplayWindow("all");
+    selectEpisode(episode);
+    setAnnouncement(`Episode ${episode.episode_id} selected in ${episode.week}. ${outside ? "Display window changed to All weeks. " : ""}All weekly charts updated.`);
+    if (episodeDisclosure.current) {
+      setEpisodesExpanded(true);
+      episodeDisclosure.current.focus();
+      episodeDisclosure.current.scrollIntoView?.({ block: "start", behavior: "instant" });
+    }
+  }
+  const episodeReference = (id: string) => {
+    const episode = episodes.byId.get(id);
+    return episode && charts.timeline.byKey.has(episode.week)
+      ? <button className="episode-reference" type="button" onClick={() => showEpisode(episode)} aria-label={`View episode ${id}`}>{id}</button>
+      : <span>{id} · Episode detail unavailable</span>;
+  };
 
   return (
     <>
-      <header className="report-intro" aria-labelledby="page-title">
-        <h1 id="page-title" tabIndex={-1}>
-          {header.conversation_label}
-        </h1>
-        {header.is_demo ? <p className="status-line">Demo data</p> : null}
-        <p>{range}</p>
+      <ReportOverview report={report}>
         {report.run_meta.date_range_clamped ? <DateRangeClampNote clamp={report.run_meta.date_range_clamped} /> : null}
-        <p>
-          {header.message_counts.me} messages from me, {header.message_counts.other} from the other person
-        </p>
-        <p>{header.episode_count} episodes</p>
-      </header>
-
-      <section className="section" aria-labelledby="weeks-title">
-        <div className="section-heading">
-          <h2 id="weeks-title">Weekly patterns</h2>
+      </ReportOverview>
+      <ReportNavigation limitationsTitle={report.limitations_title} experimental={!!report.experimental_scores} />
+      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</div>
+      <section className="report-analysis" aria-labelledby="activity-title">
+        <div className="report-section-heading">
+          <h2 id="activity-title" tabIndex={-1}>Weekly activity</h2>
+          <SpeakerLegend />
         </div>
-        <ul className="legend">
-          <li>
-            <svg aria-hidden="true" viewBox="0 0 56 12" width="56" height="12">
-              <line className="series-me" x1="0" y1="6" x2="36" y2="6" />
-              <circle className="series-me" cx="46" cy="6" r="4" />
-            </svg>
-            Me, solid line
-          </li>
-          <li>
-            <svg aria-hidden="true" viewBox="0 0 56 12" width="56" height="12">
-              <line className="series-other" x1="0" y1="6" x2="36" y2="6" />
-              <rect className="series-other-mark" x="42" y="2" width="8" height="8" />
-            </svg>
-            Other, dashed line
-          </li>
-        </ul>
-        <p className="chart-description">Gaps in a line are weeks with insufficient data.</p>
-        {orderedSeries(report.series).map((feature) => (
-          <div className="chart-feature" key={feature.key}>
-            <dl className="overall">
-              <div>
-                <dt>Me</dt>
-                <dd>{formatCellLine(feature.overall.me, feature)}</dd>
-              </div>
-              <div>
-                <dt>Other</dt>
-                <dd>{formatCellLine(feature.overall.other, feature)}</dd>
-              </div>
-            </dl>
-            <TimelineChart feature={feature} weeks={report.weeks} />
+        <div className="report-window">
+          {charts.timeline.weeks.length > 52 ? <label>Chart display window
+            <select value={displayWindow} onChange={(event) => changeWindow(event.target.value as DisplayWindow)}>
+              <option value="all">All weeks</option><option value="52">Latest 52 weeks</option><option value="13">Latest 13 weeks</option>
+            </select>
+          </label> : null}
+          <p>Charts show: {visibleWeeks[0]?.startDate ?? "Unavailable"} – {visibleWeeks.at(-1)?.endDate ?? "Unavailable"}. Full report totals stay unchanged.</p>
+        </div>
+        <div className="report-activity-grid">
+        <WeeklyActivity rows={activityRows} domain={charts.activityDomain} plotLeft={charts.plotLeft} inspection={inspection} selected={selected} />
+        <div className="report-activity-aside">
+          <WeekInspector week={selected} inspection={inspection} move={move} empty={!visibleWeeks.length} />
+          <div className="activity-disclosures"><ActivityData weeks={charts.timeline.weeks} />
+            {report.episodes !== undefined ? <button className="episode-disclosure" type="button" ref={episodeDisclosure}
+              aria-expanded={episodesExpanded} aria-controls="episode-detail-panel"
+              onClick={() => { if (episodesExpanded) setEpisodesExpanded(false); else openEpisodes(); }}><span aria-hidden="true">{episodesExpanded ? "▾" : "▸"}</span> Episode detail</button> : null}
           </div>
-        ))}
+        </div>
+        </div>
+        {report.episodes !== undefined ? <div id="episode-detail-panel" hidden={!episodesExpanded}>
+          {episodesExpanded ? <EpisodeTimeline index={episodes} week={selected} selectedId={episodeId} onSelect={selectEpisode} /> : null}
+        </div> : null}
       </section>
 
-      <section className="section" aria-labelledby="rubric-title" data-status={report.rubric.status}>
-        <div className="section-heading">
-          <h2 id="rubric-title">Scored patterns</h2>
+      <section className="report-analysis" aria-labelledby="weeks-title">
+        <div className="report-section-heading"><h2 id="weeks-title" tabIndex={-1}>Weekly patterns</h2><SpeakerLegend /></div>
+        <p className="chart-description">Gaps indicate insufficient or missing data. All charts share the activity window.</p>
+        <div className="report-feature-grid">
+          {visibleFeatures.map(({ model, rows }) => <TimelineChart key={model.feature.key} model={model} rows={rows} inspection={inspection} totalEpisodes={header.episode_count} />)}
         </div>
-        <SectionStatus status={report.rubric.status} reason={report.rubric.reason} />
-        {report.rubric.status === "ok" ? (
-          <>
-            <ul className="plain-list">
-              {report.rubric.items.map((item) => (
-                <li key={item.key}>
-                  <h3>{item.label}</h3>
-                  <RubricValue item={item} />
-                  <QuoteList quotes={item.quote_ids.map((id) => quotes.get(id)).filter((quote): quote is Quote => !!quote)} />
-                </li>
-              ))}
-            </ul>
-            {report.rubric.items.some((item) => item.anchors) ? (
-              <details className="details">
-                <summary>Anchors</summary>
-                {report.rubric.items.map((item) => (
-                  <div key={item.key}>
-                    <h3>{item.label}</h3>
-                    <p>1. {item.anchors["1"]}</p>
-                    <p>3. {item.anchors["3"]}</p>
-                    <p>5. {item.anchors["5"]}</p>
-                  </div>
-                ))}
-              </details>
-            ) : null}
-          </>
-        ) : null}
       </section>
 
-      <section className="section" aria-labelledby="observations-title" data-status={report.observations.status}>
-        <div className="section-heading">
-          <h2 id="observations-title">Observations</h2>
-        </div>
-        <SectionStatus status={report.observations.status} reason={report.observations.reason} />
-        {report.observations.status === "ok" && report.observations.items.length === 0 ? (
-          <p>Insufficient data</p>
-        ) : null}
-        {report.observations.status === "ok" ? (
-          <ol className="plain-list">
-            {report.observations.items.map((item) => (
-              <li key={item.observation_id}>
-                <p>{item.text}</p>
-                <p className="confidence">Confidence: {item.confidence}</p>
-                <p>{item.supporting_episodes} episodes</p>
-                <QuoteList quotes={item.quotes} />
-              </li>
-            ))}
-          </ol>
-        ) : null}
-      </section>
+      <ScoredPatterns rubric={report.rubric} quotes={quotes} episodeReference={episodeReference} />
+      <Observations observations={report.observations} rubric={report.rubric} features={report.series} episodeReference={episodeReference} />
 
       <section className="section" aria-labelledby="limits-title">
         <div className="section-heading">
-          <h2 id="limits-title">{report.limitations_title}</h2>
+          <h2 id="limits-title" tabIndex={-1}>{report.limitations_title}</h2>
         </div>
         <ul className="limits">
           {report.limitations.map((item) => (
@@ -143,7 +163,8 @@ export function ReportView({
         </ul>
       </section>
 
-      <section className="section">
+      <section className="section" aria-labelledby="report-details-title">
+        <div className="section-heading"><h2 id="report-details-title" tabIndex={-1}>Report details</h2></div>
         <p className="disclaimer">{report.disclaimer}</p>
         <details className="details">
           <summary>Details</summary>
@@ -170,14 +191,15 @@ export function ReportView({
             </div>
           </dl>
         </details>
-        {deleteError ? (
+        {!confirming && deleteError ? (
           <p className="field-error" role="alert">
             {deleteError}
           </p>
         ) : null}
+        {!confirming && deleting ? <p className="recovery-status" role="status">Deleting report. The request is still running.</p> : null}
         <div className="actions">
-          <button type="button" className="button button-secondary" onClick={() => setConfirming(true)}>
-            Delete report
+          <button type="button" className="button button-secondary" onClick={(event) => { event.currentTarget.focus({ preventScroll: true }); setConfirming(true); }}>
+            {deleting ? "View deletion status" : "Delete report"}
           </button>
         </div>
       </section>
@@ -189,6 +211,7 @@ export function ReportView({
       <DeleteDialog
         open={confirming}
         busy={deleting}
+        error={deleteError}
         onCancel={() => setConfirming(false)}
         onConfirm={onDelete}
       />
@@ -211,47 +234,5 @@ function DateRangeClampNote({ clamp }: { clamp: NonNullable<Report["run_meta"]["
       Your range was adjusted to the dates the conversation covers. Requested {pairText(clamp.requested)}. Applied{" "}
       {pairText(clamp.applied)}.
     </p>
-  );
-}
-
-function SectionStatus({ status, reason }: { status: string; reason: string | null }) {
-  if (status === "ok") return null;
-  if (status === "not_run") return <p data-status="not_run">{reason ?? "Not run."}</p>;
-  if (status === "failed") {
-    return (
-      <p role="alert" data-status="failed">
-        {reason ?? "This section failed."}
-      </p>
-    );
-  }
-  return <p data-status="insufficient_data">{reason && reason !== "insufficient data" ? reason : "Insufficient data"}</p>;
-}
-
-function RubricValue({ item }: { item: RubricItem }) {
-  if (item.status === "unstable") return <p>Not stable enough to report</p>;
-  if (item.status === "insufficient_data" || item.status === "not_run" || item.mean === null) {
-    return <p>Insufficient data</p>;
-  }
-  const mean = Number.isInteger(item.mean) ? String(item.mean) : String(Math.round(item.mean * 100) / 100);
-  return (
-    <p>
-      {mean} on the 1–5 anchors, across {item.n_scored} episodes
-    </p>
-  );
-}
-
-function QuoteList({ quotes }: { quotes: Quote[] }) {
-  if (quotes.length === 0) return null;
-  return (
-    <div className="quotes">
-      {quotes.map((quote) => (
-        <blockquote key={quote.quote_id}>
-          <p>{quote.text}</p>
-          <p className="quote-meta">
-            {speakerLabel(quote.speaker)} · {quote.episode_id} · {formatTimestamp(quote.timestamp)}
-          </p>
-        </blockquote>
-      ))}
-    </div>
   );
 }
