@@ -2,6 +2,7 @@ import { useState } from "react";
 import { formatCellLine, formatDay, formatTimestamp, orderedSeries, speakerLabel } from "../format";
 import type { Quote, Report, RubricItem } from "../types";
 import { DeleteDialog } from "./DeleteDialog";
+import { ExperimentalScores } from "./ExperimentalScores";
 import { TimelineChart } from "./TimelineChart";
 
 export function ReportView({
@@ -177,6 +178,8 @@ export function ReportView({
           </button>
         </div>
       </section>
+
+      {report.experimental_scores ? <ExperimentalScores section={report.experimental_scores} /> : null}
 
       <DeleteDialog
         open={confirming}
