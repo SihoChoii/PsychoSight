@@ -46,11 +46,16 @@ def observations_section(status: str, reason: Optional[str], items: List[dict], 
 
 
 def assemble(*, report_id: str, mode: str, header: dict, weeks: List[dict], series: List[dict], episodes: List[dict],
-             rubric: dict, observations: dict, quotes: List[dict], run_meta: dict) -> dict:
+             rubric: dict, observations: dict, quotes: List[dict], run_meta: dict,
+             experimental_scores: Optional[dict] = None) -> dict:
+    """Build a schema 1.1.0 report. ``experimental_scores`` is omitted when not provided, so a report
+    without the section still validates. This version always writes ``schema_version`` 1.1.0."""
     report = {
         "schema_version": config.SCHEMA_VERSION, "report_id": report_id, "mode": mode, "header": header,
         "weeks": weeks, "series": series, "episodes": episodes, "rubric": rubric, "observations": observations,
         "quotes": quotes, "limitations_title": config.LIMITATIONS_TITLE, "limitations": list(config.LIMITATIONS),
         "disclaimer": config.DISCLAIMER, "run_meta": run_meta,
     }
+    if experimental_scores is not None:
+        report["experimental_scores"] = experimental_scores
     return validate(report)

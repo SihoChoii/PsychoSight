@@ -7,10 +7,11 @@ import json
 import logging
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from . import config, loader, pipeline
-from .errors import PsychoSightError
+from .errors import ExperimentalConsentRequired, PsychoSightError
+from .experimental import strings as exp_strings
 from .storage import Store
 
 
@@ -22,12 +23,32 @@ def _setup_logging(verbose: bool) -> None:
     install_log_guard()
 
 
+def _add_experimental_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--experimental-scores", action="store_true",
+                        help="include experimental language-index scores (on for --demo unless --no-experimental-scores)")
+    parser.add_argument("--score-other", action="store_true",
+                        help="also score the other person; requires experimental scores")
+    parser.add_argument("--no-experimental-scores", action="store_true",
+                        help="do not compute experimental scores (also skips the other person)")
+
+
+def resolve_cli_experimental(demo: bool, experimental_scores: bool, score_other: bool,
+                             no_experimental_scores: bool) -> Tuple[bool, bool]:
+    """``--demo`` turns both on unless ``--no-experimental-scores``. ``--score-other`` alone is an error."""
+    experimental = (bool(demo) or bool(experimental_scores)) and not bool(no_experimental_scores)
+    other = bool(score_other) or (bool(demo) and experimental)
+    if other and not experimental:
+        raise ExperimentalConsentRequired(exp_strings.CONSENT_ERROR_MESSAGE)
+    return experimental, other
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="python -m psychosight", description=(
         "PsychoSight Lite: descriptive communication-pattern report for one 1:1 conversation. "
         + config.DISCLAIMER + "."))
     p.add_argument("--demo", action="store_true", help="shortcut for 'analyze --demo'")
     p.add_argument("--opt-in-llm", action="store_true", help="with --demo: include LLM sections")
+    _add_experimental_args(p)
     p.add_argument("-v", "--verbose", action="store_true", help="info logs (ids and counts only)")
     sub = p.add_subparsers(dest="cmd")
 
@@ -42,6 +63,7 @@ def build_parser() -> argparse.ArgumentParser:
     an.add_argument("--to", dest="date_to", help="YYYY-MM-DD (inclusive, local)")
     an.add_argument("--opt-in-llm", action="store_true",
                     help="opt in to sending excerpts of BOTH sides' messages to DeepSeek (mock for --demo)")
+    _add_experimental_args(an)
     an.add_argument("--mode", choices=["full", "deterministic_only"])
     an.add_argument("--out", "-o", help="write report JSON here (default: stdout)")
     an.add_argument("--no-save", action="store_true", help="do not store the report in the local DB")
@@ -88,11 +110,13 @@ def cmd_analyze(args) -> int:
     if not args.demo and not args.conversation:
         print("error: pass --conversation ID or --demo", file=sys.stderr)
         return 2
+    experimental, score_other = resolve_cli_experimental(
+        bool(args.demo), bool(args.experimental_scores), bool(args.score_other), bool(args.no_experimental_scores))
     rep = pipeline.run_analysis(
         args.conversation or config.DEMO_CONVERSATION_ID, demo=args.demo,
         date_from=loader.parse_date(args.date_from), date_to=loader.parse_date(args.date_to),
         llm_opt_in=bool(args.opt_in_llm), mode=args.mode, save=not args.no_save,
-        progress=_print_progress)
+        progress=_print_progress, experimental_scores=experimental, score_other=score_other)
     text = json.dumps(rep, indent=2, ensure_ascii=False)
     if args.out:
         Path(args.out).write_text(text + "\n", encoding="utf-8")
@@ -101,7 +125,8 @@ def cmd_analyze(args) -> int:
     h, m = rep["header"], rep["run_meta"]
     print(f"report {rep['report_id']} mode={rep['mode']} messages={sum(h['message_counts'].values())} "
           f"episodes={h['episode_count']} scored={h['episodes_scored']} weeks={h['week_count']} "
-          f"llm_calls={m['llm_calls']} cache_hits={m['cache_hits']} schema=valid"
+          f"llm_calls={m['llm_calls']} cache_hits={m['cache_hits']} "
+          f"experimental={rep['experimental_scores']['status']} schema=valid"
           + (f" -> {args.out}" if args.out else ""), file=sys.stderr)
     if not args.no_save:
         kind = "contains evidence quotes" if rep["quotes"] else "no quotes in this mode"
@@ -184,7 +209,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     try:
         if args.cmd is None and args.demo:
             ns = argparse.Namespace(conversation=None, demo=True, date_from=None, date_to=None,
-                                    opt_in_llm=args.opt_in_llm, mode=None, out=None, no_save=False)
+                                    opt_in_llm=args.opt_in_llm, mode=None, out=None, no_save=False,
+                                    experimental_scores=args.experimental_scores, score_other=args.score_other,
+                                    no_experimental_scores=args.no_experimental_scores)
             return cmd_analyze(ns)
         handlers = {"list-conversations": cmd_list, "analyze": cmd_analyze, "list-reports": cmd_list_reports,
                     "delete-report": cmd_delete, "serve": cmd_serve, "check-llm": cmd_check_llm}

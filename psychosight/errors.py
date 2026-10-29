@@ -50,6 +50,13 @@ class InvalidRequest(PsychoSightError):
     http_status = 422
 
 
+class ExperimentalConsentRequired(PsychoSightError):
+    """score_other without experimental scores, or a consent echo that does not match /config."""
+
+    code = "EXPERIMENTAL_CONSENT_REQUIRED"
+    http_status = 422
+
+
 class LLMOutputInvalid(PsychoSightError):
     """Model output failed schema validation (after the retry)."""
 

@@ -19,7 +19,11 @@ from pydantic import BaseModel, StrictBool
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from . import config, loader, pipeline
-from .errors import FullDiskAccessRequired, InvalidRequest, NotFound, PsychoSightError, ReportNotReady
+from .errors import (
+    ExperimentalConsentRequired, FullDiskAccessRequired, InvalidRequest, NotFound, PsychoSightError, ReportNotReady,
+)
+from .experimental.contract import DIMENSIONS
+from .experimental import strings as exp_strings
 from .llm import get_provider, install_log_guard
 from .storage import Store
 
@@ -35,6 +39,11 @@ class AnalysisRequest(BaseModel):
     llm_opt_in: StrictBool
     demo: StrictBool = False
     mode: Optional[str] = None
+    # None means "apply the default" (off, except both on for the demo).
+    experimental_scores: Optional[StrictBool] = None
+    score_other: Optional[StrictBool] = None
+    experimental_opt_in_text: Optional[str] = None
+    score_other_opt_in_text: Optional[str] = None
 
 
 @dataclass
@@ -114,7 +123,18 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
                 "demo_provider": config.demo_provider_name(),
                 "demo_provider_note": config.demo_provider_note(), "opt_in_text": config.OPT_IN_TEXT,
                 "disclaimer": config.DISCLAIMER, "limitations_title": config.LIMITATIONS_TITLE,
-                "max_episodes_scored": config.MAX_EPISODES_SCORED}
+                "max_episodes_scored": config.MAX_EPISODES_SCORED,
+                "experimental_opt_in_text": exp_strings.EXPERIMENTAL_CONSENT,
+                "score_other_opt_in_text": exp_strings.SCORE_OTHER_CONSENT,
+                "experimental_banner": exp_strings.BANNER,
+                "experimental_footer_support": exp_strings.FOOTER_SUPPORT,
+                "experimental_scale_note": exp_strings.SCALE_NOTE,
+                "experimental_how_it_works": exp_strings.HOW_IT_WORKS,
+                "experimental_enabled": pipeline.experimental_enabled(),
+                "experimental_dimensions": [
+                    {"key": d.key, "label": d.label, "family": d.family, "evidence_strength": d.evidence_strength}
+                    for d in DIMENSIONS
+                ]}
 
     @app.get("/conversations")
     def conversations():
@@ -126,7 +146,8 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
             chat_db = {"available": False, "error": {"code": exc.code, "message": exc.message}}
         return {"conversations": items, "chat_db": chat_db}
 
-    def _run(job: Job, req: AnalysisRequest, provider, date_from, date_to) -> None:
+    def _run(job: Job, req: AnalysisRequest, provider, date_from, date_to, experimental: bool,
+             score_other: bool) -> None:
         def progress(stage: str, cur: int, tot: int) -> None:
             job.stage, job.progress = stage, {"current": cur, "total": tot}
 
@@ -134,7 +155,8 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
         try:
             pipeline.run_analysis(req.conversation_id, date_from=date_from, date_to=date_to,
                                   llm_opt_in=req.llm_opt_in, demo=req.demo, mode=job.mode, report_id=job.job_id,
-                                  progress=progress, store=get_store(), provider=provider)
+                                  progress=progress, store=get_store(), provider=provider,
+                                  experimental_scores=experimental, score_other=score_other)
             job.status, job.stage = "done", "done"
             if job.deleted:
                 get_store().delete_report(job.job_id)
@@ -163,6 +185,15 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
             raise InvalidRequest("date_from must be on or before date_to.")
         if req.demo:
             req.conversation_id = config.DEMO_CONVERSATION_ID
+        is_demo = req.conversation_id == config.DEMO_CONVERSATION_ID
+        experimental, score_other = pipeline.resolve_experimental(
+            is_demo, req.experimental_scores, req.score_other)
+        # The demo does not require the consent echo. A real chat must send the exact strings from /config.
+        if experimental and not is_demo:
+            if req.experimental_opt_in_text != exp_strings.EXPERIMENTAL_CONSENT:
+                raise ExperimentalConsentRequired(exp_strings.CONSENT_MISMATCH_MESSAGE)
+            if score_other and req.score_other_opt_in_text != exp_strings.SCORE_OTHER_CONSENT:
+                raise ExperimentalConsentRequired(exp_strings.CONSENT_MISMATCH_MESSAGE)
         run_mode = pipeline.resolve_mode(req.llm_opt_in, req.mode)
         loader.check_supported(req.conversation_id)
         provider = None
@@ -172,7 +203,8 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
                   created_at=datetime.now(timezone.utc).astimezone().isoformat())
         with lock:
             jobs[job.job_id] = job
-        threading.Thread(target=_run, args=(job, req, provider, date_from, date_to), daemon=True).start()
+        threading.Thread(target=_run, args=(job, req, provider, date_from, date_to, experimental, score_other),
+                         daemon=True).start()
         log.info("job=%s queued mode=%s", job.job_id, run_mode)
         return {"job_id": job.job_id, "status": job.status}
 

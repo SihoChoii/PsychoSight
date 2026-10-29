@@ -1,4 +1,4 @@
-"""End-to-end analysis: load -> sessionize -> features -> (opt-in) rubric scoring -> synthesis -> report."""
+"""End-to-end analysis: load -> sessionize -> features -> (opt-in) rubric scoring -> synthesis -> experimental -> report."""
 
 from __future__ import annotations
 
@@ -6,21 +6,50 @@ import logging
 import time
 import uuid
 from datetime import date, datetime, timezone
-from typing import Callable, Optional
+from typing import Callable, Optional, Tuple
 
 from . import config, features, loader, report, rubric, sessionize, synthesize
-from .errors import InvalidRequest, LLMOptInRequired
+from .errors import ExperimentalConsentRequired, InvalidRequest, LLMOptInRequired
+from .experimental.contract import (
+    ENV_EXPERIMENTAL, EXP_HOLISTIC_PROMPT_VERSION, EXP_PROMPT_VERSION, EXP_SCORING_VERSION, ExpLLMStats,
+)
+from .experimental.section import not_run_section_or_shell, run_experimental
+from .experimental import strings as exp_strings
 from .llm import Provider, get_provider
 from .storage import Store
 
 log = logging.getLogger("psychosight.pipeline")
 
 ProgressFn = Callable[[str, int, int], None]
-STAGES = ("loading", "sessionizing", "features", "scoring", "synthesis", "done")
+# Full-mode order. Deterministic-only skips scoring and synthesis. The experimental stage is always
+# emitted: empty (0/0) when the section is not requested or disabled, otherwise LLM-call progress.
+STAGES = ("loading", "sessionizing", "features", "scoring", "synthesis", "experimental", "done")
 
 
 def _iso_now() -> str:
     return datetime.now(timezone.utc).astimezone().isoformat()
+
+
+def experimental_enabled() -> bool:
+    """False only when PSYCHOSIGHT_EXPERIMENTAL=0. Any other value, including unset, leaves the feature on."""
+    return config._env(ENV_EXPERIMENTAL) != "0"
+
+
+def resolve_experimental(is_demo: bool, experimental_scores: Optional[bool],
+                         score_other: Optional[bool]) -> Tuple[bool, bool]:
+    """Defaults: both false, except the demo opts in to both. score_other requires experimental scores.
+
+    An omitted flag is ``None`` (apply the default). An explicit false stays false, including on the demo,
+    so turning experimental scores off also turns off other-person scoring unless that flag is explicit.
+    """
+    experimental = is_demo if experimental_scores is None else bool(experimental_scores)
+    if score_other is None:
+        other = bool(is_demo and experimental)
+    else:
+        other = bool(score_other)
+    if other and not experimental:
+        raise ExperimentalConsentRequired(exp_strings.CONSENT_ERROR_MESSAGE)
+    return experimental, other
 
 
 def resolve_mode(llm_opt_in: bool, mode: Optional[str]) -> str:
@@ -44,6 +73,8 @@ def run_analysis(
     store: Optional[Store] = None,
     provider: Optional[Provider] = None,
     save: bool = True,
+    experimental_scores: Optional[bool] = None,
+    score_other: Optional[bool] = None,
 ) -> dict:
     t0 = time.monotonic()
     created_at = _iso_now()
@@ -53,8 +84,9 @@ def run_analysis(
         raise InvalidRequest("date_from must be on or before date_to.")
     if demo:
         conversation_id = config.DEMO_CONVERSATION_ID
+    is_demo = demo or conversation_id == config.DEMO_CONVERSATION_ID
+    experimental_on, score_other_on = resolve_experimental(is_demo, experimental_scores, score_other)
     run_mode = resolve_mode(llm_opt_in, mode)
-    is_demo = conversation_id == config.DEMO_CONVERSATION_ID
     owns_provider = False
     if run_mode == "full" and provider is None:
         provider = get_provider(is_demo, llm_opt_in)  # fails fast if not configured
@@ -115,6 +147,23 @@ def run_analysis(
             rub = report.rubric_section("not_run", config.NOT_RUN_REASON, [], [], 0, 0, None, None)
             obs = report.observations_section("not_run", config.NOT_RUN_REASON, [], None)
 
+        # After synthesis when the LLM ran, and after features in deterministic-only mode.
+        week_order = [w["week"] for w in feats["weeks"]]
+        exp_enabled = experimental_enabled()
+        exp_attempted = exp_enabled and experimental_on
+        if not exp_attempted:
+            prog("experimental", 0, 0)
+            reason = exp_strings.REASON_DISABLED if not exp_enabled else exp_strings.REASON_NOT_REQUESTED
+            exp_speakers = ("me", "other") if (experimental_on and score_other_on) else ("me",)
+            exp_section = not_run_section_or_shell(reason, exp_speakers)
+            exp_stats = ExpLLMStats()
+        else:
+            exp_speakers = ("me", "other") if score_other_on else ("me",)
+            exp_selection = selection if run_mode == "full" else rubric.select_episodes(episodes)
+            exp_section, exp_stats = run_experimental(
+                episodes=episodes, selection=exp_selection, provider=provider, store=store,
+                llm_ran=run_mode == "full", speakers=exp_speakers, week_order=week_order, progress=prog)
+
         words = {s: sum(e.word_counts.get(s, 0) for e in episodes) for s in ("me", "other")}
         msgs = {s: sum(1 for m in data.msgs if m.speaker == s) for s in ("me", "other")}
         local_dates = sorted(m.ts.date() for m in data.msgs)
@@ -141,11 +190,18 @@ def run_analysis(
             "llm_retries": stats.llm_retries, "invalid_outputs": stats.invalid_outputs,
             "dropped_quotes": stats.dropped_quotes, "dropped_observations": dropped_obs,
             "thresholds": config.thresholds(),
+            "experimental_opt_in": experimental_on,
+            "score_other_opt_in": score_other_on,
+            "experimental_scoring_version": EXP_SCORING_VERSION if exp_attempted else None,
+            "experimental_prompt_versions": (
+                {"episode": EXP_PROMPT_VERSION, "holistic": EXP_HOLISTIC_PROMPT_VERSION} if exp_attempted else None),
+            "experimental_llm_calls": exp_stats.llm_calls if exp_attempted else 0,
+            "experimental_cache_hits": exp_stats.cache_hits if exp_attempted else 0,
         }
         rep = report.assemble(
             report_id=report_id, mode=run_mode, header=header, weeks=feats["weeks"], series=feats["series"],
             episodes=features.episode_index(episodes, feats["episode_stats"], selection), rubric=rub,
-            observations=obs, quotes=quotes, run_meta=run_meta)
+            observations=obs, quotes=quotes, run_meta=run_meta, experimental_scores=exp_section)
         if save:
             store.save_report(rep, hashes={e.id: e.hash for e in episodes})
         prog("done", 1, 1)
@@ -153,8 +209,9 @@ def run_analysis(
         if usage:
             log.info("run=%s token usage calls=%d prompt=%d completion=%d reasoning=%d", report_id, usage["calls"],
                      usage["prompt_tokens"], usage["completion_tokens"], usage["reasoning_tokens"])
-        log.info("run=%s done mode=%s episodes=%d scored=%d calls=%d cache_hits=%d", report_id, run_mode,
-                 len(episodes), rub["episodes_scored"], stats.llm_calls, stats.cache_hits)
+        log.info("run=%s done mode=%s episodes=%d scored=%d calls=%d cache_hits=%d experimental=%s exp_calls=%d",
+                 report_id, run_mode, len(episodes), rub["episodes_scored"], stats.llm_calls, stats.cache_hits,
+                 exp_section.get("status"), exp_stats.llm_calls if exp_attempted else 0)
         return rep
     finally:
         if owns_provider and provider is not None:
