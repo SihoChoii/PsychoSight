@@ -40,7 +40,8 @@ Each setting (key, model, effort, ...) is resolved independently, first match wi
       package file to the first `*.app` ancestor that has a `Contents/` directory.
 
 The file format is the same `KEY=VALUE` `.env` format (`#` comments, optional `export`, optional quotes).
-If no model is set anywhere the default `deepseek-flash` at `reasoning_effort: max` is used.
+If no model is set anywhere the default `deepseek-flash` is used, at reasoning level `low` unless
+`DEEPSEEK_REASONING_EFFORT` (`none` | `low` | `high` | `max`) is set; each analysis can still choose its own level.
 `GET /config` reports `llm_available`, `llm_key_source` (`env` | `dotenv` | `bundled` | `null`) and `llm_key_note`
 (`null` when a key is found, else the message listing the places searched). The key is never returned.
 

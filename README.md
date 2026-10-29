@@ -29,7 +29,8 @@ cp .env.example .env      # then paste the DeepSeek key after DEEPSEEK_API_KEY=
 The key is **not in git** (judges receive it privately). It is read from the `DEEPSEEK_API_KEY` environment variable,
 else from `.env` at the repo root, else `~/.psychosight/.env` (both gitignored; no extra dependency), else (packaged
 app only) a `psychosight.env` bundled into the app at build time (see `docs/PACKAGING_KEY.md`). The default model
-is `deepseek-flash` (DeepSeek-V4.1-Flash) at the highest thinking effort (`reasoning_effort: max`). The key is only
+is `deepseek-flash` (DeepSeek-V4.1-Flash) at reasoning level `low`; each analysis can pick `none` (thinking off),
+`low`, `high` or `max` (`reasoning_level` on `POST /analyses`, `--reasoning-level` on the CLI). The key is only
 used after the explicit opt-in and is shown masked (`sk-…abcd`) by `check-llm`. Without a key everything else still
 works: deterministic-only reports and the offline mock demo.
 A full AI run on the demo conversation (`PSYCHOSIGHT_DEMO_PROVIDER=deepseek`, 40 episodes x 2 scoring runs + 1 synthesis
@@ -44,8 +45,8 @@ Any of these can also go in `.env`; a real environment variable wins over the fi
 | `DEEPSEEK_API_KEY` | for real LLM runs | DeepSeek key (env var or `.env`). Never logged, printed in full, returned by the API, or written to disk. |
 | `DEEPSEEK_MODEL` | no | Overrides the default model `deepseek-flash` (DeepSeek-V4.1-Flash, "4.1 flash 1017"). Other id on the key today: `deepseek-v4-pro`. |
 | `DEEPSEEK_BASE_URL` | no | Default `https://api.deepseek.com`. |
-| `DEEPSEEK_REASONING_EFFORT` | no | Default `max` (highest). `none` disables thinking. |
-| `DEEPSEEK_THINKING` | no | Default `enabled`. |
+| `DEEPSEEK_REASONING_EFFORT` | no | Default reasoning level when a request does not choose one: `none` (thinking off), `low` (default), `high` or `max`. Other values are ignored with a warning. |
+| `DEEPSEEK_THINKING` | no | Legacy: `disabled` is the same as `DEEPSEEK_REASONING_EFFORT=none`. |
 | `DEEPSEEK_JSON_MODE`, `DEEPSEEK_SEND_TEMPERATURE` | no | Default `1`; set `0` if the model rejects `response_format` or `temperature`. |
 | `DEEPSEEK_TIMEOUT_S`, `DEEPSEEK_MAX_TOKENS` | no | Request timeout (default 300 s) and optional max tokens. |
 | `PSYCHOSIGHT_PORT` | no | Default `8765`. |

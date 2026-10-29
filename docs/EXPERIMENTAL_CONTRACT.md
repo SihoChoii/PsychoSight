@@ -2,7 +2,9 @@
 
 Source of truth for Tracks A–F. Python source: `psychosight/experimental/contract.py` and `strings.py`; schema: `schemas/report.schema.json` (1.1.0); example: `docs/sample_experimental_scores.json`. Full plan and design: `docs/experimental/IMPLEMENTATION_PLAN.md`, `docs/experimental/SCORES_DESIGN_v2.md`.
 
-Real full-run sample: `docs/sample_report_experimental.json` is a complete schema 1.1.0 report generated with DeepSeek (`deepseek-flash`, reasoning `max`) on the synthetic rich demo, with the experimental section and other-person scoring on.
+Real full-run sample: `docs/sample_report_experimental.json` is a complete schema 1.1.0 report generated with DeepSeek (`deepseek-flash`, reasoning `max`, the default at the time; the default is now `low`) on the synthetic rich demo, with the experimental section and other-person scoring on.
+
+Reasoning level: the experimental episode and holistic calls use the same per-analysis `reasoning_level` as the main rubric and synthesis (`none` | `low` | `high` | `max`, default `low`; see `docs/API.md`). Their cache rows are keyed by model **and** level, so results at different levels never mix; `run_meta.reasoning_level` records the level.
 It is illustrative output only; `docs/sample_report.json` stays the 1.0.0 fixture the tests pin.
 
 The contract is frozen. If a track needs a change, stop and ask the integrator (PS Backend Engineer). `tests/test_exp_contract.py` pins the registry, constants, strings, signatures and schema.
