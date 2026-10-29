@@ -630,13 +630,16 @@ class _Counter:
 
 
 class _Gate:
-    def __init__(self, budget: CallBudget):
+    def __init__(self, budget: CallBudget, abort: Optional[threading.Event] = None):
         self.budget = budget
         self.exhausted = False
+        self.abort = abort
         self._lock = threading.Lock()
 
     def take(self) -> bool:
         with self._lock:
+            if self.abort is not None and self.abort.is_set():
+                return False
             if self.exhausted:
                 return False
             try:
@@ -679,6 +682,16 @@ def _fetch_episode(provider, episode, run_idx: int, speakers: Tuple[str, ...], g
 
 def _episode_run(provider, episode, run_idx: int, store: Store, speakers: Tuple[str, ...], model: str,
                  gate: _Gate, counter: _Counter):
+    asked = _episode_asked(provider, episode, run_idx, store, speakers, model, gate, counter)
+    if asked is None:
+        return None
+    return _with_reused(asked, episode, store, model, run_idx, speakers)
+
+
+def _episode_asked(provider, episode, run_idx: int, store: Store, speakers: Tuple[str, ...], model: str,
+                   gate: _Gate, counter: _Counter):
+    """One run of the experimental episode call (cache, then model). No rubric-v1 merge here, so this
+    part does not depend on the main rubric having finished."""
     fingerprint = exact_fingerprint(episode.turns)
     cached = store.get_score(_episode_key(episode), EXP_PROMPT_VERSION, model, run_idx)
     if _episode_cache_ok(cached, fingerprint, speakers):
@@ -692,7 +705,7 @@ def _episode_run(provider, episode, run_idx: int, store: Store, speakers: Tuple[
         store.put_score(_episode_key(episode), EXP_PROMPT_VERSION, model, run_idx, {
             "speakers": list(speakers), "_exact_fp": fingerprint, "by_speaker": asked,
         })
-    return _with_reused(asked, episode, store, model, run_idx, speakers)
+    return asked
 
 
 def _fetch_holistic(provider, user: str, speaker: str, run_idx: int, gate: _Gate, counter: _Counter):
@@ -853,10 +866,12 @@ def _aggregate(episodes, runs: Dict[str, list], speakers: Tuple[str, ...]):
 
 
 def _workers(provider) -> int:
-    """Mock stays single-threaded, same as the rubric. Otherwise ``llm_concurrency`` (default 8)."""
+    """Mock stays single-threaded, same as the rubric. Otherwise ``exp_llm_concurrency`` (default 24,
+    ``PSYCHOSIGHT_EXP_LLM_CONCURRENCY`` overrides). Every model call is its own task, so this is the
+    number of experimental calls in flight."""
     if getattr(provider, "name", None) == "mock":
         return 1
-    return max(1, config.llm_concurrency())
+    return max(1, config.exp_llm_concurrency())
 
 
 def _empty_holistic(speakers: Tuple[str, ...]) -> Dict[str, Dict[str, Optional[float]]]:
@@ -879,8 +894,18 @@ def call_budget() -> CallBudget:
 
 
 def score_llm(provider, selected, store: Store, *, speakers: Sequence[str], budget: CallBudget,
-              progress: Optional[Callable[[int, int], None]] = None, holistic: bool = True) -> ExpLLMResult:
+              progress: Optional[Callable[[int, int], None]] = None, holistic: bool = True,
+              before_merge: Optional[Callable[[], None]] = None,
+              abort: Optional[threading.Event] = None) -> ExpLLMResult:
     """Score selected episodes (two runs each) and, optionally, the five holistic domains.
+
+    Every model call (episode x run, holistic speaker x run) is one task in a single pool, so the two
+    runs of an episode run in parallel. Results are keyed by (id, run index) and aggregated in input
+    order, so completion order never changes the output.
+
+    ``before_merge`` is called after every model call has finished and before the rubric-v1 rows are
+    read from the cache for ``me``. The pipeline passes a wait on "main rubric finished", which lets
+    the experimental calls overlap the main rubric and synthesis. ``abort`` stops new calls.
 
     Does not raise when the call budget runs out: remaining episodes are skipped and ``reason``
     is set. Other provider failures propagate so the caller can mark the section failed.
@@ -889,9 +914,8 @@ def score_llm(provider, selected, store: Store, *, speakers: Sequence[str], budg
     episodes = list(selected)
     stats = ExpLLMStats()
     counter = _Counter(stats)
-    gate = _Gate(budget)
+    gate = _Gate(budget, abort)
     model = _model_name(provider)
-    runs: Dict[str, list] = {}
 
     holistic_users: Dict[str, str] = {}
     if holistic:
@@ -904,37 +928,51 @@ def score_llm(provider, selected, store: Store, *, speakers: Sequence[str], budg
     if progress:
         progress(0, total)
 
-    def work(episode):
-        return episode.id, [
-            _episode_run(provider, episode, run_idx, store, speakers_t, model, gate, counter) for run_idx in (0, 1)
-        ]
+    asked: Dict[Tuple[str, int], Optional[dict]] = {}
+    holistic_runs: Dict[Tuple[str, int], Optional[dict]] = {}
+    tasks = []  # (kind, unit id, run_idx, fn)
+    for episode in episodes:
+        for run_idx in (0, 1):
+            tasks.append(("episode", episode.id, run_idx, (lambda ep=episode, r=run_idx: _episode_asked(
+                provider, ep, r, store, speakers_t, model, gate, counter))))
+    for name in jobs:
+        for run_idx in (0, 1):
+            tasks.append(("holistic", name, run_idx, (lambda n=name, r=run_idx: _holistic_run(
+                provider, n, holistic_users[n], r, store, model, gate, counter))))
 
-    if episodes:
-        # Progress counts episodes as they finish (not in submission order), so one slow episode does
-        # not hold the bar at 0. Results are keyed by episode id, so order does not matter.
+    if tasks:
+        # Progress counts units (episodes, then holistic speakers) as both of their runs finish, in
+        # completion order, so one slow call does not hold the bar at 0.
+        pending = {}
         with ThreadPoolExecutor(max_workers=_workers(provider)) as pool:
-            futures = [pool.submit(work, episode) for episode in episodes]
+            futures = {pool.submit(fn): (kind, uid, run_idx) for kind, uid, run_idx, fn in tasks}
             for future in as_completed(futures):
-                eid, pair = future.result()
-                runs[eid] = pair
-                done += 1
-                if progress:
-                    progress(done, total)
-
-    holistic_scores = _empty_holistic(speakers_t)
-    if jobs:
-        def hwork(name: str):
-            return name, _score_holistic_speaker(provider, name, holistic_users[name], store, model, gate, counter)
-
-        with ThreadPoolExecutor(max_workers=_workers(provider)) as pool:
-            for name, scores in pool.map(hwork, jobs):
-                holistic_scores[name] = scores
-                done += 1
-                if progress:
-                    progress(done, total)
+                kind, uid, run_idx = futures[future]
+                value = future.result()
+                (asked if kind == "episode" else holistic_runs)[(uid, run_idx)] = value
+                pending[(kind, uid)] = pending.get((kind, uid), 0) + 1
+                if pending[(kind, uid)] == 2:
+                    done += 1
+                    if progress:
+                        progress(done, total)
 
     if gate.exhausted:
         log.info("experimental call ceiling reached; remaining scoring skipped")
+
+    if before_merge is not None:
+        before_merge()
+
+    runs: Dict[str, list] = {}
+    for episode in episodes:
+        pair = []
+        for run_idx in (0, 1):
+            got = asked.get((episode.id, run_idx))
+            pair.append(None if got is None else _with_reused(got, episode, store, model, run_idx, speakers_t))
+        runs[episode.id] = pair
+
+    holistic_scores = _empty_holistic(speakers_t)
+    for name in jobs:
+        holistic_scores[name] = _combine_holistic(holistic_runs.get((name, 0)), holistic_runs.get((name, 1)))
 
     observations, quotes, agreeing, rates, unstable = _aggregate(episodes, runs, speakers_t)
     return ExpLLMResult(

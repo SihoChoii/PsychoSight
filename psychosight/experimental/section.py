@@ -242,8 +242,11 @@ def _finalize(section, speakers: Sequence[str]) -> dict:
 
 
 def run_experimental(*, episodes, selection, provider, store, llm_ran: bool, speakers, week_order,
-                     progress) -> Tuple[dict, ExpLLMStats]:
+                     progress, before_merge=None, abort=None) -> Tuple[dict, ExpLLMStats]:
     """compute_deterministic -> score_llm (when llm_ran) -> build_section.
+
+    ``before_merge`` / ``abort`` are forwarded to ``score_llm`` (used when the pipeline starts this
+    stage in the background, before the main rubric has finished).
 
     Never raises. Progress is ``(stage, done, total)`` with stage ``experimental``. ``done/total``
     are experimental LLM calls. A failure yields status ``failed`` and ``strings.REASON_FAILED``.
@@ -261,8 +264,13 @@ def run_experimental(*, episodes, selection, provider, store, llm_ran: bool, spe
             def on_llm(done, total, _progress=progress):
                 _emit(_progress, done, total)
 
+            extra = {}
+            if before_merge is not None:
+                extra["before_merge"] = before_merge
+            if abort is not None:
+                extra["abort"] = abort
             llm = llm_exp.score_llm(
-                provider, selected, store, speakers=speakers, budget=budget, progress=on_llm, holistic=True)
+                provider, selected, store, speakers=speakers, budget=budget, progress=on_llm, holistic=True, **extra)
             stats = _stats_from(llm)
         section = scoring.build_section(
             det, llm, episodes, list(week_order or []), speakers=speakers, llm_ran=bool(llm_ran), seed=EXP_SEED)

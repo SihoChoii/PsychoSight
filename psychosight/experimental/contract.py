@@ -389,24 +389,26 @@ class ExpLLMResult:
 # ---------------------------------------------------------------- cross-track signatures
 # Implemented in their owner modules (tests check the parameter names):
 #   deterministic.compute_deterministic(episodes, speakers) -> DeterministicResult                      Track A
-#   llm_exp.score_llm(provider, selected, store, *, speakers, budget, progress=None, holistic=True)
+#   llm_exp.score_llm(provider, selected, store, *, speakers, budget, progress=None, holistic=True,
+#                     before_merge=None, abort=None)
 #       -> ExpLLMResult                                                                                 Track B
 #   mock_exp.complete(system, user, run_idx=0) -> llm.LLMResult                                         Track B
 #   scoring.build_section(det, llm, episodes, week_order, *, speakers, llm_ran, seed=EXP_SEED) -> dict   Track C
 #   scoring.not_run_section(reason, speakers=("me",)) -> dict                                           Track C
 #   section.run_experimental(*, episodes, selection, provider, store, llm_ran, speakers, week_order,
-#       progress) -> Tuple[dict, ExpLLMStats]                                                           Track D
+#       progress, before_merge=None, abort=None) -> Tuple[dict, ExpLLMStats]                                                           Track D
 #   safety.lint_experimental(text) -> List[str]                                                         Track D
 TRACK_FUNCTIONS: Dict[str, Tuple[str, Tuple[str, ...]]] = {
     "compute_deterministic": ("psychosight.experimental.deterministic", ("episodes", "speakers")),
     "score_llm": ("psychosight.experimental.llm_exp",
-                  ("provider", "selected", "store", "speakers", "budget", "progress", "holistic")),
+                  ("provider", "selected", "store", "speakers", "budget", "progress", "holistic",
+                   "before_merge", "abort")),
     "complete": ("psychosight.experimental.mock_exp", ("system", "user", "run_idx")),
     "build_section": ("psychosight.experimental.scoring",
                       ("det", "llm", "episodes", "week_order", "speakers", "llm_ran", "seed")),
     "not_run_section": ("psychosight.experimental.scoring", ("reason", "speakers")),
     "run_experimental": ("psychosight.experimental.section",
                          ("episodes", "selection", "provider", "store", "llm_ran", "speakers", "week_order",
-                          "progress")),
+                          "progress", "before_merge", "abort")),
     "lint_experimental": ("psychosight.safety", ("text",)),
 }

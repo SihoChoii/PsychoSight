@@ -33,7 +33,8 @@ ITEM_MIN_EPISODES = 3
 ITEM_MIN_AGREEMENT = 0.7
 HIGH_CONFIDENCE_AGREEMENT = 0.8
 MAX_LLM_CALLS = 200
-LLM_CONCURRENCY = 8  # parallel episodes; override with PSYCHOSIGHT_LLM_CONCURRENCY
+LLM_CONCURRENCY = 8  # main rubric calls in flight; override with PSYCHOSIGHT_LLM_CONCURRENCY
+EXP_LLM_CONCURRENCY = 24  # experimental calls in flight; override with PSYCHOSIGHT_EXP_LLM_CONCURRENCY
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8765
@@ -231,6 +232,18 @@ def demo_provider_note() -> Optional[str]:
 
 def llm_concurrency() -> int:
     return max(1, int(_env("PSYCHOSIGHT_LLM_CONCURRENCY") or LLM_CONCURRENCY))
+
+
+def exp_llm_concurrency() -> int:
+    """Experimental stage only. Separate from the rubric setting because its calls are longer and it can
+    run while the main rubric is still in flight."""
+    return max(1, int(_env("PSYCHOSIGHT_EXP_LLM_CONCURRENCY") or EXP_LLM_CONCURRENCY))
+
+
+def exp_overlap() -> bool:
+    """Start the experimental model calls before the main rubric (real provider only).
+    PSYCHOSIGHT_EXP_OVERLAP=0 turns it off and runs the stage after synthesis, as before."""
+    return (_env("PSYCHOSIGHT_EXP_OVERLAP") or "1") not in ("0", "false", "no")
 
 
 def port() -> int:

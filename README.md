@@ -53,7 +53,9 @@ Any of these can also go in `.env`; a real environment variable wins over the fi
 | `PSYCHOSIGHT_CHAT_DB` | no | Default `~/Library/Messages/chat.db`. |
 | `PSYCHOSIGHT_DEMO_PROVIDER` | no | `mock` (default, offline) or `deepseek` to score the synthetic demo conversation with the real API. |
 | `PSYCHOSIGHT_MAX_LLM_CALLS` | no | Per-run call ceiling (default 200). |
-| `PSYCHOSIGHT_LLM_CONCURRENCY` | no | Episodes scored in parallel (default 8). |
+| `PSYCHOSIGHT_LLM_CONCURRENCY` | no | Main rubric model calls in flight (default 8; both runs of an episode go out in parallel). |
+| `PSYCHOSIGHT_EXP_LLM_CONCURRENCY` | no | Experimental-stage model calls in flight (default 24). |
+| `PSYCHOSIGHT_EXP_OVERLAP` | no | Default `1`: with the real model, experimental calls start alongside the main rubric and synthesis. `0` runs the stage after synthesis. |
 
 ### Run
 ```bash

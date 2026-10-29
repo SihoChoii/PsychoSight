@@ -2,6 +2,9 @@
 
 Source of truth for Tracks A–F. Python source: `psychosight/experimental/contract.py` and `strings.py`; schema: `schemas/report.schema.json` (1.1.0); example: `docs/sample_experimental_scores.json`. Full plan and design: `docs/experimental/IMPLEMENTATION_PLAN.md`, `docs/experimental/SCORES_DESIGN_v2.md`.
 
+Real full-run sample: `docs/sample_report_experimental.json` is a complete schema 1.1.0 report generated with DeepSeek (`deepseek-flash`, reasoning `max`) on the synthetic rich demo, with the experimental section and other-person scoring on.
+It is illustrative output only; `docs/sample_report.json` stays the 1.0.0 fixture the tests pin.
+
 The contract is frozen. If a track needs a change, stop and ask the integrator (PS Backend Engineer). `tests/test_exp_contract.py` pins the registry, constants, strings, signatures and schema.
 
 ## 1. Files and owners
@@ -163,15 +166,18 @@ Pooling: `x = Σnum / Σden` per speaker. Rates: num = count, den = words, repor
 
 ```python
 deterministic.compute_deterministic(episodes, speakers) -> DeterministicResult                       # Track A
-llm_exp.score_llm(provider, selected, store, *, speakers, budget, progress=None, holistic=True)
+llm_exp.score_llm(provider, selected, store, *, speakers, budget, progress=None, holistic=True,
+                  before_merge=None, abort=None)
     -> ExpLLMResult                                                                                # Track B
 mock_exp.complete(system, user, run_idx=0) -> llm.LLMResult                                        # Track B
 scoring.build_section(det, llm, episodes, week_order, *, speakers, llm_ran, seed=1017) -> dict     # Track C
 scoring.not_run_section(reason, speakers=("me",)) -> dict                                          # Track C
 section.run_experimental(*, episodes, selection, provider, store, llm_ran, speakers, week_order,
-                         progress) -> Tuple[dict, ExpLLMStats]                                     # Track D
+                         progress, before_merge=None, abort=None) -> Tuple[dict, ExpLLMStats]      # Track D
 safety.lint_experimental(text) -> List[str]                                                        # Track D
 ```
+`before_merge` (called after all experimental model calls, before rubric-v1 rows are read for `me`) and `abort` (a `threading.Event` that stops new calls) are optional; the pipeline uses them to start the experimental calls alongside the main rubric when the provider is real (`PSYCHOSIGHT_EXP_OVERLAP=0` turns that off). Results do not depend on call completion order.
+
 All are `NotImplementedError` stubs on `exp/contract`. `MockProvider.complete()` sends any system prompt starting with `TASK: EXPERIMENTAL` or `TASK: HOLISTIC` to `mock_exp.complete(system, user, run_idx)` and returns its `LLMResult` unchanged (the `malformed_once`/`always_malformed` test modes still apply first).
 
 ## 6. Scoring rules (Track C)
