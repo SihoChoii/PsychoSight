@@ -115,6 +115,7 @@ export interface Report {
     experimental_llm_calls?: number;
     experimental_cache_hits?: number;
     provider_note?: string | null;
+    date_range_clamped?: DateRangeClamp | null;
   };
 }
 
@@ -232,6 +233,7 @@ export interface Config {
   experimental_banner?: string;
   experimental_footer_support?: string;
   experimental_scale_note?: string;
+  experimental_trend_note?: string;
   experimental_how_it_works?: string;
   experimental_enabled?: boolean;
   experimental_dimensions?: ExperimentalDimensionConfig[];
@@ -240,12 +242,27 @@ export interface Config {
 export interface Conversation {
   id: string;
   label: string;
-  message_count: number;
+  message_count: number | null;
   latest_date: string | null;
+  first_message_at: string | null;
+  last_message_at: string | null;
+  first_message_date: string | null;
+  last_message_date: string | null;
   is_group: boolean;
   supported: boolean;
   is_demo: boolean;
   participant_count: number;
+}
+
+export interface DateRangePair {
+  date_from: string | null;
+  date_to: string | null;
+}
+
+export interface DateRangeClamp {
+  requested: DateRangePair;
+  applied: DateRangePair;
+  bounds: DateRangePair;
 }
 
 export interface ConversationsResponse {

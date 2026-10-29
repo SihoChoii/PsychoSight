@@ -1,0 +1,5 @@
+{
+  "requested": { "date_from": "2024-01-01", "date_to": "2099-12-31" },
+  "applied": { "date_from": "2025-08-04", "date_to": "2026-02-01" },
+  "bounds": { "date_from": "2025-08-04", "date_to": "2026-02-01" }
+}

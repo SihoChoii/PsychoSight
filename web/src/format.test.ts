@@ -1,6 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { countPhrase, formatCell, orderedSeries } from "./format";
+import { countPhrase, formatCalendarDay, formatCell, orderedSeries } from "./format";
 import { progressText, stageMark } from "./stages";
+
+describe("formatCalendarDay", () => {
+  it("formats a YYYY-MM-DD local date without shifting the day", () => {
+    expect(formatCalendarDay("2025-08-04")).toBe("Aug 4, 2025");
+    expect(formatCalendarDay("2026-02-01")).toBe("Feb 1, 2026");
+    expect(formatCalendarDay("2025-03-03")).toBe("Mar 3, 2025");
+    expect(formatCalendarDay(null)).toBeNull();
+    expect(formatCalendarDay("2025-08-04T20:29:09-07:00")).toBeNull();
+  });
+});
 
 describe("formatCell", () => {
   it("renders null as Insufficient data and keeps a real zero", () => {

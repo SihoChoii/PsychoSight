@@ -8,7 +8,7 @@ import { mockApi } from "./mock";
 import { ProgressView } from "./components/ProgressView";
 import { OptIn } from "./components/OptIn";
 import { ReportView } from "./components/ReportView";
-import { INSUFFICIENT_TEXT, TREND_NOTE } from "./experimental";
+import { INSUFFICIENT_TEXT } from "./experimental";
 import {
   deterministicSection,
   failedSection,
@@ -32,8 +32,12 @@ function withSection(section: Report["experimental_scores"], schema = "1.1.0"): 
   return report;
 }
 
+const TREND_NOTE = "Weekly trend values are on their own scale and are not directly comparable to the overall index.";
+
 function renderReport(report: Report) {
-  render(<ReportView report={report} deleting={false} deleteError={null} onDelete={vi.fn()} />);
+  render(
+    <ReportView report={report} deleting={false} deleteError={null} trendNote={TREND_NOTE} onDelete={vi.fn()} />,
+  );
 }
 
 function openCard() {
@@ -60,7 +64,9 @@ describe("experimental scores section", () => {
     expect(screen.getByRole("heading", { name: "Well-being language" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Interpersonal language" })).toBeInTheDocument();
     expect(screen.getByText(INSUFFICIENT_TEXT)).toBeInTheDocument();
+    expect(screen.queryByText(/run lower/i)).not.toBeInTheDocument();
     expect(screen.getAllByText(TREND_NOTE).length).toBeGreaterThan(0);
+    expect(config.experimental_trend_note).toBe(TREND_NOTE);
 
     const openness = screen.getByRole("article", { name: "Openness (experimental language index)" });
     const whyButtons = within(openness).getAllByRole("button", { name: "Why this number" });
@@ -210,6 +216,7 @@ describe("experimental scores section", () => {
     expect(quote?.text).toBeTruthy();
     expect(within(neuroticism).getByText(quote?.text ?? "")).toBeInTheDocument();
     expect(report.quotes.some((item) => item.text === quote?.text)).toBe(false);
+    expect(within(neuroticism).queryByText(/run lower/i)).not.toBeInTheDocument();
     expect(within(neuroticism).getAllByText(TREND_NOTE).length).toBeGreaterThan(0);
     const spark = within(neuroticism).getAllByRole("img", { name: /Weekly trend for me/ })[0];
     expect(spark).toHaveAttribute("data-scale", "trend");

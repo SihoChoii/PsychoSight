@@ -11,12 +11,17 @@ import {
   sortedContributions,
   sourceLabel,
   speakerMessage,
-  TREND_NOTE,
 } from "../experimental";
 import { formatNumber, formatTimestamp, speakerLabel } from "../format";
 import type { ExpDimension, ExperimentalScores, ExpSpeakerScore, ExpTrendPoint } from "../types";
 
-export function ExperimentalScores({ section }: { section: ExperimentalScores }) {
+export function ExperimentalScores({
+  section,
+  trendNote,
+}: {
+  section: ExperimentalScores;
+  trendNote: string | null;
+}) {
   const [open, setOpen] = useState(false);
   const [shape, setShape] = useState(false);
   const panelId = useId();
@@ -83,7 +88,7 @@ export function ExperimentalScores({ section }: { section: ExperimentalScores })
                     </div>
                   ) : null}
                   {dimensions.map((dim) => (
-                    <DimensionBlock key={dim.key} dim={dim} quotes={quoteMap} />
+                    <DimensionBlock key={dim.key} dim={dim} quotes={quoteMap} trendNote={trendNote} />
                   ))}
                 </div>
               );
@@ -116,7 +121,15 @@ function HowItWorks({ text }: { text: string }) {
   );
 }
 
-function DimensionBlock({ dim, quotes }: { dim: ExpDimension; quotes: ExperimentalScores["quotes"] }) {
+function DimensionBlock({
+  dim,
+  quotes,
+  trendNote,
+}: {
+  dim: ExpDimension;
+  quotes: ExperimentalScores["quotes"];
+  trendNote: string | null;
+}) {
   const other = dim.per_speaker.other;
   return (
     <article className="exp-dim" aria-labelledby={`exp-dim-${dim.key}`}>
@@ -126,8 +139,8 @@ function DimensionBlock({ dim, quotes }: { dim: ExpDimension; quotes: Experiment
       </p>
       <p className="exp-note">{dim.evidence_note}</p>
       <div className={other ? "exp-pair" : "exp-pair exp-pair-single"}>
-        <SpeakerColumn who="me" speaker={dim.per_speaker.me} quotes={quotes} dimKey={dim.key} />
-        {other ? <SpeakerColumn who="other" speaker={other} quotes={quotes} dimKey={dim.key} /> : null}
+        <SpeakerColumn who="me" speaker={dim.per_speaker.me} quotes={quotes} dimKey={dim.key} trendNote={trendNote} />
+        {other ? <SpeakerColumn who="other" speaker={other} quotes={quotes} dimKey={dim.key} trendNote={trendNote} /> : null}
       </div>
     </article>
   );
@@ -138,11 +151,13 @@ function SpeakerColumn({
   speaker,
   quotes,
   dimKey,
+  trendNote,
 }: {
   who: "me" | "other";
   speaker: ExpSpeakerScore;
   quotes: ExperimentalScores["quotes"];
   dimKey: string;
+  trendNote: string | null;
 }) {
   const message = speakerMessage(speaker);
   const confidence = confidenceLabel(speaker.confidence);
@@ -167,7 +182,7 @@ function SpeakerColumn({
           </p>
           <p className="exp-basis">{basisText(speaker)}</p>
           <WhyPanel dimKey={dimKey} who={who} speaker={speaker} quotes={quotes} />
-          <TrendSpark points={speaker.trend} who={who} />
+          <TrendSpark points={speaker.trend} who={who} trendNote={trendNote} />
         </>
       ) : null}
     </div>
@@ -258,13 +273,22 @@ function WhyPanel({
   );
 }
 
-function TrendSpark({ points, who }: { points: ExpTrendPoint[]; who: "me" | "other" }) {
+function TrendSpark({
+  points,
+  who,
+  trendNote,
+}: {
+  points: ExpTrendPoint[];
+  who: "me" | "other";
+  trendNote: string | null;
+}) {
   const numbers = points.map((point) => point.score).filter((value): value is number => value !== null);
+  const note = trendNote ? <p className="exp-trend-note">{trendNote}</p> : null;
   if (numbers.length === 0) {
     return (
       <div className="exp-trend">
         <p className="exp-trend-label">Trend</p>
-        <p className="exp-trend-note">{TREND_NOTE}</p>
+        {note}
         <p>No weekly trend.</p>
       </div>
     );
@@ -293,12 +317,12 @@ function TrendSpark({ points, who }: { points: ExpTrendPoint[]; who: "me" | "oth
   return (
     <div className="exp-trend">
       <p className="exp-trend-label">Trend</p>
-      <p className="exp-trend-note">{TREND_NOTE}</p>
+      {note}
       <svg
         className="exp-spark"
         viewBox={`0 0 ${width} ${height}`}
         role="img"
-        aria-label={`Weekly trend for ${who === "me" ? "me" : "the other person"}. Not the same scale as the overall number.`}
+        aria-label={`Weekly trend for ${who === "me" ? "me" : "the other person"}. Not directly comparable to the overall index.`}
         data-scale="trend"
         data-ymin={min}
         data-ymax={max}

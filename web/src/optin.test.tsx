@@ -61,6 +61,9 @@ describe("opt-in disclosure", () => {
     expect(mockConfig.experimental_banner).toBe(pythonAssignment("BANNER", strings));
     expect(mockConfig.experimental_footer_support).toBe(pythonAssignment("FOOTER_SUPPORT", strings));
     expect(mockConfig.experimental_scale_note).toBe(pythonAssignment("SCALE_NOTE", strings));
+    expect(mockConfig.experimental_trend_note).toBe(
+      "Weekly trend values are on their own scale and are not directly comparable to the overall index.",
+    );
     expect(mockConfig.experimental_how_it_works).toBe(pythonAssignment("HOW_IT_WORKS", strings));
     expect(mockConfig.experimental_enabled).toBe(true);
     const labels = pythonDict("DIMENSION_LABELS", strings);

@@ -1,12 +1,11 @@
+import {
+  conversationFields,
+  conversationsQueryString,
+  type ConversationQuery,
+  type ConversationsFetch,
+} from "./conversation-adapter";
 import { apiBase, isMockMode } from "./mode";
-import type {
-  AnalysisRequest,
-  Config,
-  ConversationsResponse,
-  Job,
-  Report,
-  SavedAnalysis,
-} from "./types";
+import type { AnalysisRequest, Config, Job, Report, SavedAnalysis } from "./types";
 
 export class ApiError extends Error {
   readonly code: string;
@@ -22,7 +21,7 @@ export class ApiError extends Error {
 
 export interface Client {
   getConfig(): Promise<Config>;
-  getConversations(): Promise<ConversationsResponse>;
+  getConversations(query?: ConversationQuery): Promise<ConversationsFetch>;
   listAnalyses(): Promise<SavedAnalysis[]>;
   createAnalysis(body: AnalysisRequest): Promise<{ job_id: string; status: string }>;
   getAnalysis(jobId: string): Promise<Job>;
@@ -30,7 +29,7 @@ export interface Client {
   deleteAnalysis(jobId: string): Promise<{ deleted: boolean; job_id: string }>;
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+async function requestRaw(path: string, init?: RequestInit): Promise<{ data: unknown; headers: Headers }> {
   const headers = new Headers(init?.headers);
   headers.set("accept", "application/json");
   if (init?.body) headers.set("content-type", "application/json");
@@ -57,12 +56,21 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       response.status,
     );
   }
+  return { data, headers: response.headers };
+}
+
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const { data } = await requestRaw(path, init);
   return data as T;
 }
 
 export const httpApi: Client = {
   getConfig: () => request<Config>("/config"),
-  getConversations: () => request<ConversationsResponse>("/conversations"),
+  getConversations: async (query) => {
+    const suffix = query ? `?${conversationsQueryString(query)}` : "";
+    const { data, headers } = await requestRaw(`/conversations${suffix}`);
+    return { body: data, totalHeader: headers.get(conversationFields.totalHeader) };
+  },
   listAnalyses: async () => {
     const body = await request<{ analyses: SavedAnalysis[] }>("/analyses");
     return body.analyses;
