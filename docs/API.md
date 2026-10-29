@@ -191,4 +191,6 @@ FastAPI mounts a static directory at `/` **after** the API routes: `--static-dir
 default `web/dist` if it exists, else `web/` when it holds plain static files (an unbuilt Vite project with
 `web/package.json` is skipped, because its raw `index.html` cannot run; build it with `cd web && npm install && npm run build`).
 If no UI is found, `GET /` returns a short HTML note and the API still
-works. The frontend (branch `frontend/ui`) is a Vite app that builds into `web/dist`.
+works. The frontend is a Vite app that builds into `web/dist`. Those paths are resolved from the
+checkout root, or from the frozen app bundle, never from the process working directory. The macOS app
+passes that bundled `web/dist` as `--static-dir`.

@@ -13,10 +13,10 @@ import random
 import re
 from dataclasses import dataclass, field
 from functools import lru_cache
-from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Tuple
 
 from ..features import tokenize, week_key
+from ..resources import package_dir
 from ..models import Episode
 from . import strings
 from .contract import (
@@ -50,7 +50,7 @@ from .contract import (
     markers_for,
 )
 
-_ANCHORS_PATH = Path(__file__).resolve().parent / "data" / "exp_anchors_v1.json"
+_ANCHORS_PATH = package_dir() / "experimental" / "data" / "exp_anchors_v1.json"
 _PERCENT_UNITS = frozenset(("% of words", "% of messages"))
 _WEEK_RE = re.compile(r"^[0-9]{4}-W[0-9]{2}$")
 _SPEAKER_ORDER = ("me", "other")

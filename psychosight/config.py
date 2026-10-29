@@ -4,11 +4,13 @@
 from __future__ import annotations
 
 import os
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
 from . import __version__, defaults
+from .resources import frozen_root
 
 BACKEND_VERSION = __version__
 SCHEMA_VERSION = "1.1.0"
@@ -43,7 +45,20 @@ DEMO_LABEL = "Demo conversation (synthetic)"
 
 PLACEHOLDER_KEY = "your-key-here"
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCHEMA_PATH = REPO_ROOT / "schemas" / "report.schema.json"
+
+
+def resource_root() -> Path:
+    """Checkout root, or the frozen bundle directory that holds ``schemas/`` and ``web/dist``.
+
+    Not the process working directory.
+    """
+    frozen = frozen_root()
+    if frozen is not None:
+        return frozen
+    return REPO_ROOT
+
+
+SCHEMA_PATH = resource_root() / "schemas" / "report.schema.json"
 
 DISCLAIMER = "Experimental self-reflection, not a clinical or diagnostic tool"
 LIMITATIONS_TITLE = "What this cannot tell you"
@@ -85,16 +100,18 @@ def thresholds() -> dict:
     }
 
 
-PLACEHOLDER_KEY = "your-key-here"
-REPO_ROOT = Path(__file__).resolve().parents[1]
-
-
 def dotenv_paths() -> list:
-    """Files read for settings not in the environment. PSYCHOSIGHT_DOTENV (os-separated list) overrides."""
+    """Files read for settings not in the environment. PSYCHOSIGHT_DOTENV (os-separated list) overrides.
+
+    A frozen app reads only ``~/.psychosight/.env``. It does not read a ``.env`` packed inside the bundle.
+    """
     override = os.environ.get("PSYCHOSIGHT_DOTENV", "").strip()
     if override:
         return [Path(p).expanduser() for p in override.split(os.pathsep) if p]
-    return [REPO_ROOT / ".env", Path.home() / ".psychosight" / ".env"]
+    home = Path.home() / ".psychosight" / ".env"
+    if frozen_root() is not None:
+        return [home]
+    return [REPO_ROOT / ".env", home]
 
 
 def parse_dotenv(text: str) -> dict:
@@ -254,7 +271,7 @@ def static_dir() -> Optional[Path]:
     override = _env("PSYCHOSIGHT_STATIC_DIR")
     if override:
         return Path(override).expanduser()
-    web = REPO_ROOT / "web"
+    web = resource_root() / "web"
     if (web / "dist").is_dir():
         return web / "dist"
     # web/ is only served as-is when it is plain static files; a Vite project (package.json) must be built first,
@@ -265,7 +282,9 @@ def static_dir() -> Optional[Path]:
 
 
 def unbuilt_ui_hint() -> Optional[str]:
-    web = REPO_ROOT / "web"
+    if getattr(sys, "frozen", False):
+        return None
+    web = resource_root() / "web"
     if not _env("PSYCHOSIGHT_STATIC_DIR") and (web / "package.json").is_file() and not (web / "dist").is_dir():
         return "web UI is not built: run `cd web && npm install && npm run build`, then restart serve"
     return None

@@ -1,15 +1,15 @@
 export function DiskAccess({ message, onDemo }: { message: string; onDemo: () => void }) {
-  const mentionsPath = /Full Disk Access/i.test(message);
+  const hasSteps = /System Settings/i.test(message);
   return (
     <section className="focus-task" aria-labelledby="page-title">
       <h1 id="page-title" tabIndex={-1}>
         Full Disk Access
       </h1>
       <p className="decision-copy">{message}</p>
-      {mentionsPath ? null : (
+      {hasSteps ? null : (
         <p className="decision-copy">
-          Grant Full Disk Access to the terminal running the backend: System Settings, Privacy &amp; Security, Full
-          Disk Access. Then restart it.
+          Grant Full Disk Access to PsychoSight.app, or to the terminal if you started the backend there. System
+          Settings, Privacy &amp; Security, Full Disk Access. Then quit and reopen it.
         </p>
       )}
       <div className="actions">

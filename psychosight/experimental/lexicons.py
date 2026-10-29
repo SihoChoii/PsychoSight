@@ -18,9 +18,10 @@ from pathlib import Path
 from typing import Dict, FrozenSet, Iterable, List, Optional, Sequence, Tuple
 
 from ..features import I_PREFIX, I_WORDS, tokenize
+from ..resources import package_dir
 from .contract import BIG_FIVE
 
-_PKG = Path(__file__).resolve().parent
+_PKG = package_dir() / "experimental"
 DATA_DIR = _PKG / "data"
 WORDLIST_DIR = DATA_DIR / "wordlists"
 THIRD_PARTY_DIR = DATA_DIR / "third_party"

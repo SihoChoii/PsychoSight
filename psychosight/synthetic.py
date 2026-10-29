@@ -11,12 +11,12 @@ from __future__ import annotations
 import json
 from datetime import datetime
 from functools import lru_cache
-from pathlib import Path
 from typing import List, Tuple
 
 from .msgexport import AttachmentRef, MessageRow
+from .resources import package_dir
 
-DATA_FILE = Path(__file__).resolve().parent / "data" / "demo_conversation.jsonl"
+DATA_FILE = package_dir() / "data" / "demo_conversation.jsonl"
 DEMO_TZ = "America/Los_Angeles"
 DEMO_HANDLE = "+15555550123"
 WEEKS = 26  # ISO weeks spanned (including the quiet week with no messages)

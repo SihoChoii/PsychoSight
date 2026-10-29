@@ -26,7 +26,8 @@ TAPBACK_RE = re.compile(
 def _fda_error(db_path: Path, exc: BaseException) -> FullDiskAccessRequired:
     return FullDiskAccessRequired(
         f"Cannot read the Messages database at {db_path} ({type(exc).__name__}). On macOS, grant Full Disk Access "
-        "to the app running the backend (System Settings > Privacy & Security > Full Disk Access), then restart it. "
+        "to PsychoSight.app, or to the terminal if you started the backend there "
+        "(System Settings > Privacy & Security > Full Disk Access), then quit and reopen it. "
         "You can use the demo conversation meanwhile."
     )
 

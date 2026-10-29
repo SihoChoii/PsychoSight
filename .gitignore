@@ -13,3 +13,6 @@ psychosight-report*.json
 .DS_Store
 web/node_modules/
 web/dist/
+/dist/
+/build/
+packaging/macos/PsychoSight.icns

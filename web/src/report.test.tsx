@@ -8,6 +8,20 @@ import type { Report } from "./types";
 const full = fullReport as unknown as Report;
 const deterministic = deterministicReport as unknown as Report;
 
+/** The rich demo fixture has no thin week and no unstable rubric item. Inject those states. */
+function withThinWeek(report: Report): Report {
+  const next = structuredClone(report);
+  const initiation = next.series.find((series) => series.key === "initiation_pct");
+  const point = initiation?.points.find((item) => item.week === "2025-W41");
+  if (!initiation || !point) throw new Error("sample report is missing the 2025-W41 initiation row");
+  point.me = { value: null, count: point.me.count, reason: "insufficient data" };
+  point.other = { value: null, count: point.other.count, reason: "insufficient data" };
+  const unstable = next.rubric.items[0];
+  unstable.status = "unstable";
+  unstable.mean = null;
+  return next;
+}
+
 function renderReport(report: Report, onDelete = vi.fn()) {
   render(<ReportView report={report} deleting={false} deleteError={null} onDelete={onDelete} />);
   return onDelete;
@@ -15,7 +29,7 @@ function renderReport(report: Report, onDelete = vi.fn()) {
 
 describe("report rendering", () => {
   it("shows Insufficient data for null weeks and keeps a real zero", () => {
-    renderReport(full);
+    renderReport(withThinWeek(full));
     const table = screen.getByRole("table", { name: "Episodes opened" });
     const row = within(table).getByRole("row", { name: /2025-W41/ });
     expect(within(row).getAllByText("Insufficient data").length).toBeGreaterThan(0);
@@ -24,7 +38,7 @@ describe("report rendering", () => {
     expect(screen.getByRole("heading", { name: full.limitations_title })).toBeInTheDocument();
     expect(screen.getByText(full.disclaimer)).toBeInTheDocument();
     expect(screen.getAllByText("Confidence: high").length).toBeGreaterThan(0);
-    expect(screen.getByText("Confidence: medium")).toBeInTheDocument();
+    expect(screen.getAllByText("Confidence: medium").length).toBeGreaterThan(0);
     expect(screen.getByText("Not stable enough to report")).toBeInTheDocument();
     expect(screen.getByText(/Median reply time, approximate/)).toBeInTheDocument();
   });

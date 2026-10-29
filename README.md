@@ -147,8 +147,9 @@ An optional section can add 0–100 indexes from word counts in this conversatio
 - The API binds to 127.0.0.1 and only serves message text as evidence quotes inside reports.
 
 ### Troubleshooting
-- **`FULL_DISK_ACCESS_REQUIRED`**: System Settings > Privacy & Security > Full Disk Access, enable the app that runs
-  the backend (Terminal, iTerm, or your IDE), then restart it. The demo conversation works meanwhile.
+- **`FULL_DISK_ACCESS_REQUIRED`**: System Settings > Privacy & Security > Full Disk Access, enable PsychoSight.app
+  (or Terminal, iTerm, or your IDE if you started the backend there), then quit and reopen it. The demo conversation
+  works meanwhile. Steps for the packaged app are in `packaging/macos/README.md`.
 - **`LLM_UNAVAILABLE` "No DeepSeek API key found"**: `cp .env.example .env`, paste the key, restart the backend.
 - **`LLM_UNAVAILABLE` "rejected the API key"**: the key in `.env` (or `DEEPSEEK_API_KEY`) is wrong or revoked;
   replace it and run `python -m psychosight check-llm`.
@@ -183,3 +184,7 @@ VITE_MOCK=1 npm run dev
 ```
 
 Dev and build notes also live in `web/README.md`.
+
+## macOS app
+
+`packaging/macos/build.sh` builds a double-clickable `PsychoSight.app` with the Python runtime, dependencies, and `web/dist` inside the bundle. It does not contain a DeepSeek key. The key belongs in `~/.psychosight/.env`. Full Disk Access, when you want to read Messages, is granted to PsychoSight.app. Details: `packaging/macos/README.md`.
