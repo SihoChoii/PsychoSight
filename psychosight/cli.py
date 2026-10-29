@@ -134,7 +134,9 @@ def cmd_check_llm(args) -> int:
     provider = DeepSeekProvider()
     try:
         models = provider.list_models()
-        print(f"model={provider.model} reasoning_effort={provider.reasoning_effort} base_url={provider.settings.base_url}")
+        s = provider.settings
+        print(f"model={provider.model} reasoning_effort={provider.reasoning_effort} thinking={s.thinking} "
+              f"base_url={s.base_url} key={config.mask_key(s.api_key)} ({s.key_source or 'unset'})")
         print(f"provider models: {', '.join(models) if models else '(could not list)'}")
         if models and provider.model not in models:
             print("warning: DEEPSEEK_MODEL is not in the provider's model list", file=sys.stderr)

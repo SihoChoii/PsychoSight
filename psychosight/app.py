@@ -109,7 +109,8 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
     def get_config():
         s = config.llm_settings()
         return {"version": config.BACKEND_VERSION, "schema_version": config.SCHEMA_VERSION, "provider": "deepseek",
-                "model": s.model, "llm_configured": s.configured, "reasoning_effort": s.reasoning_effort,
+                "model": s.model, "llm_configured": s.configured, "llm_available": s.configured,
+                "llm_key_source": s.key_source, "reasoning_effort": s.reasoning_effort,
                 "demo_provider": config.demo_provider_name(), "opt_in_text": config.OPT_IN_TEXT,
                 "disclaimer": config.DISCLAIMER, "limitations_title": config.LIMITATIONS_TITLE,
                 "max_episodes_scored": config.MAX_EPISODES_SCORED}

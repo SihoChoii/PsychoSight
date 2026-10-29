@@ -1,4 +1,5 @@
-"""Constants and environment readers. Secrets are read from the environment only, never written anywhere."""
+"""Constants and environment readers. Secrets come from the environment or a gitignored `.env` file (repo root or
+~/.psychosight/.env) and are never logged or written anywhere."""
 
 from __future__ import annotations
 
@@ -7,7 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
-from . import __version__
+from . import __version__, defaults
 
 BACKEND_VERSION = __version__
 SCHEMA_VERSION = "1.0.0"
@@ -39,6 +40,7 @@ DEFAULT_PORT = 8765
 DEMO_CONVERSATION_ID = "demo"
 DEMO_LABEL = "Demo conversation (synthetic)"
 
+PLACEHOLDER_KEY = "your-key-here"
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_PATH = REPO_ROOT / "schemas" / "report.schema.json"
 
@@ -81,9 +83,62 @@ def thresholds() -> dict:
     }
 
 
-def _env(name: str) -> Optional[str]:
+PLACEHOLDER_KEY = "your-key-here"
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def dotenv_paths() -> list:
+    """Files read for settings not in the environment. PSYCHOSIGHT_DOTENV (os-separated list) overrides."""
+    override = os.environ.get("PSYCHOSIGHT_DOTENV", "").strip()
+    if override:
+        return [Path(p).expanduser() for p in override.split(os.pathsep) if p]
+    return [REPO_ROOT / ".env", Path.home() / ".psychosight" / ".env"]
+
+
+def parse_dotenv(text: str) -> dict:
+    """Minimal KEY=VALUE parser (no dependency): '#' comments, optional 'export ', optional quotes."""
+    values = {}
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        if line.startswith("export "):
+            line = line[len("export "):].strip()
+        key, _, value = line.partition("=")
+        key, value = key.strip(), value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
+            value = value[1:-1]
+        elif " #" in value:
+            value = value.split(" #", 1)[0].rstrip()
+        if key:
+            values[key] = value
+    return values
+
+
+def _dotenv() -> dict:
+    """Merged .env values; earlier files win. Read on each call so edits apply without a restart."""
+    merged: dict = {}
+    for path in dotenv_paths():
+        try:
+            values = parse_dotenv(path.read_text(encoding="utf-8"))
+        except OSError:
+            continue
+        for k, v in values.items():
+            merged.setdefault(k, v)
+    return merged
+
+
+def _env_with_source(name: str) -> tuple:
     value = os.environ.get(name, "").strip()
-    return value or None
+    if value:
+        return value, "env"
+    value = (_dotenv().get(name) or "").strip()
+    return (value, "dotenv") if value else (None, None)
+
+
+def _env(name: str) -> Optional[str]:
+    """Environment variable, falling back to the .env files."""
+    return _env_with_source(name)[0]
 
 
 @dataclass(frozen=True)
@@ -97,11 +152,12 @@ class LLMSettings:
     send_temperature: bool
     timeout_s: float
     max_tokens: Optional[int]
+    key_source: Optional[str] = None  # "env", "dotenv" or None
 
     def __repr__(self) -> str:  # never show the key
         return (
             f"LLMSettings(model={self.model!r}, base_url={self.base_url!r}, "
-            f"reasoning_effort={self.reasoning_effort!r}, api_key={'set' if self.api_key else 'unset'})"
+            f"reasoning_effort={self.reasoning_effort!r}, api_key={mask_key(self.api_key)!r}, key_source={self.key_source!r})"
         )
 
     @property
@@ -109,15 +165,26 @@ class LLMSettings:
         return bool(self.api_key and self.model)
 
 
+def mask_key(key: Optional[str]) -> str:
+    """Never show a key in full: 'sk-…1a2b' (or 'unset')."""
+    if not key:
+        return "unset"
+    return f"{key[:3]}…{key[-4:]}" if len(key) > 12 else "…"
+
+
 def llm_settings() -> LLMSettings:
     max_tokens = _env("DEEPSEEK_MAX_TOKENS")
+    api_key, key_source = _env_with_source("DEEPSEEK_API_KEY")
+    if api_key == PLACEHOLDER_KEY:  # .env copied from .env.example but not filled in
+        api_key, key_source = None, None
     return LLMSettings(
-        api_key=_env("DEEPSEEK_API_KEY"),
-        # No hardcoded model: Siho supplies the exact id ("4.1 flash 1017") via DEEPSEEK_MODEL.
-        model=_env("DEEPSEEK_MODEL"),
-        base_url=(_env("DEEPSEEK_BASE_URL") or "https://api.deepseek.com").rstrip("/"),
+        api_key=api_key,
+        key_source=key_source,
+        # Default is "DeepSeek 4.1 flash 1017" (id deepseek-flash); DEEPSEEK_MODEL overrides.
+        model=_env("DEEPSEEK_MODEL") or defaults.DEFAULT_DEEPSEEK_MODEL,
+        base_url=(_env("DEEPSEEK_BASE_URL") or defaults.DEFAULT_DEEPSEEK_BASE_URL).rstrip("/"),
         # Highest documented effort by default; set DEEPSEEK_REASONING_EFFORT=none to disable thinking.
-        reasoning_effort=_env("DEEPSEEK_REASONING_EFFORT") or "max",
+        reasoning_effort=_env("DEEPSEEK_REASONING_EFFORT") or defaults.DEFAULT_REASONING_EFFORT,
         thinking=_env("DEEPSEEK_THINKING") or "enabled",
         json_mode=(_env("DEEPSEEK_JSON_MODE") or "1") not in ("0", "false", "no"),
         send_temperature=(_env("DEEPSEEK_SEND_TEMPERATURE") or "1") not in ("0", "false", "no"),

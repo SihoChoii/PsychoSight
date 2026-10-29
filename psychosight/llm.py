@@ -1,7 +1,7 @@
 """Thin LLM provider layer: DeepSeek (OpenAI-compatible) and an offline MockProvider.
 
 Privacy rules enforced here:
-- The API key is read from the environment only and never logged or written.
+- The API key (DEEPSEEK_API_KEY from the environment or a gitignored .env file) is never logged or written.
 - Reasoning traces (`reasoning_content`) can quote messages: they are discarded on receipt and never
   logged, returned or persisted.
 - Request and response bodies are never logged; only status codes, counts and timings.
@@ -94,6 +94,9 @@ class Provider:
         """Optional preflight."""
 
 
+MISSING_KEY_MESSAGE = ("No DeepSeek API key found. Copy .env.example to .env and put the DeepSeek key in it "
+                       "(or export DEEPSEEK_API_KEY), then restart the backend.")
+
 RETRY_STATUS = {429, 500, 502, 503, 504}
 
 
@@ -105,7 +108,7 @@ class DeepSeekProvider(Provider):
                  sleep: Callable[[float], None] = time.sleep, max_attempts: int = 4):
         self.settings = settings or config.llm_settings()
         if not self.settings.api_key:
-            raise LLMUnavailable("DEEPSEEK_API_KEY is not set. Export it in the shell that runs the backend.")
+            raise LLMUnavailable(MISSING_KEY_MESSAGE)
         if not self.settings.model:
             raise LLMUnavailable("DEEPSEEK_MODEL is not set. Export the exact DeepSeek model id "
                                  "(see GET https://api.deepseek.com/models).")
@@ -193,7 +196,9 @@ class DeepSeekProvider(Provider):
             if status in (400, 404, 422) and self._is_model_error(resp):
                 raise self._model_rejected(status)
             if status in (401, 403):
-                raise LLMUnavailable(f"DeepSeek rejected the API key (HTTP {status}). Check DEEPSEEK_API_KEY.")
+                where = {"dotenv": "the key in your .env file", "env": "the DEEPSEEK_API_KEY environment variable"}
+                raise LLMUnavailable(f"DeepSeek rejected the API key (HTTP {status}). Check "
+                                     f"{where.get(self.settings.key_source, 'DEEPSEEK_API_KEY')}.")
             if status == 402:
                 raise LLMUnavailable("DeepSeek reports insufficient balance (HTTP 402).")
             if status in RETRY_STATUS:

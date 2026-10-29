@@ -42,6 +42,60 @@ def test_real_provider_requires_key_and_model():
         DeepSeekProvider(settings(model=None))
 
 
+def test_defaults_dotenv_and_env_override(tmp_path, monkeypatch):
+    s = config.llm_settings()
+    assert s.api_key is None and s.key_source is None and not s.configured
+    assert s.model == "deepseek-flash" and s.reasoning_effort == "max" and s.thinking == "enabled"
+    assert s.base_url == "https://api.deepseek.com"
+    env_file = tmp_path / ".env"
+    env_file.write_text("# comment\nexport DEEPSEEK_API_KEY='sk-dotenv-FAKE-KEY-7q7q'\n"
+                        "DEEPSEEK_MODEL=deepseek-v4-pro  # inline comment\nBROKEN LINE\n", encoding="utf-8")
+    monkeypatch.setenv("PSYCHOSIGHT_DOTENV", str(env_file))
+    s = config.llm_settings()
+    assert s.api_key == "sk-dotenv-FAKE-KEY-7q7q" and s.key_source == "dotenv" and s.configured
+    assert s.model == "deepseek-v4-pro"
+    assert "FAKE-KEY" not in repr(s) and "7q7q" in repr(s)  # masked: prefix + last 4 only
+    assert isinstance(get_provider(is_demo=False, llm_opt_in=True), DeepSeekProvider)
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "sk-env-OVERRIDE-1234")
+    monkeypatch.setenv("DEEPSEEK_MODEL", "deepseek-flash")
+    s = config.llm_settings()
+    assert s.api_key == "sk-env-OVERRIDE-1234" and s.key_source == "env" and s.model == "deepseek-flash"
+
+
+def test_dotenv_first_file_wins_and_missing_files_ignored(tmp_path, monkeypatch):
+    import os
+    a, b = tmp_path / "a.env", tmp_path / "b.env"
+    a.write_text("DEEPSEEK_API_KEY=sk-from-a-FAKE-0001\n", encoding="utf-8")
+    b.write_text('DEEPSEEK_API_KEY="sk-from-b-FAKE-0002"\nDEEPSEEK_MODEL=deepseek-v4-pro\n', encoding="utf-8")
+    monkeypatch.setenv("PSYCHOSIGHT_DOTENV", os.pathsep.join([str(tmp_path / "missing.env"), str(a), str(b)]))
+    s = config.llm_settings()
+    assert s.api_key == "sk-from-a-FAKE-0001" and s.model == "deepseek-v4-pro"
+
+
+def test_missing_key_message_is_actionable(tmp_path, monkeypatch):
+    example = (config.REPO_ROOT / ".env.example").read_text(encoding="utf-8")
+    env_file = tmp_path / ".env"
+    env_file.write_text(example, encoding="utf-8")  # copied but not filled in
+    monkeypatch.setenv("PSYCHOSIGHT_DOTENV", str(env_file))
+    assert config.llm_settings().api_key is None and config.llm_settings().model == "deepseek-flash"
+    with pytest.raises(LLMUnavailable) as exc:
+        get_provider(is_demo=False, llm_opt_in=True)
+    assert "Copy .env.example to .env" in exc.value.message and "DEEPSEEK_API_KEY" in exc.value.message
+
+
+def test_mask_key():
+    assert config.mask_key(None) == "unset"
+    assert config.mask_key("sk-abcdefghijklmnop1234") == "sk-…1234"
+    assert config.mask_key("short") == "…"
+
+
+def test_rejected_key_message_names_source():
+    p = DeepSeekProvider(settings(key_source="dotenv"),
+                         transport=httpx.MockTransport(lambda r: httpx.Response(401, json={})))
+    with pytest.raises(LLMUnavailable, match=r"\.env file"):
+        p.complete("s", "u")
+
+
 def test_request_body_and_reasoning_discarded():
     seen = {}
 

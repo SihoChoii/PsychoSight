@@ -38,7 +38,20 @@ def test_health_config_no_secrets(client, monkeypatch):
     assert cfg["opt_in_text"] == config.OPT_IN_TEXT and "BOTH sides" in cfg["opt_in_text"]
     assert "DeepSeek" in cfg["opt_in_text"] and "other person's messages" in cfg["opt_in_text"]
     assert cfg["model"] == "my-model" and cfg["llm_configured"] is True
-    assert "sk-SECRET-123" not in json.dumps(cfg)
+    assert "sk-SECRET-123" not in json.dumps(cfg) and cfg["llm_key_source"] == "env"
+
+
+def test_config_dotenv_key_available_without_secret(client, tmp_path, monkeypatch):
+    cfg = client.get("/config").json()
+    assert cfg["llm_available"] is False and cfg["llm_key_source"] is None and cfg["model"] == "deepseek-flash"
+    env_file = tmp_path / ".env"
+    env_file.write_text("DEEPSEEK_API_KEY=sk-dotenv-FAKE-SECRET-5555\n", encoding="utf-8")
+    monkeypatch.setenv("PSYCHOSIGHT_DOTENV", str(env_file))
+    cfg = client.get("/config").json()
+    assert cfg["llm_available"] is True and cfg["llm_configured"] is True
+    assert cfg["model"] == "deepseek-flash" and cfg["reasoning_effort"] == "max"
+    assert cfg["llm_key_source"] == "dotenv"
+    assert "FAKE-SECRET" not in json.dumps(cfg) and "5555" not in json.dumps(cfg)
 
 
 def test_conversations_demo_first_and_fda_error(client):
