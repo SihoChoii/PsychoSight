@@ -23,8 +23,9 @@ import {
   withNullOther,
 } from "./fixtures/experimental-samples";
 import mockConfig from "./fixtures/mock-config.json";
+import { interpretReasoningLevel, readReasoningControl, reasoningFields } from "./reasoning-adapter";
 import { queryFlag } from "./mode";
-import type { AnalysisRequest, Config, DateRangeClamp, ExperimentalScores, Job, Report, SavedAnalysis } from "./types";
+import type { AnalysisRequest, Config, CreatedAnalysis, DateRangeClamp, ExperimentalScores, Job, Report, SavedAnalysis } from "./types";
 
 const STEP_MS = 450;
 
@@ -80,6 +81,7 @@ interface MockJob {
   experimental: boolean;
   scoreOther: boolean;
   clamp: DateRangeClamp | null;
+  reasoningLevel: string | null;
 }
 
 const jobs = new Map<string, MockJob>();
@@ -118,6 +120,12 @@ function cloneReport(source: Report, job: { id: string; mode: string; conversati
   report.run_meta.run_id = job.id;
   report.run_meta.mode = job.mode;
   report.run_meta.llm_opt_in = job.mode === "full";
+  return report;
+}
+
+function withReasoningMeta(report: Report, job: MockJob): Report {
+  report.run_meta.reasoning_level = job.mode === "full" ? job.reasoningLevel : null;
+  report.run_meta.reasoning_effort = null;
   return report;
 }
 
@@ -285,7 +293,7 @@ export const mockApi: Client = {
     return saved.sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
   },
 
-  async createAnalysis(body: AnalysisRequest) {
+  async createAnalysis(body: AnalysisRequest): Promise<CreatedAnalysis> {
     const conversation = findConversation(body.conversation_id);
     if (!conversation) throw new ApiError("NOT_FOUND", `No conversation with id '${body.conversation_id}'.`, 404);
     if (!conversation.supported || conversation.is_group) {
@@ -301,9 +309,14 @@ export const mockApi: Client = {
         422,
       );
     }
+    const decision = interpretReasoningLevel(body[reasoningFields.requestLevel], mockConfig);
+    if (!decision.ok) throw new ApiError(decision.code, decision.message, 422);
     const range = resolveDateRange(body.date_from, body.date_to, conversation.first_message_date, conversation.last_message_date);
     if (!range.ok) throw new ApiError(range.code, range.message, 422);
     const mode = body.mode === "deterministic_only" || body.llm_opt_in === false ? "deterministic_only" : "full";
+    const control = readReasoningControl(mockConfig);
+    const reasoningLevel =
+      mode === "full" ? (decision.level ?? control.levels[control.defaultIndex]?.id ?? null) : null;
     const id = `demo-${Math.random().toString(16).slice(2, 10)}`;
     jobs.set(id, {
       id,
@@ -315,8 +328,10 @@ export const mockApi: Client = {
       experimental: body.experimental_scores === true,
       scoreOther: body.experimental_scores === true && body.score_other === true,
       clamp: range.clamp,
+      reasoningLevel,
     });
-    return { job_id: id, status: "queued" };
+    if (!decision.level) return { job_id: id, status: "queued" };
+    return { job_id: id, status: "queued", [reasoningFields.requestLevel]: decision.level };
   },
 
   async getAnalysis(jobId: string) {
@@ -351,9 +366,10 @@ export const mockApi: Client = {
       throw new ApiError("REPORT_NOT_READY", `Analysis '${jobId}' is still ${view.status} (stage ${view.stage}).`, 409);
     }
     const base = sourceFor(job.mode);
-    if (!job.experimental) return withDateClamp(withSection(base, notRunSection, job), job.clamp);
+    const stamped = (report: Report) => withReasoningMeta(withDateClamp(report, job.clamp), job);
+    if (!job.experimental) return stamped(withSection(base, notRunSection, job));
     const section = job.mode === "deterministic_only" ? deterministicSection : stubSection;
-    return withDateClamp(withSection(base, job.scoreOther ? section : withNullOther(section), job), job.clamp);
+    return stamped(withSection(base, job.scoreOther ? section : withNullOther(section), job));
   },
 
   async deleteAnalysis(jobId: string) {

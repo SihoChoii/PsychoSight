@@ -905,6 +905,212 @@ progress::-moz-progress-bar {
   max-width: 65ch;
 }
 
+.reasoning {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.reasoning legend {
+  display: block;
+  width: 100%;
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  font-size: 16px;
+  float: none;
+}
+
+.reasoning-current,
+.reasoning-description,
+.reasoning-hint,
+.reasoning-reason {
+  margin: var(--space-2) 0 0;
+  max-width: 65ch;
+  overflow-wrap: anywhere;
+}
+
+.reasoning-current {
+  font-size: var(--body-size);
+}
+
+.reasoning-description,
+.reasoning-hint,
+.reasoning-reason {
+  color: var(--secondary);
+}
+
+.reasoning.is-disabled .reasoning-current {
+  color: var(--secondary);
+}
+
+.reasoning-slider {
+  display: block;
+  width: 100%;
+  height: 48px;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--control-radius);
+  accent-color: var(--focus);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: none;
+}
+
+.reasoning-slider:disabled {
+  cursor: default;
+  accent-color: var(--line);
+}
+
+.reasoning-slider::-moz-focus-outer {
+  border: 0;
+}
+
+.reasoning-slider::-webkit-slider-runnable-track {
+  height: 48px;
+  background: linear-gradient(var(--foreground), var(--foreground)) center / 100% var(--line-width) no-repeat;
+  border: 0;
+  border-radius: 0;
+}
+
+.reasoning-slider:disabled::-webkit-slider-runnable-track {
+  background: linear-gradient(var(--line), var(--line)) center / 100% var(--line-width) no-repeat;
+}
+
+.reasoning-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 16px;
+  background: var(--foreground);
+  border: var(--line-width) solid var(--foreground);
+  border-radius: var(--control-radius);
+  transition: none;
+}
+
+.reasoning-slider:disabled::-webkit-slider-thumb {
+  background: transparent;
+  border-color: var(--line);
+}
+
+.reasoning-slider::-moz-range-track {
+  height: 48px;
+  background: linear-gradient(var(--foreground), var(--foreground)) center / 100% var(--line-width) no-repeat;
+  border: 0;
+}
+
+.reasoning-slider:disabled::-moz-range-track {
+  background: linear-gradient(var(--line), var(--line)) center / 100% var(--line-width) no-repeat;
+}
+
+.reasoning-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--foreground);
+  border: var(--line-width) solid var(--foreground);
+  border-radius: var(--control-radius);
+  transition: none;
+}
+
+.reasoning-slider:disabled::-moz-range-thumb {
+  background: transparent;
+  border-color: var(--line);
+}
+
+.reasoning-scale {
+  padding-inline: 20px;
+}
+
+.reasoning-ends {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin: 12px 0 0;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--secondary);
+}
+
+.reasoning-ticks {
+  position: relative;
+  height: 76px;
+  margin: var(--space-1) 8px 0;
+}
+
+.reasoning-ticks.is-single {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.reasoning-tick {
+  position: absolute;
+  top: 0;
+  left: calc(var(--tick-index) * 100% / max(var(--tick-count) - 1, 1));
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+  max-width: min(8em, calc(100% / max(var(--tick-count) - 1, 1)));
+  min-height: 48px;
+  margin: 0;
+  padding: 0 2px;
+  border: 0;
+  border-radius: var(--control-radius);
+  background: transparent;
+  color: var(--secondary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.reasoning-ticks.is-single .reasoning-tick {
+  left: 50%;
+}
+
+.reasoning-tick.is-current {
+  color: var(--foreground);
+}
+
+.reasoning-tick:disabled {
+  color: var(--secondary);
+}
+
+.reasoning-tick-mark {
+  width: var(--line-width);
+  height: 8px;
+  background: currentColor;
+  flex: none;
+}
+
+.reasoning-tick.is-current .reasoning-tick-mark {
+  height: 12px;
+}
+
+.reasoning.is-disabled .reasoning-tick-mark {
+  background: var(--line);
+}
+
+.reasoning-tick-label {
+  max-width: 100%;
+}
+
+@media (max-width: 400px) {
+  .reasoning-ends,
+  .reasoning-tick {
+    font-size: 12px;
+  }
+}
+
 .exp-card {
   padding-top: var(--space-8);
   padding-bottom: var(--space-8);

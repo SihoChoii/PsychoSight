@@ -9,6 +9,7 @@ import { ProgressView } from "./components/ProgressView";
 import { ReportView } from "./components/ReportView";
 import { Shell } from "./components/Shell";
 import { applyTheme, currentTheme, isMockMode, type ThemeName } from "./mode";
+import { readReasoningControl } from "./reasoning-adapter";
 import { parseHash, type Route } from "./routes";
 import type { Config, ExperimentalChoice, Job, Report, SavedAnalysis } from "./types";
 
@@ -106,7 +107,7 @@ export function App() {
     setTheme(next);
   }
 
-  async function start(optIn: boolean, choice: ExperimentalChoice) {
+  async function start(optIn: boolean, choice: ExperimentalChoice, reasoningLevel: string | null = null) {
     const selection = readSelection();
     if (!selection) {
       window.location.hash = "#/";
@@ -125,6 +126,7 @@ export function App() {
           llmOptIn: optIn,
           choice,
           config,
+          reasoningLevel: optIn ? reasoningLevel : null,
         }),
       );
       sessionStorage.setItem(JOB_KEY, created.job_id);
@@ -153,14 +155,21 @@ export function App() {
         experimentalText={config?.experimental_opt_in_text ?? null}
         scoreOtherText={config?.score_other_opt_in_text ?? null}
         demoProviderNote={config?.demo_provider_note ?? null}
-        onOptIn={(choice) => start(true, choice)}
-        onLocalOnly={(choice) => start(false, choice)}
+        reasoningConfig={config}
+        onOptIn={(choice, reasoningLevel) => start(true, choice, reasoningLevel)}
+        onLocalOnly={(choice) => start(false, choice, null)}
       />
     );
   } else if (route.name === "run") {
     body = <RunScreen jobId={route.jobId} />;
   } else if (route.name === "report") {
-    body = <ReportScreen jobId={route.jobId} trendNote={config?.experimental_trend_note ?? null} />;
+    body = (
+      <ReportScreen
+        jobId={route.jobId}
+        trendNote={config?.experimental_trend_note ?? null}
+        reasoningLevels={readReasoningControl(config).levels}
+      />
+    );
   } else if (listError) {
     body = (
       <section className="focus-task" aria-labelledby="page-title">
@@ -297,7 +306,15 @@ function RunScreen({ jobId }: { jobId: string }) {
   return <ProgressView job={job} onBack={() => { window.location.hash = "#/"; }} />;
 }
 
-function ReportScreen({ jobId, trendNote }: { jobId: string; trendNote: string | null }) {
+function ReportScreen({
+  jobId,
+  trendNote,
+  reasoningLevels,
+}: {
+  jobId: string;
+  trendNote: string | null;
+  reasoningLevels: readonly { id: string; label: string }[];
+}) {
   const [report, setReport] = useState<Report | null>(null);
   const [error, setError] = useState<ApiError | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -364,5 +381,14 @@ function ReportScreen({ jobId, trendNote }: { jobId: string; trendNote: string |
       </section>
     );
   }
-  return <ReportView report={report} deleting={deleting} deleteError={deleteError} trendNote={trendNote} onDelete={remove} />;
+  return (
+    <ReportView
+      report={report}
+      deleting={deleting}
+      deleteError={deleteError}
+      trendNote={trendNote}
+      reasoningLevels={reasoningLevels}
+      onDelete={remove}
+    />
+  );
 }
