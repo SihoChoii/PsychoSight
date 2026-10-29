@@ -8,3 +8,4 @@ dependencies = ["fastapi>=0.100", "uvicorn>=0.22", "jsonschema>=4.17", "httpx>=0
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning:fastapi.testclient", "ignore:Using `httpx` with `starlette.testclient`"]

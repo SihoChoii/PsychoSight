@@ -57,12 +57,12 @@ def conversation_summary(conv: msgexport.Conversation) -> dict:
 
 
 def demo_summary() -> dict:
-    rows = synthetic.generate_rows()
+    msgs = normalize_rows(synthetic.generate_rows())
     return {
         "id": config.DEMO_CONVERSATION_ID,
         "label": config.DEMO_LABEL,
-        "message_count": len(rows),
-        "latest_date": max(r.sent_at for r in rows).isoformat(),
+        "message_count": len(msgs),
+        "latest_date": msgs[-1].ts.isoformat() if msgs else None,
         "is_group": False,
         "supported": True,
         "is_demo": True,
