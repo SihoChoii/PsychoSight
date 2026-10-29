@@ -1,0 +1,6447 @@
+{
+  "status": "ok",
+  "reason": null,
+  "banner": "Experimental, not validated. These scores are not a diagnosis, not a personality test and not a measure of who anyone is. They come from word counts and AI ratings of this one conversation and can easily be wrong.",
+  "title": "Experimental scores",
+  "scale_note": "0–100 experimental index. 50 is the midpoint of fixed reference points, not an average person. The shaded band shows how uncertain the number is.",
+  "footer_support": "If anything in this conversation is weighing on you, consider talking with someone you trust or a licensed professional.",
+  "how_it_works": "These numbers come from word counts and AI ratings of text messages. The research behind them looked at essays, Facebook posts, blogs and forums, mostly from large groups of people. Nobody has tested these formulas on iMessage conversations.\n\nThe best published language-based personality models are modest. Agreement with self-report questionnaires is around r = .3 to .4 (Park et al. 2015; Azucar et al. 2018), and AI models asked directly come in around r = .29 (Peters & Matz 2024). Two people with the same true trait can easily get very different scores.\n\nNarcissism, attachment and addiction language have much weaker or exploratory evidence. Some popular ideas have failed outright: saying \"I\" a lot is not linked to narcissism (Carey et al. 2015, r = .01).\n\nOne conversation reflects the relationship and the moment as much as the person. Your score with one person and your score with another can differ.\n\nThe 0–100 scale is our own construction. 50 is the midpoint of fixed reference anchors. It is not an average person, and nothing on the scale is a dividing line.\n\nPeople tend to find vague personality feedback accurate (the Barnum effect, Forer 1949). Treat these scores as conversation starters, not facts.",
+  "scoring_version": "exp-scores-v1",
+  "prompt_versions": {
+    "episode": "traits-exp-v1",
+    "holistic": "exp-holistic-v1"
+  },
+  "anchors_version": "exp-anchors-v1",
+  "speakers_scored": [
+    "me",
+    "other"
+  ],
+  "thresholds": {
+    "min_episodes": 20,
+    "min_words": 1500,
+    "max_confidence": "medium"
+  },
+  "dimensions": [
+    {
+      "key": "openness",
+      "label": "Openness (experimental language index)",
+      "family": "big_five",
+      "evidence_strength": "moderate",
+      "evidence_note": "Language markers associated in research with openness; evidence: moderate",
+      "citations": [
+        {
+          "short": "Park et al. 2015",
+          "doi": "10.1037/pspp0000020"
+        },
+        {
+          "short": "Azucar, Marengo & Settanni 2018",
+          "doi": "10.1016/j.paid.2017.12.018"
+        },
+        {
+          "short": "Yarkoni 2010",
+          "doi": "10.1016/j.jrp.2010.04.001"
+        },
+        {
+          "short": "Peters & Matz 2024",
+          "doi": "10.1093/pnasnexus/pgae231"
+        }
+      ],
+      "per_speaker": {
+        "me": {
+          "status": "ok",
+          "reason": null,
+          "score": 49,
+          "band": {
+            "lo": 36,
+            "hi": 62
+          },
+          "confidence": "medium",
+          "n_episodes": 36,
+          "n_words": 13649,
+          "contributions": [
+            {
+              "marker_key": "wwbp.openness",
+              "label": "WWBP weighted word list for this dimension",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.467,
+              "value": 0.174,
+              "unit": "lexicon units per 100 words",
+              "sub_score": 0.543,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "holistic.openness",
+              "label": "Overall AI rating for this dimension",
+              "source": "H",
+              "direction": "up",
+              "weight": 0.315,
+              "value": 2.615,
+              "unit": "1-5 rubric",
+              "sub_score": 0.404,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "long_word_share",
+              "label": "Long words (7+ letters)",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.109,
+              "value": 21.184,
+              "unit": "% of words",
+              "sub_score": 0.599,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "empath_intellect",
+              "label": "Art, reading and ideas words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.109,
+              "value": 0.495,
+              "unit": "% of words",
+              "sub_score": 0.439,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 43,
+              "n_episodes": 7,
+              "n_words": 470,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 49,
+              "n_episodes": 8,
+              "n_words": 647,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 48,
+              "n_episodes": 8,
+              "n_words": 577,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 40,
+              "n_episodes": 7,
+              "n_words": 455,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 49,
+              "n_episodes": 7,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 55,
+              "n_episodes": 8,
+              "n_words": 482,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 56,
+              "n_episodes": 6,
+              "n_words": 544,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 53,
+              "n_episodes": 6,
+              "n_words": 493,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 55,
+              "n_episodes": 7,
+              "n_words": 563,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 58,
+              "n_episodes": 8,
+              "n_words": 510,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 50,
+              "n_episodes": 7,
+              "n_words": 439,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 48,
+              "n_episodes": 9,
+              "n_words": 639,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 57,
+              "n_episodes": 10,
+              "n_words": 815,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 57,
+              "n_episodes": 8,
+              "n_words": 546,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 54,
+              "n_episodes": 7,
+              "n_words": 530,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 42,
+              "n_episodes": 8,
+              "n_words": 669,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 55,
+              "n_episodes": 7,
+              "n_words": 591,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 42,
+              "n_episodes": 8,
+              "n_words": 596,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 54,
+              "n_episodes": 8,
+              "n_words": 498,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 48,
+              "n_episodes": 8,
+              "n_words": 614,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 54,
+              "n_episodes": 7,
+              "n_words": 502,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 44,
+              "n_episodes": 8,
+              "n_words": 398,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 56,
+              "n_episodes": 7,
+              "n_words": 528,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 43,
+              "n_episodes": 8,
+              "n_words": 556,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 44,
+              "n_episodes": 9,
+              "n_words": 488,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        },
+        "other": {
+          "status": "ok",
+          "reason": null,
+          "score": 42,
+          "band": {
+            "lo": 28,
+            "hi": 56
+          },
+          "confidence": "low",
+          "n_episodes": 33,
+          "n_words": 13146,
+          "contributions": [
+            {
+              "marker_key": "wwbp.openness",
+              "label": "WWBP weighted word list for this dimension",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.467,
+              "value": -0.166,
+              "unit": "lexicon units per 100 words",
+              "sub_score": 0.459,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "holistic.openness",
+              "label": "Overall AI rating for this dimension",
+              "source": "H",
+              "direction": "up",
+              "weight": 0.315,
+              "value": 2.411,
+              "unit": "1-5 rubric",
+              "sub_score": 0.353,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "long_word_share",
+              "label": "Long words (7+ letters)",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.109,
+              "value": 18.809,
+              "unit": "% of words",
+              "sub_score": 0.401,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "empath_intellect",
+              "label": "Art, reading and ideas words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.109,
+              "value": 0.555,
+              "unit": "% of words",
+              "sub_score": 0.505,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 45,
+              "n_episodes": 7,
+              "n_words": 435,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 42,
+              "n_episodes": 8,
+              "n_words": 638,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 36,
+              "n_episodes": 8,
+              "n_words": 533,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 35,
+              "n_episodes": 7,
+              "n_words": 551,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 48,
+              "n_episodes": 7,
+              "n_words": 437,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 42,
+              "n_episodes": 8,
+              "n_words": 448,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 33,
+              "n_episodes": 6,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 50,
+              "n_episodes": 6,
+              "n_words": 433,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 34,
+              "n_episodes": 7,
+              "n_words": 597,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 51,
+              "n_episodes": 8,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 39,
+              "n_episodes": 7,
+              "n_words": 451,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 50,
+              "n_episodes": 9,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 36,
+              "n_episodes": 10,
+              "n_words": 813,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 45,
+              "n_episodes": 8,
+              "n_words": 516,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 43,
+              "n_episodes": 7,
+              "n_words": 431,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 49,
+              "n_episodes": 8,
+              "n_words": 598,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 41,
+              "n_episodes": 7,
+              "n_words": 564,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 45,
+              "n_episodes": 8,
+              "n_words": 471,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 45,
+              "n_episodes": 8,
+              "n_words": 438,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 34,
+              "n_episodes": 8,
+              "n_words": 627,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 36,
+              "n_episodes": 7,
+              "n_words": 522,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 36,
+              "n_episodes": 8,
+              "n_words": 443,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 37,
+              "n_episodes": 7,
+              "n_words": 430,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 48,
+              "n_episodes": 8,
+              "n_words": 512,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 42,
+              "n_episodes": 9,
+              "n_words": 489,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        }
+      }
+    },
+    {
+      "key": "conscientiousness",
+      "label": "Conscientiousness (experimental language index)",
+      "family": "big_five",
+      "evidence_strength": "moderate",
+      "evidence_note": "Language markers associated in research with conscientiousness; evidence: moderate",
+      "citations": [
+        {
+          "short": "Park et al. 2015",
+          "doi": "10.1037/pspp0000020"
+        },
+        {
+          "short": "Azucar, Marengo & Settanni 2018",
+          "doi": "10.1016/j.paid.2017.12.018"
+        },
+        {
+          "short": "Marengo, Montag & Settanni 2025",
+          "doi": "10.1111/jopy.70019"
+        }
+      ],
+      "per_speaker": {
+        "me": {
+          "status": "ok",
+          "reason": null,
+          "score": 56,
+          "band": {
+            "lo": 45,
+            "hi": 67
+          },
+          "confidence": "medium",
+          "n_episodes": 36,
+          "n_words": 13649,
+          "contributions": [
+            {
+              "marker_key": "wwbp.conscientiousness",
+              "label": "WWBP weighted word list for this dimension",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.457,
+              "value": 0.019,
+              "unit": "lexicon units per 100 words",
+              "sub_score": 0.505,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "holistic.conscientiousness",
+              "label": "Overall AI rating for this dimension",
+              "source": "H",
+              "direction": "up",
+              "weight": 0.358,
+              "value": 3.695,
+              "unit": "1-5 rubric",
+              "sub_score": 0.674,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "swear_rate",
+              "label": "Swear words",
+              "source": "D",
+              "direction": "down",
+              "weight": 0.123,
+              "value": 1.004,
+              "unit": "% of words",
+              "sub_score": 0.498,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.follows_through_on_plans",
+              "label": "Follows through on plans (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.062,
+              "value": 3.028,
+              "unit": "1-5 rubric",
+              "sub_score": 0.507,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 48,
+              "n_episodes": 7,
+              "n_words": 470,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 51,
+              "n_episodes": 8,
+              "n_words": 647,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 58,
+              "n_episodes": 8,
+              "n_words": 577,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 57,
+              "n_episodes": 7,
+              "n_words": 455,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 56,
+              "n_episodes": 7,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 54,
+              "n_episodes": 8,
+              "n_words": 482,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 64,
+              "n_episodes": 6,
+              "n_words": 544,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 57,
+              "n_episodes": 6,
+              "n_words": 493,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 47,
+              "n_episodes": 7,
+              "n_words": 563,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 60,
+              "n_episodes": 8,
+              "n_words": 510,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 64,
+              "n_episodes": 7,
+              "n_words": 439,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 56,
+              "n_episodes": 9,
+              "n_words": 639,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 58,
+              "n_episodes": 10,
+              "n_words": 815,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 50,
+              "n_episodes": 8,
+              "n_words": 546,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 51,
+              "n_episodes": 7,
+              "n_words": 530,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 53,
+              "n_episodes": 8,
+              "n_words": 669,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 65,
+              "n_episodes": 7,
+              "n_words": 591,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 48,
+              "n_episodes": 8,
+              "n_words": 596,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 61,
+              "n_episodes": 8,
+              "n_words": 498,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 51,
+              "n_episodes": 8,
+              "n_words": 614,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 60,
+              "n_episodes": 7,
+              "n_words": 502,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 58,
+              "n_episodes": 8,
+              "n_words": 398,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 57,
+              "n_episodes": 7,
+              "n_words": 528,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 64,
+              "n_episodes": 8,
+              "n_words": 556,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 58,
+              "n_episodes": 9,
+              "n_words": 488,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        },
+        "other": {
+          "status": "ok",
+          "reason": null,
+          "score": 52,
+          "band": {
+            "lo": 36,
+            "hi": 68
+          },
+          "confidence": "low",
+          "n_episodes": 33,
+          "n_words": 13146,
+          "contributions": [
+            {
+              "marker_key": "wwbp.conscientiousness",
+              "label": "WWBP weighted word list for this dimension",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.457,
+              "value": 0.351,
+              "unit": "lexicon units per 100 words",
+              "sub_score": 0.587,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "holistic.conscientiousness",
+              "label": "Overall AI rating for this dimension",
+              "source": "H",
+              "direction": "up",
+              "weight": 0.358,
+              "value": 2.698,
+              "unit": "1-5 rubric",
+              "sub_score": 0.425,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "swear_rate",
+              "label": "Swear words",
+              "source": "D",
+              "direction": "down",
+              "weight": 0.123,
+              "value": 0.901,
+              "unit": "% of words",
+              "sub_score": 0.55,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.follows_through_on_plans",
+              "label": "Follows through on plans (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.062,
+              "value": 2.837,
+              "unit": "1-5 rubric",
+              "sub_score": 0.459,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 49,
+              "n_episodes": 7,
+              "n_words": 435,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 58,
+              "n_episodes": 8,
+              "n_words": 638,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 60,
+              "n_episodes": 8,
+              "n_words": 533,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 44,
+              "n_episodes": 7,
+              "n_words": 551,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 46,
+              "n_episodes": 7,
+              "n_words": 437,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 58,
+              "n_episodes": 8,
+              "n_words": 448,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 44,
+              "n_episodes": 6,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 45,
+              "n_episodes": 6,
+              "n_words": 433,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 55,
+              "n_episodes": 7,
+              "n_words": 597,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 45,
+              "n_episodes": 8,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 51,
+              "n_episodes": 7,
+              "n_words": 451,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 47,
+              "n_episodes": 9,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 54,
+              "n_episodes": 10,
+              "n_words": 813,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 48,
+              "n_episodes": 8,
+              "n_words": 516,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 57,
+              "n_episodes": 7,
+              "n_words": 431,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 46,
+              "n_episodes": 8,
+              "n_words": 598,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 46,
+              "n_episodes": 7,
+              "n_words": 564,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 44,
+              "n_episodes": 8,
+              "n_words": 471,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 47,
+              "n_episodes": 8,
+              "n_words": 438,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 50,
+              "n_episodes": 8,
+              "n_words": 627,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 51,
+              "n_episodes": 7,
+              "n_words": 522,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 60,
+              "n_episodes": 8,
+              "n_words": 443,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 50,
+              "n_episodes": 7,
+              "n_words": 430,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 44,
+              "n_episodes": 8,
+              "n_words": 512,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 57,
+              "n_episodes": 9,
+              "n_words": 489,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        }
+      }
+    },
+    {
+      "key": "extraversion",
+      "label": "Extraversion (experimental language index)",
+      "family": "big_five",
+      "evidence_strength": "moderate",
+      "evidence_note": "Language markers associated in research with extraversion; evidence: moderate",
+      "citations": [
+        {
+          "short": "Park et al. 2015",
+          "doi": "10.1037/pspp0000020"
+        },
+        {
+          "short": "Azucar, Marengo & Settanni 2018",
+          "doi": "10.1016/j.paid.2017.12.018"
+        },
+        {
+          "short": "Yarkoni 2010",
+          "doi": "10.1016/j.jrp.2010.04.001"
+        },
+        {
+          "short": "Stachl et al. 2020",
+          "doi": "10.1073/pnas.1920484117"
+        }
+      ],
+      "per_speaker": {
+        "me": {
+          "status": "ok",
+          "reason": null,
+          "score": 59,
+          "band": {
+            "lo": 48,
+            "hi": 70
+          },
+          "confidence": "medium",
+          "n_episodes": 36,
+          "n_words": 13649,
+          "contributions": [
+            {
+              "marker_key": "wwbp.extraversion",
+              "label": "WWBP weighted word list for this dimension",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.416,
+              "value": -0.052,
+              "unit": "lexicon units per 100 words",
+              "sub_score": 0.487,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "holistic.extraversion",
+              "label": "Overall AI rating for this dimension",
+              "source": "H",
+              "direction": "up",
+              "weight": 0.287,
+              "value": 3.479,
+              "unit": "1-5 rubric",
+              "sub_score": 0.62,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "pos_emotion_rate",
+              "label": "Positive-emotion words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.149,
+              "value": 4.608,
+              "unit": "% of words",
+              "sub_score": 0.777,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "social_word_rate",
+              "label": "Social words (friends, family, people)",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.099,
+              "value": 3.708,
+              "unit": "% of words",
+              "sub_score": 0.677,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "initiation_share",
+              "label": "Starts the episode",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.05,
+              "value": 0.531,
+              "unit": "share of episodes",
+              "sub_score": 0.551,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 60,
+              "n_episodes": 7,
+              "n_words": 470,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 62,
+              "n_episodes": 8,
+              "n_words": 647,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 53,
+              "n_episodes": 8,
+              "n_words": 577,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 53,
+              "n_episodes": 7,
+              "n_words": 455,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 51,
+              "n_episodes": 7,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 59,
+              "n_episodes": 8,
+              "n_words": 482,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 68,
+              "n_episodes": 6,
+              "n_words": 544,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 56,
+              "n_episodes": 6,
+              "n_words": 493,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 67,
+              "n_episodes": 7,
+              "n_words": 563,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 56,
+              "n_episodes": 8,
+              "n_words": 510,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 52,
+              "n_episodes": 7,
+              "n_words": 439,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 52,
+              "n_episodes": 9,
+              "n_words": 639,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 67,
+              "n_episodes": 10,
+              "n_words": 815,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 54,
+              "n_episodes": 8,
+              "n_words": 546,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 68,
+              "n_episodes": 7,
+              "n_words": 530,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 62,
+              "n_episodes": 8,
+              "n_words": 669,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 64,
+              "n_episodes": 7,
+              "n_words": 591,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 62,
+              "n_episodes": 8,
+              "n_words": 596,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 62,
+              "n_episodes": 8,
+              "n_words": 498,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 65,
+              "n_episodes": 8,
+              "n_words": 614,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 51,
+              "n_episodes": 7,
+              "n_words": 502,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 64,
+              "n_episodes": 8,
+              "n_words": 398,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 66,
+              "n_episodes": 7,
+              "n_words": 528,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 53,
+              "n_episodes": 8,
+              "n_words": 556,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 56,
+              "n_episodes": 9,
+              "n_words": 488,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        },
+        "other": {
+          "status": "ok",
+          "reason": null,
+          "score": 53,
+          "band": {
+            "lo": 42,
+            "hi": 64
+          },
+          "confidence": "low",
+          "n_episodes": 33,
+          "n_words": 13146,
+          "contributions": [
+            {
+              "marker_key": "wwbp.extraversion",
+              "label": "WWBP weighted word list for this dimension",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.416,
+              "value": 0.521,
+              "unit": "lexicon units per 100 words",
+              "sub_score": 0.627,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "holistic.extraversion",
+              "label": "Overall AI rating for this dimension",
+              "source": "H",
+              "direction": "up",
+              "weight": 0.287,
+              "value": 2.408,
+              "unit": "1-5 rubric",
+              "sub_score": 0.352,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "pos_emotion_rate",
+              "label": "Positive-emotion words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.149,
+              "value": 4.016,
+              "unit": "% of words",
+              "sub_score": 0.629,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "social_word_rate",
+              "label": "Social words (friends, family, people)",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.099,
+              "value": 3.068,
+              "unit": "% of words",
+              "sub_score": 0.517,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "initiation_share",
+              "label": "Starts the episode",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.05,
+              "value": 0.539,
+              "unit": "share of episodes",
+              "sub_score": 0.564,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 53,
+              "n_episodes": 7,
+              "n_words": 435,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 49,
+              "n_episodes": 8,
+              "n_words": 638,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 47,
+              "n_episodes": 8,
+              "n_words": 533,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 46,
+              "n_episodes": 7,
+              "n_words": 551,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 60,
+              "n_episodes": 7,
+              "n_words": 437,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 53,
+              "n_episodes": 8,
+              "n_words": 448,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 54,
+              "n_episodes": 6,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 55,
+              "n_episodes": 6,
+              "n_words": 433,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 52,
+              "n_episodes": 7,
+              "n_words": 597,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 56,
+              "n_episodes": 8,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 50,
+              "n_episodes": 7,
+              "n_words": 451,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 44,
+              "n_episodes": 9,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 62,
+              "n_episodes": 10,
+              "n_words": 813,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 54,
+              "n_episodes": 8,
+              "n_words": 516,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 56,
+              "n_episodes": 7,
+              "n_words": 431,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 50,
+              "n_episodes": 8,
+              "n_words": 598,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 58,
+              "n_episodes": 7,
+              "n_words": 564,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 53,
+              "n_episodes": 8,
+              "n_words": 471,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 54,
+              "n_episodes": 8,
+              "n_words": 438,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 60,
+              "n_episodes": 8,
+              "n_words": 627,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 45,
+              "n_episodes": 7,
+              "n_words": 522,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 57,
+              "n_episodes": 8,
+              "n_words": 443,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 46,
+              "n_episodes": 7,
+              "n_words": 430,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 59,
+              "n_episodes": 8,
+              "n_words": 512,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 47,
+              "n_episodes": 9,
+              "n_words": 489,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        }
+      }
+    },
+    {
+      "key": "agreeableness",
+      "label": "Agreeableness (experimental language index)",
+      "family": "big_five",
+      "evidence_strength": "moderate",
+      "evidence_note": "Language markers associated in research with agreeableness; evidence: moderate",
+      "citations": [
+        {
+          "short": "Park et al. 2015",
+          "doi": "10.1037/pspp0000020"
+        },
+        {
+          "short": "Azucar, Marengo & Settanni 2018",
+          "doi": "10.1016/j.paid.2017.12.018"
+        },
+        {
+          "short": "Yarkoni 2010",
+          "doi": "10.1016/j.jrp.2010.04.001"
+        }
+      ],
+      "per_speaker": {
+        "me": {
+          "status": "ok",
+          "reason": null,
+          "score": 68,
+          "band": {
+            "lo": 54,
+            "hi": 82
+          },
+          "confidence": "medium",
+          "n_episodes": 36,
+          "n_words": 13649,
+          "contributions": [
+            {
+              "marker_key": "wwbp.agreeableness",
+              "label": "WWBP weighted word list for this dimension",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.321,
+              "value": 0.649,
+              "unit": "lexicon units per 100 words",
+              "sub_score": 0.657,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "holistic.agreeableness",
+              "label": "Overall AI rating for this dimension",
+              "source": "H",
+              "direction": "up",
+              "weight": 0.266,
+              "value": 3.701,
+              "unit": "1-5 rubric",
+              "sub_score": 0.675,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "anger_swear_rate",
+              "label": "Anger and swear words",
+              "source": "D",
+              "direction": "down",
+              "weight": 0.138,
+              "value": 0.396,
+              "unit": "% of words",
+              "sub_score": 0.842,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "we_rate",
+              "label": "We/us/our words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.092,
+              "value": 1.157,
+              "unit": "% of words",
+              "sub_score": 0.532,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.validates_feelings",
+              "label": "Validates the other person's feelings (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.046,
+              "value": 3.891,
+              "unit": "1-5 rubric",
+              "sub_score": 0.723,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": [
+                "xq_002"
+              ]
+            },
+            {
+              "marker_key": "llm.assigns_fault_to_other",
+              "label": "Puts fault on the other person (AI rating)",
+              "source": "R",
+              "direction": "down",
+              "weight": 0.046,
+              "value": 1.9,
+              "unit": "1-5 rubric",
+              "sub_score": 0.775,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.escalating_language",
+              "label": "Escalating wording (AI rating)",
+              "source": "R",
+              "direction": "down",
+              "weight": 0.046,
+              "value": 2.275,
+              "unit": "1-5 rubric",
+              "sub_score": 0.681,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.repair_attempts",
+              "label": "Repair attempts (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.046,
+              "value": 3.418,
+              "unit": "1-5 rubric",
+              "sub_score": 0.605,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 63,
+              "n_episodes": 7,
+              "n_words": 470,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 59,
+              "n_episodes": 8,
+              "n_words": 647,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 76,
+              "n_episodes": 8,
+              "n_words": 577,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 66,
+              "n_episodes": 7,
+              "n_words": 455,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 59,
+              "n_episodes": 7,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 63,
+              "n_episodes": 8,
+              "n_words": 482,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 76,
+              "n_episodes": 6,
+              "n_words": 544,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 69,
+              "n_episodes": 6,
+              "n_words": 493,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 61,
+              "n_episodes": 7,
+              "n_words": 563,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 69,
+              "n_episodes": 8,
+              "n_words": 510,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 64,
+              "n_episodes": 7,
+              "n_words": 439,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 60,
+              "n_episodes": 9,
+              "n_words": 639,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 63,
+              "n_episodes": 10,
+              "n_words": 815,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 65,
+              "n_episodes": 8,
+              "n_words": 546,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 77,
+              "n_episodes": 7,
+              "n_words": 530,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 62,
+              "n_episodes": 8,
+              "n_words": 669,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 75,
+              "n_episodes": 7,
+              "n_words": 591,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 66,
+              "n_episodes": 8,
+              "n_words": 596,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 76,
+              "n_episodes": 8,
+              "n_words": 498,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 63,
+              "n_episodes": 8,
+              "n_words": 614,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 65,
+              "n_episodes": 7,
+              "n_words": 502,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 66,
+              "n_episodes": 8,
+              "n_words": 398,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 77,
+              "n_episodes": 7,
+              "n_words": 528,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 75,
+              "n_episodes": 8,
+              "n_words": 556,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 62,
+              "n_episodes": 9,
+              "n_words": 488,
+              "reason": null
+            }
+          ],
+          "quote_ids": [
+            "xq_002"
+          ]
+        },
+        "other": {
+          "status": "ok",
+          "reason": null,
+          "score": 40,
+          "band": {
+            "lo": 28,
+            "hi": 52
+          },
+          "confidence": "low",
+          "n_episodes": 33,
+          "n_words": 13146,
+          "contributions": [
+            {
+              "marker_key": "wwbp.agreeableness",
+              "label": "WWBP weighted word list for this dimension",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.321,
+              "value": 0.068,
+              "unit": "lexicon units per 100 words",
+              "sub_score": 0.517,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "holistic.agreeableness",
+              "label": "Overall AI rating for this dimension",
+              "source": "H",
+              "direction": "up",
+              "weight": 0.266,
+              "value": 2.266,
+              "unit": "1-5 rubric",
+              "sub_score": 0.316,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "anger_swear_rate",
+              "label": "Anger and swear words",
+              "source": "D",
+              "direction": "down",
+              "weight": 0.138,
+              "value": 1.404,
+              "unit": "% of words",
+              "sub_score": 0.438,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "we_rate",
+              "label": "We/us/our words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.092,
+              "value": 0.681,
+              "unit": "% of words",
+              "sub_score": 0.267,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.validates_feelings",
+              "label": "Validates the other person's feelings (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.046,
+              "value": 2.548,
+              "unit": "1-5 rubric",
+              "sub_score": 0.387,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.assigns_fault_to_other",
+              "label": "Puts fault on the other person (AI rating)",
+              "source": "R",
+              "direction": "down",
+              "weight": 0.046,
+              "value": 3.903,
+              "unit": "1-5 rubric",
+              "sub_score": 0.274,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": [
+                "xq_004"
+              ]
+            },
+            {
+              "marker_key": "llm.escalating_language",
+              "label": "Escalating wording (AI rating)",
+              "source": "R",
+              "direction": "down",
+              "weight": 0.046,
+              "value": 3.885,
+              "unit": "1-5 rubric",
+              "sub_score": 0.279,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": [
+                "xq_003"
+              ]
+            },
+            {
+              "marker_key": "llm.repair_attempts",
+              "label": "Repair attempts (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.046,
+              "value": 2.59,
+              "unit": "1-5 rubric",
+              "sub_score": 0.398,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": [
+                "xq_005"
+              ]
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 39,
+              "n_episodes": 7,
+              "n_words": 435,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 45,
+              "n_episodes": 8,
+              "n_words": 638,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 36,
+              "n_episodes": 8,
+              "n_words": 533,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 44,
+              "n_episodes": 7,
+              "n_words": 551,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 44,
+              "n_episodes": 7,
+              "n_words": 437,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 46,
+              "n_episodes": 8,
+              "n_words": 448,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 35,
+              "n_episodes": 6,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 32,
+              "n_episodes": 6,
+              "n_words": 433,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 46,
+              "n_episodes": 7,
+              "n_words": 597,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 47,
+              "n_episodes": 8,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 45,
+              "n_episodes": 7,
+              "n_words": 451,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 40,
+              "n_episodes": 9,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 32,
+              "n_episodes": 10,
+              "n_words": 813,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 31,
+              "n_episodes": 8,
+              "n_words": 516,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 49,
+              "n_episodes": 7,
+              "n_words": 431,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 34,
+              "n_episodes": 8,
+              "n_words": 598,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 35,
+              "n_episodes": 7,
+              "n_words": 564,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 32,
+              "n_episodes": 8,
+              "n_words": 471,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 32,
+              "n_episodes": 8,
+              "n_words": 438,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 31,
+              "n_episodes": 8,
+              "n_words": 627,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 36,
+              "n_episodes": 7,
+              "n_words": 522,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 49,
+              "n_episodes": 8,
+              "n_words": 443,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 36,
+              "n_episodes": 7,
+              "n_words": 430,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 39,
+              "n_episodes": 8,
+              "n_words": 512,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 48,
+              "n_episodes": 9,
+              "n_words": 489,
+              "reason": null
+            }
+          ],
+          "quote_ids": [
+            "xq_003",
+            "xq_004",
+            "xq_005"
+          ]
+        }
+      }
+    },
+    {
+      "key": "neuroticism",
+      "label": "Neuroticism (experimental language index)",
+      "family": "big_five",
+      "evidence_strength": "moderate",
+      "evidence_note": "Language markers associated in research with neuroticism; evidence: moderate",
+      "citations": [
+        {
+          "short": "Park et al. 2015",
+          "doi": "10.1037/pspp0000020"
+        },
+        {
+          "short": "Azucar, Marengo & Settanni 2018",
+          "doi": "10.1016/j.paid.2017.12.018"
+        },
+        {
+          "short": "Yarkoni 2010",
+          "doi": "10.1016/j.jrp.2010.04.001"
+        },
+        {
+          "short": "Tackman et al. 2019",
+          "doi": "10.1037/pspp0000187"
+        }
+      ],
+      "per_speaker": {
+        "me": {
+          "status": "ok",
+          "reason": null,
+          "score": 65,
+          "band": {
+            "lo": 50,
+            "hi": 80
+          },
+          "confidence": "medium",
+          "n_episodes": 36,
+          "n_words": 13649,
+          "contributions": [
+            {
+              "marker_key": "wwbp.neuroticism",
+              "label": "WWBP weighted word list for this dimension",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.321,
+              "value": 0.661,
+              "unit": "lexicon units per 100 words",
+              "sub_score": 0.659,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "holistic.neuroticism",
+              "label": "Overall AI rating for this dimension",
+              "source": "H",
+              "direction": "up",
+              "weight": 0.266,
+              "value": 3.704,
+              "unit": "1-5 rubric",
+              "sub_score": 0.676,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "neg_emotion_rate",
+              "label": "Negative-emotion words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.138,
+              "value": 2.615,
+              "unit": "% of words",
+              "sub_score": 0.763,
+              "anchor_source": "Rude, Gortner & Pennebaker 2004",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "anxiety_word_rate",
+              "label": "Worry and nervousness words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.092,
+              "value": 0.797,
+              "unit": "% of words",
+              "sub_score": 0.633,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "i_rate",
+              "label": "I/me/my words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.092,
+              "value": 11.502,
+              "unit": "% of words",
+              "sub_score": 0.526,
+              "anchor_source": "Rude, Gortner & Pennebaker 2004",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.expressed_worry",
+              "label": "Expressed worry (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.046,
+              "value": 3.369,
+              "unit": "1-5 rubric",
+              "sub_score": 0.592,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": [
+                "xq_001"
+              ]
+            },
+            {
+              "marker_key": "llm.reassurance_seeking",
+              "label": "Asks for reassurance (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.046,
+              "value": 2.798,
+              "unit": "1-5 rubric",
+              "sub_score": 0.45,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 63,
+              "n_episodes": 7,
+              "n_words": 470,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 68,
+              "n_episodes": 8,
+              "n_words": 647,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 61,
+              "n_episodes": 8,
+              "n_words": 577,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 59,
+              "n_episodes": 7,
+              "n_words": 455,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 69,
+              "n_episodes": 7,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 63,
+              "n_episodes": 8,
+              "n_words": 482,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 69,
+              "n_episodes": 6,
+              "n_words": 544,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 64,
+              "n_episodes": 6,
+              "n_words": 493,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 63,
+              "n_episodes": 7,
+              "n_words": 563,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 61,
+              "n_episodes": 8,
+              "n_words": 510,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 69,
+              "n_episodes": 7,
+              "n_words": 439,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 63,
+              "n_episodes": 9,
+              "n_words": 639,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 56,
+              "n_episodes": 10,
+              "n_words": 815,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 60,
+              "n_episodes": 8,
+              "n_words": 546,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 71,
+              "n_episodes": 7,
+              "n_words": 530,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 66,
+              "n_episodes": 8,
+              "n_words": 669,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 63,
+              "n_episodes": 7,
+              "n_words": 591,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 74,
+              "n_episodes": 8,
+              "n_words": 596,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 59,
+              "n_episodes": 8,
+              "n_words": 498,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 61,
+              "n_episodes": 8,
+              "n_words": 614,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 66,
+              "n_episodes": 7,
+              "n_words": 502,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 59,
+              "n_episodes": 8,
+              "n_words": 398,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 66,
+              "n_episodes": 7,
+              "n_words": 528,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 62,
+              "n_episodes": 8,
+              "n_words": 556,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 66,
+              "n_episodes": 9,
+              "n_words": 488,
+              "reason": null
+            }
+          ],
+          "quote_ids": [
+            "xq_001"
+          ]
+        },
+        "other": {
+          "status": "ok",
+          "reason": null,
+          "score": 43,
+          "band": {
+            "lo": 31,
+            "hi": 55
+          },
+          "confidence": "low",
+          "n_episodes": 33,
+          "n_words": 13146,
+          "contributions": [
+            {
+              "marker_key": "wwbp.neuroticism",
+              "label": "WWBP weighted word list for this dimension",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.321,
+              "value": -0.888,
+              "unit": "lexicon units per 100 words",
+              "sub_score": 0.292,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "holistic.neuroticism",
+              "label": "Overall AI rating for this dimension",
+              "source": "H",
+              "direction": "up",
+              "weight": 0.266,
+              "value": 2.685,
+              "unit": "1-5 rubric",
+              "sub_score": 0.421,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "neg_emotion_rate",
+              "label": "Negative-emotion words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.138,
+              "value": 2.349,
+              "unit": "% of words",
+              "sub_score": 0.558,
+              "anchor_source": "Rude, Gortner & Pennebaker 2004",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "anxiety_word_rate",
+              "label": "Worry and nervousness words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.092,
+              "value": 0.735,
+              "unit": "% of words",
+              "sub_score": 0.577,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "i_rate",
+              "label": "I/me/my words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.092,
+              "value": 11.629,
+              "unit": "% of words",
+              "sub_score": 0.616,
+              "anchor_source": "Rude, Gortner & Pennebaker 2004",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.expressed_worry",
+              "label": "Expressed worry (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.046,
+              "value": 2.563,
+              "unit": "1-5 rubric",
+              "sub_score": 0.391,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.reassurance_seeking",
+              "label": "Asks for reassurance (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.046,
+              "value": 3.004,
+              "unit": "1-5 rubric",
+              "sub_score": 0.501,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 48,
+              "n_episodes": 7,
+              "n_words": 435,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 37,
+              "n_episodes": 8,
+              "n_words": 638,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 44,
+              "n_episodes": 8,
+              "n_words": 533,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 44,
+              "n_episodes": 7,
+              "n_words": 551,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 47,
+              "n_episodes": 7,
+              "n_words": 437,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 45,
+              "n_episodes": 8,
+              "n_words": 448,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 35,
+              "n_episodes": 6,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 38,
+              "n_episodes": 6,
+              "n_words": 433,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 49,
+              "n_episodes": 7,
+              "n_words": 597,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 38,
+              "n_episodes": 8,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 35,
+              "n_episodes": 7,
+              "n_words": 451,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 49,
+              "n_episodes": 9,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 36,
+              "n_episodes": 10,
+              "n_words": 813,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 46,
+              "n_episodes": 8,
+              "n_words": 516,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 45,
+              "n_episodes": 7,
+              "n_words": 431,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 42,
+              "n_episodes": 8,
+              "n_words": 598,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 45,
+              "n_episodes": 7,
+              "n_words": 564,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 36,
+              "n_episodes": 8,
+              "n_words": 471,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 38,
+              "n_episodes": 8,
+              "n_words": 438,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 48,
+              "n_episodes": 8,
+              "n_words": 627,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 40,
+              "n_episodes": 7,
+              "n_words": 522,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 45,
+              "n_episodes": 8,
+              "n_words": 443,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 45,
+              "n_episodes": 7,
+              "n_words": 430,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 50,
+              "n_episodes": 8,
+              "n_words": 512,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 38,
+              "n_episodes": 9,
+              "n_words": 489,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        }
+      }
+    },
+    {
+      "key": "depression_language",
+      "label": "Depression-related language (experimental language index)",
+      "family": "wellbeing_language",
+      "evidence_strength": "small",
+      "evidence_note": "Language markers associated in research with depression; evidence: small",
+      "citations": [
+        {
+          "short": "Edwards & Holtzman 2017",
+          "doi": "10.1016/j.jrp.2017.02.005"
+        },
+        {
+          "short": "Tackman et al. 2019",
+          "doi": "10.1037/pspp0000187"
+        },
+        {
+          "short": "Rude, Gortner & Pennebaker 2004",
+          "doi": "10.1080/02699930441000030"
+        },
+        {
+          "short": "Eichstaedt et al. 2018",
+          "doi": "10.1073/pnas.1802331115"
+        },
+        {
+          "short": "Al-Mosaiwi & Johnstone 2018",
+          "doi": "10.1177/2167702617747074"
+        }
+      ],
+      "per_speaker": {
+        "me": {
+          "status": "ok",
+          "reason": null,
+          "score": 40,
+          "band": {
+            "lo": 22,
+            "hi": 58
+          },
+          "confidence": "low",
+          "n_episodes": 36,
+          "n_words": 13649,
+          "contributions": [
+            {
+              "marker_key": "i_rate",
+              "label": "I/me/my words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.271,
+              "value": 11.105,
+              "unit": "% of words",
+              "sub_score": 0.245,
+              "anchor_source": "Rude, Gortner & Pennebaker 2004",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "neg_emotion_rate",
+              "label": "Negative-emotion words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.208,
+              "value": 2.289,
+              "unit": "% of words",
+              "sub_score": 0.511,
+              "anchor_source": "Rude, Gortner & Pennebaker 2004",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "vader_compound",
+              "label": "Overall message tone (VADER)",
+              "source": "D",
+              "direction": "down",
+              "weight": 0.208,
+              "value": -0.009,
+              "unit": "valence",
+              "sub_score": 0.509,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "absolutist_rate",
+              "label": "Absolutist words (always, never, ...)",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.104,
+              "value": 1.031,
+              "unit": "% of words",
+              "sub_score": 0.409,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.hopeless_or_low_energy_wording",
+              "label": "Hopeless or low-energy wording (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.104,
+              "value": 2.898,
+              "unit": "1-5 rubric",
+              "sub_score": 0.475,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.negative_self_evaluation",
+              "label": "Negative statements about oneself (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.104,
+              "value": 2.14,
+              "unit": "1-5 rubric",
+              "sub_score": 0.285,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 47,
+              "n_episodes": 7,
+              "n_words": 470,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 49,
+              "n_episodes": 8,
+              "n_words": 647,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 46,
+              "n_episodes": 8,
+              "n_words": 577,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 49,
+              "n_episodes": 7,
+              "n_words": 455,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 46,
+              "n_episodes": 7,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 39,
+              "n_episodes": 8,
+              "n_words": 482,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 31,
+              "n_episodes": 6,
+              "n_words": 544,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 41,
+              "n_episodes": 6,
+              "n_words": 493,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 34,
+              "n_episodes": 7,
+              "n_words": 563,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 35,
+              "n_episodes": 8,
+              "n_words": 510,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 42,
+              "n_episodes": 7,
+              "n_words": 439,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 49,
+              "n_episodes": 9,
+              "n_words": 639,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 40,
+              "n_episodes": 10,
+              "n_words": 815,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 46,
+              "n_episodes": 8,
+              "n_words": 546,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 32,
+              "n_episodes": 7,
+              "n_words": 530,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 47,
+              "n_episodes": 8,
+              "n_words": 669,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 38,
+              "n_episodes": 7,
+              "n_words": 591,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 38,
+              "n_episodes": 8,
+              "n_words": 596,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 42,
+              "n_episodes": 8,
+              "n_words": 498,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 49,
+              "n_episodes": 8,
+              "n_words": 614,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 37,
+              "n_episodes": 7,
+              "n_words": 502,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 35,
+              "n_episodes": 8,
+              "n_words": 398,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 39,
+              "n_episodes": 7,
+              "n_words": 528,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 43,
+              "n_episodes": 8,
+              "n_words": 556,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 35,
+              "n_episodes": 9,
+              "n_words": 488,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        },
+        "other": {
+          "status": "ok",
+          "reason": null,
+          "score": 35,
+          "band": {
+            "lo": 15,
+            "hi": 55
+          },
+          "confidence": "low",
+          "n_episodes": 33,
+          "n_words": 13146,
+          "contributions": [
+            {
+              "marker_key": "i_rate",
+              "label": "I/me/my words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.271,
+              "value": 11.364,
+              "unit": "% of words",
+              "sub_score": 0.428,
+              "anchor_source": "Rude, Gortner & Pennebaker 2004",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "neg_emotion_rate",
+              "label": "Negative-emotion words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.208,
+              "value": 2.071,
+              "unit": "% of words",
+              "sub_score": 0.342,
+              "anchor_source": "Rude, Gortner & Pennebaker 2004",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "vader_compound",
+              "label": "Overall message tone (VADER)",
+              "source": "D",
+              "direction": "down",
+              "weight": 0.208,
+              "value": 0.209,
+              "unit": "valence",
+              "sub_score": 0.291,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "absolutist_rate",
+              "label": "Absolutist words (always, never, ...)",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.104,
+              "value": 1.049,
+              "unit": "% of words",
+              "sub_score": 0.422,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.hopeless_or_low_energy_wording",
+              "label": "Hopeless or low-energy wording (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.104,
+              "value": 1.575,
+              "unit": "1-5 rubric",
+              "sub_score": 0.144,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.negative_self_evaluation",
+              "label": "Negative statements about oneself (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.104,
+              "value": 2.588,
+              "unit": "1-5 rubric",
+              "sub_score": 0.397,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 26,
+              "n_episodes": 7,
+              "n_words": 435,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 32,
+              "n_episodes": 8,
+              "n_words": 638,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 30,
+              "n_episodes": 8,
+              "n_words": 533,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 35,
+              "n_episodes": 7,
+              "n_words": 551,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 39,
+              "n_episodes": 7,
+              "n_words": 437,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 34,
+              "n_episodes": 8,
+              "n_words": 448,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 44,
+              "n_episodes": 6,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 44,
+              "n_episodes": 6,
+              "n_words": 433,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 34,
+              "n_episodes": 7,
+              "n_words": 597,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 34,
+              "n_episodes": 8,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 39,
+              "n_episodes": 7,
+              "n_words": 451,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 36,
+              "n_episodes": 9,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 39,
+              "n_episodes": 10,
+              "n_words": 813,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 28,
+              "n_episodes": 8,
+              "n_words": 516,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 37,
+              "n_episodes": 7,
+              "n_words": 431,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 40,
+              "n_episodes": 8,
+              "n_words": 598,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 43,
+              "n_episodes": 7,
+              "n_words": 564,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 35,
+              "n_episodes": 8,
+              "n_words": 471,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 40,
+              "n_episodes": 8,
+              "n_words": 438,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 27,
+              "n_episodes": 8,
+              "n_words": 627,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 39,
+              "n_episodes": 7,
+              "n_words": 522,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 32,
+              "n_episodes": 8,
+              "n_words": 443,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 26,
+              "n_episodes": 7,
+              "n_words": 430,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 39,
+              "n_episodes": 8,
+              "n_words": 512,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 40,
+              "n_episodes": 9,
+              "n_words": 489,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        }
+      }
+    },
+    {
+      "key": "anxiety_language",
+      "label": "Anxiety-related language (experimental language index)",
+      "family": "wellbeing_language",
+      "evidence_strength": "small",
+      "evidence_note": "Language markers associated in research with anxiety; evidence: small",
+      "citations": [
+        {
+          "short": "Yarkoni 2010",
+          "doi": "10.1016/j.jrp.2010.04.001"
+        },
+        {
+          "short": "Al-Mosaiwi & Johnstone 2018",
+          "doi": "10.1177/2167702617747074"
+        }
+      ],
+      "per_speaker": {
+        "me": {
+          "status": "ok",
+          "reason": null,
+          "score": 53,
+          "band": {
+            "lo": 36,
+            "hi": 70
+          },
+          "confidence": "low",
+          "n_episodes": 36,
+          "n_words": 13649,
+          "contributions": [
+            {
+              "marker_key": "anxiety_word_rate",
+              "label": "Worry and nervousness words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.303,
+              "value": 0.549,
+              "unit": "% of words",
+              "sub_score": 0.408,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "tentative_worry_rate",
+              "label": "Tentative and worry words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.242,
+              "value": 2.55,
+              "unit": "% of words",
+              "sub_score": 0.517,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "absolutist_rate",
+              "label": "Absolutist words (always, never, ...)",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.152,
+              "value": 1.427,
+              "unit": "% of words",
+              "sub_score": 0.713,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.expressed_worry",
+              "label": "Expressed worry (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.152,
+              "value": 3.949,
+              "unit": "1-5 rubric",
+              "sub_score": 0.737,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": [
+                "xq_001"
+              ]
+            },
+            {
+              "marker_key": "llm.reassurance_seeking",
+              "label": "Asks for reassurance (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.152,
+              "value": 2.683,
+              "unit": "1-5 rubric",
+              "sub_score": 0.421,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 48,
+              "n_episodes": 7,
+              "n_words": 470,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 61,
+              "n_episodes": 8,
+              "n_words": 647,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 54,
+              "n_episodes": 8,
+              "n_words": 577,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 53,
+              "n_episodes": 7,
+              "n_words": 455,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 61,
+              "n_episodes": 7,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 49,
+              "n_episodes": 8,
+              "n_words": 482,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 61,
+              "n_episodes": 6,
+              "n_words": 544,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 61,
+              "n_episodes": 6,
+              "n_words": 493,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 48,
+              "n_episodes": 7,
+              "n_words": 563,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 62,
+              "n_episodes": 8,
+              "n_words": 510,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 44,
+              "n_episodes": 7,
+              "n_words": 439,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 61,
+              "n_episodes": 9,
+              "n_words": 639,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 59,
+              "n_episodes": 10,
+              "n_words": 815,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 51,
+              "n_episodes": 8,
+              "n_words": 546,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 62,
+              "n_episodes": 7,
+              "n_words": 530,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 60,
+              "n_episodes": 8,
+              "n_words": 669,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 54,
+              "n_episodes": 7,
+              "n_words": 591,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 44,
+              "n_episodes": 8,
+              "n_words": 596,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 46,
+              "n_episodes": 8,
+              "n_words": 498,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 49,
+              "n_episodes": 8,
+              "n_words": 614,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 58,
+              "n_episodes": 7,
+              "n_words": 502,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 47,
+              "n_episodes": 8,
+              "n_words": 398,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 60,
+              "n_episodes": 7,
+              "n_words": 528,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 58,
+              "n_episodes": 8,
+              "n_words": 556,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 52,
+              "n_episodes": 9,
+              "n_words": 488,
+              "reason": null
+            }
+          ],
+          "quote_ids": [
+            "xq_001"
+          ]
+        },
+        "other": {
+          "status": "ok",
+          "reason": null,
+          "score": 40,
+          "band": {
+            "lo": 19,
+            "hi": 61
+          },
+          "confidence": "low",
+          "n_episodes": 33,
+          "n_words": 13146,
+          "contributions": [
+            {
+              "marker_key": "anxiety_word_rate",
+              "label": "Worry and nervousness words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.303,
+              "value": 0.417,
+              "unit": "% of words",
+              "sub_score": 0.288,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "tentative_worry_rate",
+              "label": "Tentative and worry words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.242,
+              "value": 2.566,
+              "unit": "% of words",
+              "sub_score": 0.522,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "absolutist_rate",
+              "label": "Absolutist words (always, never, ...)",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.152,
+              "value": 0.727,
+              "unit": "% of words",
+              "sub_score": 0.175,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.expressed_worry",
+              "label": "Expressed worry (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.152,
+              "value": 3.096,
+              "unit": "1-5 rubric",
+              "sub_score": 0.524,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.reassurance_seeking",
+              "label": "Asks for reassurance (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.152,
+              "value": 3.009,
+              "unit": "1-5 rubric",
+              "sub_score": 0.502,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 47,
+              "n_episodes": 7,
+              "n_words": 435,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 35,
+              "n_episodes": 8,
+              "n_words": 638,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 48,
+              "n_episodes": 8,
+              "n_words": 533,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 34,
+              "n_episodes": 7,
+              "n_words": 551,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 32,
+              "n_episodes": 7,
+              "n_words": 437,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 43,
+              "n_episodes": 8,
+              "n_words": 448,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 35,
+              "n_episodes": 6,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 31,
+              "n_episodes": 6,
+              "n_words": 433,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 31,
+              "n_episodes": 7,
+              "n_words": 597,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 47,
+              "n_episodes": 8,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 42,
+              "n_episodes": 7,
+              "n_words": 451,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 43,
+              "n_episodes": 9,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 38,
+              "n_episodes": 10,
+              "n_words": 813,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 46,
+              "n_episodes": 8,
+              "n_words": 516,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 46,
+              "n_episodes": 7,
+              "n_words": 431,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 32,
+              "n_episodes": 8,
+              "n_words": 598,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 33,
+              "n_episodes": 7,
+              "n_words": 564,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 39,
+              "n_episodes": 8,
+              "n_words": 471,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 45,
+              "n_episodes": 8,
+              "n_words": 438,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 33,
+              "n_episodes": 8,
+              "n_words": 627,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 43,
+              "n_episodes": 7,
+              "n_words": 522,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 38,
+              "n_episodes": 8,
+              "n_words": 443,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 45,
+              "n_episodes": 7,
+              "n_words": 430,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 35,
+              "n_episodes": 8,
+              "n_words": 512,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 32,
+              "n_episodes": 9,
+              "n_words": 489,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        }
+      }
+    },
+    {
+      "key": "addictive_language",
+      "label": "Addictive-tendency language (experimental language index)",
+      "family": "wellbeing_language",
+      "evidence_strength": "very_weak",
+      "evidence_note": "Language markers associated in research with addictive tendencies; evidence: very weak",
+      "citations": [
+        {
+          "short": "Curtis et al. 2018",
+          "doi": "10.1371/journal.pone.0194290"
+        },
+        {
+          "short": "Lu et al. 2019",
+          "doi": "10.1145/3292500.3330737"
+        },
+        {
+          "short": "Smith, Peters & Reiter 2024",
+          "doi": "10.1371/journal.pdig.0000605"
+        }
+      ],
+      "per_speaker": {
+        "me": {
+          "status": "ok",
+          "reason": null,
+          "score": 5,
+          "band": {
+            "lo": 0,
+            "hi": 31
+          },
+          "confidence": "low",
+          "n_episodes": 36,
+          "n_words": 13649,
+          "contributions": [
+            {
+              "marker_key": "substance_first_person_rate",
+              "label": "Alcohol or drug words near I/me/my",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.167,
+              "value": 0.02,
+              "unit": "% of words",
+              "sub_score": 0.04,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "gambling_first_person_rate",
+              "label": "Betting words near I/me/my",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.167,
+              "value": 0.0,
+              "unit": "% of words",
+              "sub_score": 0.0,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "craving_phrase_rate",
+              "label": "Craving or urge phrases",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.167,
+              "value": 0.0,
+              "unit": "% of words",
+              "sub_score": 0.0,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "late_night_episode_share",
+              "label": "Episodes started 01:00-04:00",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.167,
+              "value": 0.038,
+              "unit": "share of episodes",
+              "sub_score": 0.076,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.urge_or_loss_of_control_wording",
+              "label": "Urge or loss-of-control wording (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.167,
+              "value": 1,
+              "unit": "1-5 rubric",
+              "sub_score": 0,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.using_to_cope_wording",
+              "label": "Using something to cope (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.167,
+              "value": 1.843,
+              "unit": "1-5 rubric",
+              "sub_score": 0.211,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 0,
+              "n_episodes": 7,
+              "n_words": 470,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 4,
+              "n_episodes": 8,
+              "n_words": 647,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 6,
+              "n_episodes": 8,
+              "n_words": 577,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 14,
+              "n_episodes": 7,
+              "n_words": 455,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 14,
+              "n_episodes": 7,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 3,
+              "n_episodes": 8,
+              "n_words": 482,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 0,
+              "n_episodes": 6,
+              "n_words": 544,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 10,
+              "n_episodes": 6,
+              "n_words": 493,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 12,
+              "n_episodes": 7,
+              "n_words": 563,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 14,
+              "n_episodes": 8,
+              "n_words": 510,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 14,
+              "n_episodes": 7,
+              "n_words": 439,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 7,
+              "n_episodes": 9,
+              "n_words": 639,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 2,
+              "n_episodes": 10,
+              "n_words": 815,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 10,
+              "n_episodes": 8,
+              "n_words": 546,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 2,
+              "n_episodes": 7,
+              "n_words": 530,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 5,
+              "n_episodes": 8,
+              "n_words": 669,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 1,
+              "n_episodes": 7,
+              "n_words": 591,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 9,
+              "n_episodes": 8,
+              "n_words": 596,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 5,
+              "n_episodes": 8,
+              "n_words": 498,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 2,
+              "n_episodes": 8,
+              "n_words": 614,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 3,
+              "n_episodes": 7,
+              "n_words": 502,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 6,
+              "n_episodes": 8,
+              "n_words": 398,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 0,
+              "n_episodes": 7,
+              "n_words": 528,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 14,
+              "n_episodes": 8,
+              "n_words": 556,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 3,
+              "n_episodes": 9,
+              "n_words": 488,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        },
+        "other": {
+          "status": "ok",
+          "reason": null,
+          "score": 5,
+          "band": {
+            "lo": 0,
+            "hi": 32
+          },
+          "confidence": "low",
+          "n_episodes": 33,
+          "n_words": 13146,
+          "contributions": [
+            {
+              "marker_key": "substance_first_person_rate",
+              "label": "Alcohol or drug words near I/me/my",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.2,
+              "value": 0.02,
+              "unit": "% of words",
+              "sub_score": 0.04,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "gambling_first_person_rate",
+              "label": "Betting words near I/me/my",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.2,
+              "value": 0.0,
+              "unit": "% of words",
+              "sub_score": 0.0,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "craving_phrase_rate",
+              "label": "Craving or urge phrases",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.2,
+              "value": 0.0,
+              "unit": "% of words",
+              "sub_score": 0.0,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "late_night_episode_share",
+              "label": "Episodes started 01:00-04:00",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.2,
+              "value": 0.088,
+              "unit": "share of episodes",
+              "sub_score": 0.175,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.using_to_cope_wording",
+              "label": "Using something to cope (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.2,
+              "value": 1.054,
+              "unit": "1-5 rubric",
+              "sub_score": 0.013,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.urge_or_loss_of_control_wording",
+              "label": "Urge or loss-of-control wording (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0,
+              "value": null,
+              "unit": "1-5 rubric",
+              "sub_score": null,
+              "anchor_source": "rubric scale",
+              "status": "no_data",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 0,
+              "n_episodes": 7,
+              "n_words": 435,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 10,
+              "n_episodes": 8,
+              "n_words": 638,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 0,
+              "n_episodes": 8,
+              "n_words": 533,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 8,
+              "n_episodes": 7,
+              "n_words": 551,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 6,
+              "n_episodes": 7,
+              "n_words": 437,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 13,
+              "n_episodes": 8,
+              "n_words": 448,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 8,
+              "n_episodes": 6,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 12,
+              "n_episodes": 6,
+              "n_words": 433,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 14,
+              "n_episodes": 7,
+              "n_words": 597,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 6,
+              "n_episodes": 8,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 6,
+              "n_episodes": 7,
+              "n_words": 451,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 0,
+              "n_episodes": 9,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 11,
+              "n_episodes": 10,
+              "n_words": 813,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 6,
+              "n_episodes": 8,
+              "n_words": 516,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 1,
+              "n_episodes": 7,
+              "n_words": 431,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 0,
+              "n_episodes": 8,
+              "n_words": 598,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 10,
+              "n_episodes": 7,
+              "n_words": 564,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 8,
+              "n_episodes": 8,
+              "n_words": 471,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 5,
+              "n_episodes": 8,
+              "n_words": 438,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 0,
+              "n_episodes": 8,
+              "n_words": 627,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 7,
+              "n_episodes": 7,
+              "n_words": 522,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 6,
+              "n_episodes": 8,
+              "n_words": 443,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 11,
+              "n_episodes": 7,
+              "n_words": 430,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 14,
+              "n_episodes": 8,
+              "n_words": 512,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 6,
+              "n_episodes": 9,
+              "n_words": 489,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        }
+      }
+    },
+    {
+      "key": "anger_hostility_language",
+      "label": "Anger/hostility language (experimental language index)",
+      "family": "interpersonal",
+      "evidence_strength": "small",
+      "evidence_note": "Language markers associated in research with anger and hostility; evidence: small",
+      "citations": [
+        {
+          "short": "Yarkoni 2010",
+          "doi": "10.1016/j.jrp.2010.04.001"
+        }
+      ],
+      "per_speaker": {
+        "me": {
+          "status": "ok",
+          "reason": null,
+          "score": 26,
+          "band": {
+            "lo": 6,
+            "hi": 46
+          },
+          "confidence": "low",
+          "n_episodes": 36,
+          "n_words": 13649,
+          "contributions": [
+            {
+              "marker_key": "anger_rage_rate",
+              "label": "Anger and rage words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.375,
+              "value": 0.467,
+              "unit": "% of words",
+              "sub_score": 0.311,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "swear_rate",
+              "label": "Swear words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.312,
+              "value": 0.331,
+              "unit": "% of words",
+              "sub_score": 0.166,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.escalating_language",
+              "label": "Escalating wording (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.156,
+              "value": 2.242,
+              "unit": "1-5 rubric",
+              "sub_score": 0.311,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.assigns_fault_to_other",
+              "label": "Puts fault on the other person (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.156,
+              "value": 2.16,
+              "unit": "1-5 rubric",
+              "sub_score": 0.29,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 22,
+              "n_episodes": 7,
+              "n_words": 470,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 33,
+              "n_episodes": 8,
+              "n_words": 647,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 23,
+              "n_episodes": 8,
+              "n_words": 577,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 23,
+              "n_episodes": 7,
+              "n_words": 455,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 33,
+              "n_episodes": 7,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 34,
+              "n_episodes": 8,
+              "n_words": 482,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 25,
+              "n_episodes": 6,
+              "n_words": 544,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 21,
+              "n_episodes": 6,
+              "n_words": 493,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 20,
+              "n_episodes": 7,
+              "n_words": 563,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 30,
+              "n_episodes": 8,
+              "n_words": 510,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 32,
+              "n_episodes": 7,
+              "n_words": 439,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 27,
+              "n_episodes": 9,
+              "n_words": 639,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 22,
+              "n_episodes": 10,
+              "n_words": 815,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 30,
+              "n_episodes": 8,
+              "n_words": 546,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 18,
+              "n_episodes": 7,
+              "n_words": 530,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 25,
+              "n_episodes": 8,
+              "n_words": 669,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 27,
+              "n_episodes": 7,
+              "n_words": 591,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 32,
+              "n_episodes": 8,
+              "n_words": 596,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 20,
+              "n_episodes": 8,
+              "n_words": 498,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 24,
+              "n_episodes": 8,
+              "n_words": 614,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 22,
+              "n_episodes": 7,
+              "n_words": 502,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 34,
+              "n_episodes": 8,
+              "n_words": 398,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 19,
+              "n_episodes": 7,
+              "n_words": 528,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 29,
+              "n_episodes": 8,
+              "n_words": 556,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 17,
+              "n_episodes": 9,
+              "n_words": 488,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        },
+        "other": {
+          "status": "ok",
+          "reason": null,
+          "score": 59,
+          "band": {
+            "lo": 43,
+            "hi": 75
+          },
+          "confidence": "low",
+          "n_episodes": 33,
+          "n_words": 13146,
+          "contributions": [
+            {
+              "marker_key": "anger_rage_rate",
+              "label": "Anger and rage words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.375,
+              "value": 0.837,
+              "unit": "% of words",
+              "sub_score": 0.558,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": [
+                "xq_006"
+              ]
+            },
+            {
+              "marker_key": "swear_rate",
+              "label": "Swear words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.312,
+              "value": 1.364,
+              "unit": "% of words",
+              "sub_score": 0.682,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.escalating_language",
+              "label": "Escalating wording (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.156,
+              "value": 3.549,
+              "unit": "1-5 rubric",
+              "sub_score": 0.637,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": [
+                "xq_003"
+              ]
+            },
+            {
+              "marker_key": "llm.assigns_fault_to_other",
+              "label": "Puts fault on the other person (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.156,
+              "value": 2.832,
+              "unit": "1-5 rubric",
+              "sub_score": 0.458,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": [
+                "xq_004"
+              ]
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 52,
+              "n_episodes": 7,
+              "n_words": 435,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 51,
+              "n_episodes": 8,
+              "n_words": 638,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 67,
+              "n_episodes": 8,
+              "n_words": 533,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 61,
+              "n_episodes": 7,
+              "n_words": 551,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 52,
+              "n_episodes": 7,
+              "n_words": 437,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 57,
+              "n_episodes": 8,
+              "n_words": 448,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 67,
+              "n_episodes": 6,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 50,
+              "n_episodes": 6,
+              "n_words": 433,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 53,
+              "n_episodes": 7,
+              "n_words": 597,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 59,
+              "n_episodes": 8,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 68,
+              "n_episodes": 7,
+              "n_words": 451,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 58,
+              "n_episodes": 9,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 56,
+              "n_episodes": 10,
+              "n_words": 813,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 52,
+              "n_episodes": 8,
+              "n_words": 516,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 51,
+              "n_episodes": 7,
+              "n_words": 431,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 64,
+              "n_episodes": 8,
+              "n_words": 598,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 50,
+              "n_episodes": 7,
+              "n_words": 564,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 54,
+              "n_episodes": 8,
+              "n_words": 471,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 63,
+              "n_episodes": 8,
+              "n_words": 438,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 51,
+              "n_episodes": 8,
+              "n_words": 627,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 68,
+              "n_episodes": 7,
+              "n_words": 522,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 63,
+              "n_episodes": 8,
+              "n_words": 443,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 67,
+              "n_episodes": 7,
+              "n_words": 430,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 53,
+              "n_episodes": 8,
+              "n_words": 512,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 65,
+              "n_episodes": 9,
+              "n_words": 489,
+              "reason": null
+            }
+          ],
+          "quote_ids": [
+            "xq_003",
+            "xq_004",
+            "xq_006"
+          ]
+        }
+      }
+    },
+    {
+      "key": "narcissism_language",
+      "label": "Narcissism-related language (experimental language index)",
+      "family": "interpersonal",
+      "evidence_strength": "very_weak",
+      "evidence_note": "Language markers associated in research with narcissism; evidence: very weak",
+      "citations": [
+        {
+          "short": "Carey et al. 2015",
+          "doi": "10.1037/pspp0000029"
+        },
+        {
+          "short": "Holtzman et al. 2019",
+          "doi": "10.1177/0261927X19871084"
+        },
+        {
+          "short": "Zhang, Fingerman & Birditt 2023",
+          "doi": "10.1093/geronb/gbad061"
+        }
+      ],
+      "per_speaker": {
+        "me": {
+          "status": "ok",
+          "reason": null,
+          "score": 36,
+          "band": {
+            "lo": 6,
+            "hi": 66
+          },
+          "confidence": "low",
+          "n_episodes": 36,
+          "n_words": 13649,
+          "contributions": [
+            {
+              "marker_key": "achievement_work_rate",
+              "label": "Achievement and work words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.188,
+              "value": 1.267,
+              "unit": "% of words",
+              "sub_score": 0.307,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "you_rate",
+              "label": "You/your words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.188,
+              "value": 3.274,
+              "unit": "% of words",
+              "sub_score": 0.318,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "we_rate",
+              "label": "We/us/our words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.156,
+              "value": 0.86,
+              "unit": "% of words",
+              "sub_score": 0.367,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "tentative_anxiety_rate",
+              "label": "Tentative and anxious-sounding words",
+              "source": "D",
+              "direction": "down",
+              "weight": 0.156,
+              "value": 2.926,
+              "unit": "% of words",
+              "sub_score": 0.358,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.topic_redirect_to_self",
+              "label": "Steers the topic to oneself (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.156,
+              "value": 2.892,
+              "unit": "1-5 rubric",
+              "sub_score": 0.473,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.validates_feelings",
+              "label": "Validates the other person's feelings (AI rating)",
+              "source": "R",
+              "direction": "down",
+              "weight": 0.156,
+              "value": 3.632,
+              "unit": "1-5 rubric",
+              "sub_score": 0.342,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": [
+                "xq_002"
+              ]
+            },
+            {
+              "marker_key": "llm.superiority_or_entitlement_phrasing",
+              "label": "Superiority or entitlement phrasing (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0,
+              "value": null,
+              "unit": "1-5 rubric",
+              "sub_score": null,
+              "anchor_source": "rubric scale",
+              "status": "no_data",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 44,
+              "n_episodes": 7,
+              "n_words": 470,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 32,
+              "n_episodes": 8,
+              "n_words": 647,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 38,
+              "n_episodes": 8,
+              "n_words": 577,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 35,
+              "n_episodes": 7,
+              "n_words": 455,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 40,
+              "n_episodes": 7,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 30,
+              "n_episodes": 8,
+              "n_words": 482,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 29,
+              "n_episodes": 6,
+              "n_words": 544,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 38,
+              "n_episodes": 6,
+              "n_words": 493,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 29,
+              "n_episodes": 7,
+              "n_words": 563,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 31,
+              "n_episodes": 8,
+              "n_words": 510,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 43,
+              "n_episodes": 7,
+              "n_words": 439,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 33,
+              "n_episodes": 9,
+              "n_words": 639,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 39,
+              "n_episodes": 10,
+              "n_words": 815,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 36,
+              "n_episodes": 8,
+              "n_words": 546,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 35,
+              "n_episodes": 7,
+              "n_words": 530,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 31,
+              "n_episodes": 8,
+              "n_words": 669,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 41,
+              "n_episodes": 7,
+              "n_words": 591,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 28,
+              "n_episodes": 8,
+              "n_words": 596,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 44,
+              "n_episodes": 8,
+              "n_words": 498,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 33,
+              "n_episodes": 8,
+              "n_words": 614,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 31,
+              "n_episodes": 7,
+              "n_words": 502,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 40,
+              "n_episodes": 8,
+              "n_words": 398,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 29,
+              "n_episodes": 7,
+              "n_words": 528,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 44,
+              "n_episodes": 8,
+              "n_words": 556,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 42,
+              "n_episodes": 9,
+              "n_words": 488,
+              "reason": null
+            }
+          ],
+          "quote_ids": [
+            "xq_002"
+          ]
+        },
+        "other": {
+          "status": "ok",
+          "reason": null,
+          "score": 30,
+          "band": {
+            "lo": 2,
+            "hi": 58
+          },
+          "confidence": "low",
+          "n_episodes": 33,
+          "n_words": 13146,
+          "contributions": [
+            {
+              "marker_key": "achievement_work_rate",
+              "label": "Achievement and work words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.162,
+              "value": 1.321,
+              "unit": "% of words",
+              "sub_score": 0.329,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "you_rate",
+              "label": "You/your words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.162,
+              "value": 3.086,
+              "unit": "% of words",
+              "sub_score": 0.272,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "we_rate",
+              "label": "We/us/our words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.135,
+              "value": 0.752,
+              "unit": "% of words",
+              "sub_score": 0.307,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "tentative_anxiety_rate",
+              "label": "Tentative and anxious-sounding words",
+              "source": "D",
+              "direction": "down",
+              "weight": 0.135,
+              "value": 3.237,
+              "unit": "% of words",
+              "sub_score": 0.254,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.topic_redirect_to_self",
+              "label": "Steers the topic to oneself (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.135,
+              "value": 2.283,
+              "unit": "1-5 rubric",
+              "sub_score": 0.321,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.superiority_or_entitlement_phrasing",
+              "label": "Superiority or entitlement phrasing (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.135,
+              "value": 1.991,
+              "unit": "1-5 rubric",
+              "sub_score": 0.248,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.validates_feelings",
+              "label": "Validates the other person's feelings (AI rating)",
+              "source": "R",
+              "direction": "down",
+              "weight": 0.135,
+              "value": 3.433,
+              "unit": "1-5 rubric",
+              "sub_score": 0.392,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 22,
+              "n_episodes": 7,
+              "n_words": 435,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 33,
+              "n_episodes": 8,
+              "n_words": 638,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 30,
+              "n_episodes": 8,
+              "n_words": 533,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 32,
+              "n_episodes": 7,
+              "n_words": 551,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 26,
+              "n_episodes": 7,
+              "n_words": 437,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 30,
+              "n_episodes": 8,
+              "n_words": 448,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 36,
+              "n_episodes": 6,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 22,
+              "n_episodes": 6,
+              "n_words": 433,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 37,
+              "n_episodes": 7,
+              "n_words": 597,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 23,
+              "n_episodes": 8,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 29,
+              "n_episodes": 7,
+              "n_words": 451,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 38,
+              "n_episodes": 9,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 31,
+              "n_episodes": 10,
+              "n_words": 813,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 24,
+              "n_episodes": 8,
+              "n_words": 516,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 28,
+              "n_episodes": 7,
+              "n_words": 431,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 36,
+              "n_episodes": 8,
+              "n_words": 598,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 33,
+              "n_episodes": 7,
+              "n_words": 564,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 30,
+              "n_episodes": 8,
+              "n_words": 471,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 31,
+              "n_episodes": 8,
+              "n_words": 438,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 37,
+              "n_episodes": 8,
+              "n_words": 627,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 27,
+              "n_episodes": 7,
+              "n_words": 522,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 28,
+              "n_episodes": 8,
+              "n_words": 443,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 22,
+              "n_episodes": 7,
+              "n_words": 430,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 22,
+              "n_episodes": 8,
+              "n_words": 512,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 30,
+              "n_episodes": 9,
+              "n_words": 489,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        }
+      }
+    },
+    {
+      "key": "attachment_anxious_language",
+      "label": "Anxious-attachment-related language (experimental language index)",
+      "family": "interpersonal",
+      "evidence_strength": "very_weak",
+      "evidence_note": "Language markers associated in research with anxious attachment; evidence: very weak",
+      "citations": [
+        {
+          "short": "Dunlop et al. 2019",
+          "doi": "10.1177/1948550619847455"
+        }
+      ],
+      "per_speaker": {
+        "me": {
+          "status": "ok",
+          "reason": null,
+          "score": 64,
+          "band": {
+            "lo": 38,
+            "hi": 90
+          },
+          "confidence": "low",
+          "n_episodes": 36,
+          "n_words": 13649,
+          "contributions": [
+            {
+              "marker_key": "i_rate",
+              "label": "I/me/my words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.348,
+              "value": 11.784,
+              "unit": "% of words",
+              "sub_score": 0.726,
+              "anchor_source": "Rude, Gortner & Pennebaker 2004",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "double_text_rate",
+              "label": "Double texts (two messages in a row)",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.217,
+              "value": 26.722,
+              "unit": "% of messages",
+              "sub_score": 0.621,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.reassurance_seeking",
+              "label": "Asks for reassurance (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.217,
+              "value": 2.855,
+              "unit": "1-5 rubric",
+              "sub_score": 0.464,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.worry_about_the_relationship",
+              "label": "Worry about the relationship (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.217,
+              "value": 3.808,
+              "unit": "1-5 rubric",
+              "sub_score": 0.702,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 62,
+              "n_episodes": 7,
+              "n_words": 470,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 71,
+              "n_episodes": 8,
+              "n_words": 647,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 68,
+              "n_episodes": 8,
+              "n_words": 577,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 62,
+              "n_episodes": 7,
+              "n_words": 455,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 66,
+              "n_episodes": 7,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 56,
+              "n_episodes": 8,
+              "n_words": 482,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 64,
+              "n_episodes": 6,
+              "n_words": 544,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 58,
+              "n_episodes": 6,
+              "n_words": 493,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 67,
+              "n_episodes": 7,
+              "n_words": 563,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 61,
+              "n_episodes": 8,
+              "n_words": 510,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 59,
+              "n_episodes": 7,
+              "n_words": 439,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 60,
+              "n_episodes": 9,
+              "n_words": 639,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 55,
+              "n_episodes": 10,
+              "n_words": 815,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 56,
+              "n_episodes": 8,
+              "n_words": 546,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 71,
+              "n_episodes": 7,
+              "n_words": 530,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 56,
+              "n_episodes": 8,
+              "n_words": 669,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 61,
+              "n_episodes": 7,
+              "n_words": 591,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 64,
+              "n_episodes": 8,
+              "n_words": 596,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 71,
+              "n_episodes": 8,
+              "n_words": 498,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 72,
+              "n_episodes": 8,
+              "n_words": 614,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 69,
+              "n_episodes": 7,
+              "n_words": 502,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 64,
+              "n_episodes": 8,
+              "n_words": 398,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 65,
+              "n_episodes": 7,
+              "n_words": 528,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 58,
+              "n_episodes": 8,
+              "n_words": 556,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 68,
+              "n_episodes": 9,
+              "n_words": 488,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        },
+        "other": {
+          "status": "ok",
+          "reason": null,
+          "score": 30,
+          "band": {
+            "lo": 0,
+            "hi": 60
+          },
+          "confidence": "low",
+          "n_episodes": 33,
+          "n_words": 13146,
+          "contributions": [
+            {
+              "marker_key": "i_rate",
+              "label": "I/me/my words",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.348,
+              "value": 11.129,
+              "unit": "% of words",
+              "sub_score": 0.262,
+              "anchor_source": "Rude, Gortner & Pennebaker 2004",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "double_text_rate",
+              "label": "Double texts (two messages in a row)",
+              "source": "D",
+              "direction": "up",
+              "weight": 0.217,
+              "value": 19.123,
+              "unit": "% of messages",
+              "sub_score": 0.404,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.reassurance_seeking",
+              "label": "Asks for reassurance (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.217,
+              "value": 1.638,
+              "unit": "1-5 rubric",
+              "sub_score": 0.16,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.worry_about_the_relationship",
+              "label": "Worry about the relationship (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.217,
+              "value": 2.535,
+              "unit": "1-5 rubric",
+              "sub_score": 0.384,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 21,
+              "n_episodes": 7,
+              "n_words": 435,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 31,
+              "n_episodes": 8,
+              "n_words": 638,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 32,
+              "n_episodes": 8,
+              "n_words": 533,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 39,
+              "n_episodes": 7,
+              "n_words": 551,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 33,
+              "n_episodes": 7,
+              "n_words": 437,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 33,
+              "n_episodes": 8,
+              "n_words": 448,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 23,
+              "n_episodes": 6,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 37,
+              "n_episodes": 6,
+              "n_words": 433,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 35,
+              "n_episodes": 7,
+              "n_words": 597,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 35,
+              "n_episodes": 8,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 24,
+              "n_episodes": 7,
+              "n_words": 451,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 26,
+              "n_episodes": 9,
+              "n_words": 635,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 21,
+              "n_episodes": 10,
+              "n_words": 813,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 27,
+              "n_episodes": 8,
+              "n_words": 516,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 28,
+              "n_episodes": 7,
+              "n_words": 431,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 25,
+              "n_episodes": 8,
+              "n_words": 598,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 39,
+              "n_episodes": 7,
+              "n_words": 564,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 29,
+              "n_episodes": 8,
+              "n_words": 471,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 25,
+              "n_episodes": 8,
+              "n_words": 438,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 32,
+              "n_episodes": 8,
+              "n_words": 627,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 32,
+              "n_episodes": 7,
+              "n_words": 522,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 39,
+              "n_episodes": 8,
+              "n_words": 443,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 36,
+              "n_episodes": 7,
+              "n_words": 430,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 30,
+              "n_episodes": 8,
+              "n_words": 512,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 24,
+              "n_episodes": 9,
+              "n_words": 489,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        }
+      }
+    },
+    {
+      "key": "attachment_avoidant_language",
+      "label": "Avoidant-attachment-related language (experimental language index)",
+      "family": "interpersonal",
+      "evidence_strength": "very_weak",
+      "evidence_note": "Language markers associated in research with avoidant attachment; evidence: very weak",
+      "citations": [
+        {
+          "short": "Dunlop et al. 2019",
+          "doi": "10.1177/1948550619847455"
+        }
+      ],
+      "per_speaker": {
+        "me": {
+          "status": "ok",
+          "reason": null,
+          "score": 25,
+          "band": {
+            "lo": 0,
+            "hi": 55
+          },
+          "confidence": "low",
+          "n_episodes": 36,
+          "n_words": 13649,
+          "contributions": [
+            {
+              "marker_key": "we_rate",
+              "label": "We/us/our words",
+              "source": "D",
+              "direction": "down",
+              "weight": 0.5,
+              "value": 1.741,
+              "unit": "% of words",
+              "sub_score": 0.144,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.emotional_disclosure",
+              "label": "Shares own feelings (AI rating)",
+              "source": "R",
+              "direction": "down",
+              "weight": 0.25,
+              "value": 3.425,
+              "unit": "1-5 rubric",
+              "sub_score": 0.394,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.deflects_closeness",
+              "label": "Deflects closeness (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0.25,
+              "value": 2.275,
+              "unit": "1-5 rubric",
+              "sub_score": 0.319,
+              "anchor_source": "rubric scale",
+              "status": "ok",
+              "quote_ids": []
+            }
+          ],
+          "trend": [
+            {
+              "week": "2025-W32",
+              "score": 31,
+              "n_episodes": 7,
+              "n_words": 470,
+              "reason": null
+            },
+            {
+              "week": "2025-W33",
+              "score": 28,
+              "n_episodes": 8,
+              "n_words": 647,
+              "reason": null
+            },
+            {
+              "week": "2025-W34",
+              "score": 17,
+              "n_episodes": 8,
+              "n_words": 577,
+              "reason": null
+            },
+            {
+              "week": "2025-W35",
+              "score": 25,
+              "n_episodes": 7,
+              "n_words": 455,
+              "reason": null
+            },
+            {
+              "week": "2025-W36",
+              "score": 24,
+              "n_episodes": 7,
+              "n_words": 499,
+              "reason": null
+            },
+            {
+              "week": "2025-W37",
+              "score": 21,
+              "n_episodes": 8,
+              "n_words": 482,
+              "reason": null
+            },
+            {
+              "week": "2025-W38",
+              "score": 33,
+              "n_episodes": 6,
+              "n_words": 544,
+              "reason": null
+            },
+            {
+              "week": "2025-W39",
+              "score": 19,
+              "n_episodes": 6,
+              "n_words": 493,
+              "reason": null
+            },
+            {
+              "week": "2025-W40",
+              "score": 27,
+              "n_episodes": 7,
+              "n_words": 563,
+              "reason": null
+            },
+            {
+              "week": "2025-W41",
+              "score": 19,
+              "n_episodes": 8,
+              "n_words": 510,
+              "reason": null
+            },
+            {
+              "week": "2025-W42",
+              "score": 19,
+              "n_episodes": 7,
+              "n_words": 439,
+              "reason": null
+            },
+            {
+              "week": "2025-W43",
+              "score": 24,
+              "n_episodes": 9,
+              "n_words": 639,
+              "reason": null
+            },
+            {
+              "week": "2025-W44",
+              "score": 16,
+              "n_episodes": 10,
+              "n_words": 815,
+              "reason": null
+            },
+            {
+              "week": "2025-W45",
+              "score": 27,
+              "n_episodes": 8,
+              "n_words": 546,
+              "reason": null
+            },
+            {
+              "week": "2025-W47",
+              "score": 30,
+              "n_episodes": 7,
+              "n_words": 530,
+              "reason": null
+            },
+            {
+              "week": "2025-W48",
+              "score": 32,
+              "n_episodes": 8,
+              "n_words": 669,
+              "reason": null
+            },
+            {
+              "week": "2025-W49",
+              "score": 21,
+              "n_episodes": 7,
+              "n_words": 591,
+              "reason": null
+            },
+            {
+              "week": "2025-W50",
+              "score": 26,
+              "n_episodes": 8,
+              "n_words": 596,
+              "reason": null
+            },
+            {
+              "week": "2025-W51",
+              "score": 28,
+              "n_episodes": 8,
+              "n_words": 498,
+              "reason": null
+            },
+            {
+              "week": "2025-W52",
+              "score": 19,
+              "n_episodes": 8,
+              "n_words": 614,
+              "reason": null
+            },
+            {
+              "week": "2026-W01",
+              "score": 17,
+              "n_episodes": 7,
+              "n_words": 502,
+              "reason": null
+            },
+            {
+              "week": "2026-W02",
+              "score": 27,
+              "n_episodes": 8,
+              "n_words": 398,
+              "reason": null
+            },
+            {
+              "week": "2026-W03",
+              "score": 16,
+              "n_episodes": 7,
+              "n_words": 528,
+              "reason": null
+            },
+            {
+              "week": "2026-W04",
+              "score": 29,
+              "n_episodes": 8,
+              "n_words": 556,
+              "reason": null
+            },
+            {
+              "week": "2026-W05",
+              "score": 21,
+              "n_episodes": 9,
+              "n_words": 488,
+              "reason": null
+            }
+          ],
+          "quote_ids": []
+        },
+        "other": {
+          "status": "insufficient_data",
+          "reason": "fewer than 2 markers with data, or no word-count marker with data",
+          "score": null,
+          "band": null,
+          "confidence": null,
+          "n_episodes": 33,
+          "n_words": 13146,
+          "contributions": [
+            {
+              "marker_key": "we_rate",
+              "label": "We/us/our words",
+              "source": "D",
+              "direction": "down",
+              "weight": 1.0,
+              "value": 1.335,
+              "unit": "% of words",
+              "sub_score": 0.369,
+              "anchor_source": "engineering anchor",
+              "status": "ok",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.emotional_disclosure",
+              "label": "Shares own feelings (AI rating)",
+              "source": "R",
+              "direction": "down",
+              "weight": 0,
+              "value": null,
+              "unit": "1-5 rubric",
+              "sub_score": null,
+              "anchor_source": "rubric scale",
+              "status": "no_data",
+              "quote_ids": []
+            },
+            {
+              "marker_key": "llm.deflects_closeness",
+              "label": "Deflects closeness (AI rating)",
+              "source": "R",
+              "direction": "up",
+              "weight": 0,
+              "value": null,
+              "unit": "1-5 rubric",
+              "sub_score": null,
+              "anchor_source": "rubric scale",
+              "status": "no_data",
+              "quote_ids": []
+            }
+          ],
+          "trend": [],
+          "quote_ids": []
+        }
+      }
+    }
+  ],
+  "quotes": [
+    {
+      "id": "xq_001",
+      "speaker": "me",
+      "episode_id": "ep-0001",
+      "marker_key": "llm.expressed_worry",
+      "text": "kind of nervous about the new hire training tomorrow",
+      "ts": "2025-08-04T20:32:52-07:00"
+    },
+    {
+      "id": "xq_002",
+      "speaker": "me",
+      "episode_id": "ep-0008",
+      "marker_key": "llm.validates_feelings",
+      "text": "you worked so hard on that, it makes sense you're upset",
+      "ts": "2025-08-11T07:45:54-07:00"
+    },
+    {
+      "id": "xq_003",
+      "speaker": "other",
+      "episode_id": "ep-0075",
+      "marker_key": "llm.escalating_language",
+      "text": "you never ask how my day was anymore",
+      "ts": "2025-10-14T15:33:09-07:00"
+    },
+    {
+      "id": "xq_004",
+      "speaker": "other",
+      "episode_id": "ep-0075",
+      "marker_key": "llm.assigns_fault_to_other",
+      "text": "you said you'd text when you left and you didn't",
+      "ts": "2025-10-14T15:22:55-07:00"
+    },
+    {
+      "id": "xq_005",
+      "speaker": "other",
+      "episode_id": "ep-0003",
+      "marker_key": "llm.repair_attempts",
+      "text": "I'm so sorry but also ❤️",
+      "ts": "2025-08-07T09:49:35-07:00"
+    },
+    {
+      "id": "xq_006",
+      "speaker": "other",
+      "episode_id": "ep-0098",
+      "marker_key": "anger_rage_rate",
+      "text": "I don't want to go to bed angry but I am",
+      "ts": "2025-11-02T01:45:40-07:00"
+    }
+  ]
+}
