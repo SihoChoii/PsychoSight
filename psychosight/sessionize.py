@@ -35,6 +35,17 @@ def episode_hash(turns: List[Turn]) -> str:
     return hashlib.sha256(normalized_text(turns).encode("utf-8")).hexdigest()
 
 
+def exact_fingerprint(turns: List[Turn]) -> str:
+    """Hash of the exact message text quote offsets refer to.
+
+    episode_hash collapses case and whitespace, so two episodes can share it while their
+    character offsets differ. Cache rows store this fingerprint and are not reused when it
+    does not match.
+    """
+    payload = "\n".join(f"{m.speaker}\t{m.text}" for t in turns for m in t.msgs)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
 def sessionize(
     msgs: List[Msg],
     turn_gap_s: int = config.TURN_GAP_S,

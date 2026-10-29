@@ -20,7 +20,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from . import config, loader, pipeline
 from .errors import FullDiskAccessRequired, InvalidRequest, NotFound, PsychoSightError, ReportNotReady
-from .llm import get_provider
+from .llm import get_provider, install_log_guard
 from .storage import Store
 
 log = logging.getLogger("psychosight.app")
@@ -59,7 +59,17 @@ def _err(code: str, message: str, status: int) -> JSONResponse:
     return JSONResponse({"error": {"code": code, "message": message}}, status_code=status)
 
 
+def _public_id(value: str, limit: int = 64) -> str:
+    """Short, single-line id for error text. Do not echo an unbounded client string."""
+    cleaned = "".join(ch if ch.isprintable() and ch not in "\r\n\t" else " " for ch in (value or ""))
+    cleaned = " ".join(cleaned.split())
+    if len(cleaned) > limit:
+        return cleaned[:limit] + "..."
+    return cleaned or "(empty)"
+
+
 def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None, use_default_static: bool = True) -> FastAPI:
+    install_log_guard()
     app = FastAPI(title="PsychoSight Lite", version=config.BACKEND_VERSION)
     app.add_middleware(CORSMiddleware, allow_origin_regex=LOCAL_ORIGINS, allow_methods=["*"], allow_headers=["*"])
     state = {"store": store}
@@ -132,15 +142,23 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
         except Exception as exc:  # noqa: BLE001
             job.status, job.error = "error", {"code": "INTERNAL_ERROR", "message": "Unexpected backend error."}
             log.error("job=%s failed type=%s stage=%s", job.job_id, type(exc).__name__, job.stage)
+        finally:
+            closer = getattr(provider, "close", None)
+            if closer:
+                closer()
 
     @app.post("/analyses", status_code=202)
     def create_analysis(req: AnalysisRequest):
         if req.mode not in (None, "full", "deterministic_only"):
             raise InvalidRequest("mode must be 'full', 'deterministic_only' or null.")
+        if not req.conversation_id or len(req.conversation_id) > 128:
+            raise InvalidRequest("conversation_id is missing or too long.")
         try:
             date_from, date_to = loader.parse_date(req.date_from), loader.parse_date(req.date_to)
         except ValueError:
             raise InvalidRequest("date_from/date_to must be YYYY-MM-DD.")
+        if date_from and date_to and date_from > date_to:
+            raise InvalidRequest("date_from must be on or before date_to.")
         if req.demo:
             req.conversation_id = config.DEMO_CONVERSATION_ID
         run_mode = pipeline.resolve_mode(req.llm_opt_in, req.mode)
@@ -167,7 +185,7 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
             return job.view()
         rep = get_store().get_report(job_id)
         if rep is None:
-            raise NotFound(f"No analysis with id '{job_id}'.")
+            raise NotFound(f"No analysis with id '{_public_id(job_id)}'.")
         return {"job_id": job_id, "status": "done", "stage": "done", "progress": {"current": 1, "total": 1},
                 "mode": rep["mode"], "conversation_id": rep["header"]["conversation_id"],
                 "created_at": rep["run_meta"]["created_at"], "error": None}
@@ -176,7 +194,7 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
     def get_report(job_id: str):
         job = jobs.get(job_id)
         if job and job.deleted:
-            raise NotFound(f"No analysis with id '{job_id}'.")
+            raise NotFound(f"No analysis with id '{_public_id(job_id)}'.")
         if job and job.status in ("queued", "running"):
             raise ReportNotReady(f"Analysis '{job_id}' is still {job.status} (stage {job.stage}).")
         if job and job.status == "error":
@@ -184,7 +202,7 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
             return _err(err.get("code", "INTERNAL_ERROR"), err.get("message", "Analysis failed."), 409)
         rep = get_store().get_report(job_id)
         if rep is None:
-            raise NotFound(f"No report with id '{job_id}'.")
+            raise NotFound(f"No report with id '{_public_id(job_id)}'.")
         return rep
 
     @app.delete("/analyses/{job_id}")
@@ -198,7 +216,7 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
                 with lock:
                     jobs.pop(job_id, None)
         if not removed:
-            raise NotFound(f"No analysis with id '{job_id}'.")
+            raise NotFound(f"No analysis with id '{_public_id(job_id)}'.")
         log.info("job=%s deleted", job_id)
         return {"deleted": True, "job_id": job_id}
 

@@ -5,7 +5,6 @@ No norms, cutoffs or labels: values are shown as-is next to the count they are b
 
 from __future__ import annotations
 
-import re
 import statistics
 from collections import OrderedDict
 from datetime import timedelta
@@ -14,11 +13,12 @@ from typing import Dict, List, Optional, Sequence
 from . import config
 from .models import SPEAKERS, Episode, elapsed_s, utc
 
-# Al-Mosaiwi & Johnstone (2018) absolutist dictionary, 19 words. Descriptive use only.
+# Al-Mosaiwi & Johnstone (2018) absolutist dictionary, 19 words (Table S2). Descriptive use only.
+# "whole" is in the published list; "absolute" is not.
 ABSOLUTIST_WORDS = frozenset([
-    "absolute", "absolutely", "all", "always", "complete", "completely", "constant", "constantly",
+    "absolutely", "all", "always", "complete", "completely", "constant", "constantly",
     "definitely", "entire", "ever", "every", "everyone", "everything", "full", "must", "never",
-    "nothing", "totally",
+    "nothing", "totally", "whole",
 ])
 QUALIFIERS = frozenset(["not", "almost", "nearly"])
 I_WORDS = frozenset(["i", "me", "my", "mine", "myself"])
@@ -27,12 +27,56 @@ I_PREFIX = "i'"
 WE_CONTRACTIONS = frozenset(["we're", "we've", "we'll", "we'd"])
 LATE_NIGHT_HOURS = (1, 4)  # [01:00, 04:00) local
 
-_TOKEN = re.compile(r"[a-z0-9]+(?:'[a-z]+)?")
 INSUFFICIENT = "insufficient data"
 
 
+def _is_cjk(ch: str) -> bool:
+    o = ord(ch)
+    return (
+        0x2E80 <= o <= 0x2EFF
+        or 0x3040 <= o <= 0x30FF
+        or 0x3400 <= o <= 0x9FFF
+        or 0xAC00 <= o <= 0xD7AF
+        or 0xF900 <= o <= 0xFAFF
+        or 0x20000 <= o <= 0x2CEAF
+    )
+
+
+def _is_word_char(ch: str) -> bool:
+    """ASCII letters/digits, or any other letter that is not counted per CJK character."""
+    if _is_cjk(ch):
+        return False
+    if ch.isascii():
+        return ch.isalpha() or ch.isdigit()
+    return ch.isalpha() or ch.isdigit()
+
+
 def tokenize(text: str) -> List[str]:
-    return _TOKEN.findall(text.lower().replace("\u2019", "'"))
+    """Word tokens. ASCII behavior matches the previous [a-z0-9] pattern, including one
+    trailing apostrophe group ("don't", "i'm"). CJK and kana are one token per character so a
+    non-English thread can reach the word floor; other letters stay with their word."""
+    text = text.lower().replace("\u2019", "'").replace("\u2018", "'")
+    tokens: List[str] = []
+    i, n = 0, len(text)
+    while i < n:
+        ch = text[i]
+        if _is_cjk(ch):
+            tokens.append(ch)
+            i += 1
+            continue
+        if _is_word_char(ch):
+            j = i + 1
+            while j < n and _is_word_char(text[j]):
+                j += 1
+            if j < n and text[j] == "'" and j + 1 < n and _is_word_char(text[j + 1]):
+                j += 2
+                while j < n and _is_word_char(text[j]):
+                    j += 1
+            tokens.append(text[i:j])
+            i = j
+            continue
+        i += 1
+    return tokens
 
 
 def count_absolutist(tokens: Sequence[str]) -> int:
@@ -57,7 +101,10 @@ def is_late_night(ep: Episode) -> bool:
 
 
 def week_key(ep: Episode) -> str:
-    return ep.start.strftime("%G-W%V")
+    """ISO week of the episode start, in local time. isocalendar() is used instead of strftime
+    %G/%V, which depend on the platform C library."""
+    year, week, _weekday = ep.start.isocalendar()
+    return f"{int(year)}-W{int(week):02d}"
 
 
 def _side_stats(eps: Sequence[Episode]) -> Dict[str, dict]:
