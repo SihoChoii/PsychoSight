@@ -7,7 +7,7 @@ import random
 import re
 import statistics
 import threading
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional, Tuple
 
@@ -381,16 +381,29 @@ def score_episodes(provider: Provider, episodes: List[Episode], store: Store, ll
     if progress:
         progress(0, total)
 
-    def work(ep: Episode) -> Tuple[str, List[Optional[dict]]]:
-        return ep.id, [score_one(provider, ep, r, store, result.stats, budget) for r in (0, 1)]
-
     workers = 1 if provider.name == "mock" else max(1, concurrency or config.llm_concurrency())
+    # Each (episode, run) is its own task, so the two runs of one episode go out in parallel. Results
+    # are keyed by run index and stored in episode order; progress counts episodes with both runs done.
+    slots: Dict[str, List[Optional[dict]]] = {ep.id: [None, None] for ep in episodes}
+    finished: Dict[str, int] = {}
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        for eid, runs in pool.map(work, episodes):
-            result.runs[eid] = runs
-            done += 1
-            if progress:
-                progress(done, total)
+        futures = {pool.submit(score_one, provider, ep, r, store, result.stats, budget): (ep.id, r)
+                   for ep in episodes for r in (0, 1)}
+        try:
+            for future in as_completed(futures):
+                eid, r = futures[future]
+                slots[eid][r] = future.result()
+                finished[eid] = finished.get(eid, 0) + 1
+                if finished[eid] == 2:
+                    done += 1
+                    if progress:
+                        progress(done, total)
+        except BaseException:
+            for future in futures:
+                future.cancel()
+            raise
+    for ep in episodes:
+        result.runs[ep.id] = slots[ep.id]
     log.info("rubric scored episodes=%d calls=%d cache_hits=%d", total, result.stats.llm_calls,
              result.stats.cache_hits)
     return result

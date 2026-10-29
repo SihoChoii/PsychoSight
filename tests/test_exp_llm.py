@@ -594,10 +594,11 @@ def test_progress_counts_episodes_and_holistic_speakers(tmp_path):
     assert seen == [(0, 0)]
 
 
-def test_concurrency_matches_rubric_default(tmp_path, monkeypatch):
-    monkeypatch.delenv("PSYCHOSIGHT_LLM_CONCURRENCY", raising=False)
-    assert config.LLM_CONCURRENCY == 8
-    n = config.llm_concurrency()
+def test_concurrency_follows_the_experimental_setting(tmp_path, monkeypatch):
+    monkeypatch.delenv("PSYCHOSIGHT_EXP_LLM_CONCURRENCY", raising=False)
+    assert config.LLM_CONCURRENCY == 8 and config.exp_llm_concurrency() == 24
+    monkeypatch.setenv("PSYCHOSIGHT_EXP_LLM_CONCURRENCY", "8")
+    n = config.exp_llm_concurrency()
     assert n == 8
     barrier = threading.Barrier(n)
     lock = threading.Lock()

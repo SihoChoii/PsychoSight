@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import threading
 import time
 import uuid
 from datetime import date, datetime, timezone
@@ -112,53 +113,76 @@ def run_analysis(
         selection: dict = {}
         quotes: list = []
         dropped_obs = 0
-        if run_mode == "full":
-            selection = rubric.select_episodes(episodes)
-            selected = [e for e in episodes if e.id in selection]
-            if not selected:
-                prog("scoring", 0, 0)
-                rub = report.rubric_section("insufficient_data", "insufficient data", [], [], 0, 0, None,
-                                            config.PROMPT_VERSION)
-                obs = report.observations_section("insufficient_data", "insufficient data", [],
-                                                  config.SYNTHESIS_PROMPT_VERSION)
-            else:
-                scoring = rubric.score_episodes(provider, selected, store, llm_opt_in,
-                                                progress=lambda c, t: prog("scoring", c, t), budget=budget)
-                stats = scoring.stats
-                by_id = {e.id: e for e in episodes}
-                week_of = {eid: feats["episode_stats"][eid]["week"] for eid in by_id}
-                items, quotes, agreement = rubric.aggregate(scoring, by_id, week_of, [w["week"] for w in feats["weeks"]])
-                n_scored = sum(1 for runs in scoring.runs.values() if runs[0] is not None and runs[1] is not None)
-                unstable = [i["key"] for i in items if i["status"] == "unstable"]
-                any_ok = any(i["status"] == "ok" for i in items)
-                rub = report.rubric_section("ok" if any_ok else "insufficient_data",
-                                            None if any_ok else "insufficient data", items, unstable, len(selected),
-                                            n_scored, agreement, config.PROMPT_VERSION)
-                prog("synthesis", 0, 1)
-                obs = synthesize.synthesize(provider, llm_opt_in, feats["series"], items, quotes, n_scored,
-                                            sorted(scoring.runs), {e.id for e in episodes}, stats=stats,
-                                            budget=budget)
-                dropped_obs = obs.pop("_dropped", 0)
-                used = {q for i in rub["items"] for q in i["quote_ids"]} | \
-                       {q["quote_id"] for o in obs["items"] for q in o["quotes"]}
-                quotes = [q for q in quotes if q["quote_id"] in used]
-                prog("synthesis", 1, 1)
-        else:
-            rub = report.rubric_section("not_run", config.NOT_RUN_REASON, [], [], 0, 0, None, None)
-            obs = report.observations_section("not_run", config.NOT_RUN_REASON, [], None)
-
-        # After synthesis when the LLM ran, and after features in deterministic-only mode.
+        # The experimental stage needs only the episodes, the selection and the features, so with a real
+        # provider its model calls start now and overlap the main rubric and synthesis. It reads the
+        # rubric-v1 cache rows (reused items for "me") only after the main rubric has finished.
         week_order = [w["week"] for w in feats["weeks"]]
         exp_enabled = experimental_enabled()
         exp_attempted = exp_enabled and experimental_on
+        exp_speakers = ("me", "other") if score_other_on else ("me",)
+        if run_mode == "full":
+            selection = rubric.select_episodes(episodes)
+        background = None
+        if (exp_attempted and run_mode == "full" and provider is not None
+                and getattr(provider, "name", None) != "mock" and config.exp_overlap()):
+            background = _BackgroundExperimental(
+                prog, episodes=episodes, selection=selection, provider=provider, store=store,
+                speakers=exp_speakers, week_order=week_order)
+            background.start()
+        try:
+            if run_mode == "full":
+                selected = [e for e in episodes if e.id in selection]
+                if not selected:
+                    prog("scoring", 0, 0)
+                    rub = report.rubric_section("insufficient_data", "insufficient data", [], [], 0, 0, None,
+                                                config.PROMPT_VERSION)
+                    obs = report.observations_section("insufficient_data", "insufficient data", [],
+                                                      config.SYNTHESIS_PROMPT_VERSION)
+                else:
+                    scoring = rubric.score_episodes(provider, selected, store, llm_opt_in,
+                                                    progress=lambda c, t: prog("scoring", c, t), budget=budget)
+                    stats = scoring.stats
+                    if background is not None:
+                        background.rubric_done.set()  # rubric-v1 rows are cached; experimental may merge
+                    by_id = {e.id: e for e in episodes}
+                    week_of = {eid: feats["episode_stats"][eid]["week"] for eid in by_id}
+                    items, quotes, agreement = rubric.aggregate(scoring, by_id, week_of, [w["week"] for w in feats["weeks"]])
+                    n_scored = sum(1 for runs in scoring.runs.values() if runs[0] is not None and runs[1] is not None)
+                    unstable = [i["key"] for i in items if i["status"] == "unstable"]
+                    any_ok = any(i["status"] == "ok" for i in items)
+                    rub = report.rubric_section("ok" if any_ok else "insufficient_data",
+                                                None if any_ok else "insufficient data", items, unstable, len(selected),
+                                                n_scored, agreement, config.PROMPT_VERSION)
+                    prog("synthesis", 0, 1)
+                    obs = synthesize.synthesize(provider, llm_opt_in, feats["series"], items, quotes, n_scored,
+                                                sorted(scoring.runs), {e.id for e in episodes}, stats=stats,
+                                                budget=budget)
+                    dropped_obs = obs.pop("_dropped", 0)
+                    used = {q for i in rub["items"] for q in i["quote_ids"]} | \
+                           {q["quote_id"] for o in obs["items"] for q in o["quotes"]}
+                    quotes = [q for q in quotes if q["quote_id"] in used]
+                    prog("synthesis", 1, 1)
+            else:
+                rub = report.rubric_section("not_run", config.NOT_RUN_REASON, [], [], 0, 0, None, None)
+                obs = report.observations_section("not_run", config.NOT_RUN_REASON, [], None)
+        except BaseException:
+            if background is not None:
+                background.abort.set()
+            raise
+        finally:
+            if background is not None:
+                background.rubric_done.set()
+
         if not exp_attempted:
             prog("experimental", 0, 0)
             reason = exp_strings.REASON_DISABLED if not exp_enabled else exp_strings.REASON_NOT_REQUESTED
             exp_speakers = ("me", "other") if (experimental_on and score_other_on) else ("me",)
             exp_section = not_run_section_or_shell(reason, exp_speakers)
             exp_stats = ExpLLMStats()
+        elif background is not None:
+            exp_section, exp_stats = background.finish()
         else:
-            exp_speakers = ("me", "other") if score_other_on else ("me",)
+            # After synthesis when the LLM ran, and after features in deterministic-only mode.
             exp_selection = selection if run_mode == "full" else rubric.select_episodes(episodes)
             exp_section, exp_stats = run_experimental(
                 episodes=episodes, selection=exp_selection, provider=provider, store=store,
@@ -218,6 +242,56 @@ def run_analysis(
             closer = getattr(provider, "close", None)
             if closer:
                 closer()
+
+
+class _BackgroundExperimental:
+    """Runs ``run_experimental`` on a worker thread that starts before the main rubric.
+
+    Progress from the worker is held back while the main stages run (the job keeps one current
+    stage), then the latest value is shown when :meth:`finish` is called after synthesis.
+    """
+
+    def __init__(self, prog: ProgressFn, **kwargs):
+        self._prog = prog
+        self._kwargs = kwargs
+        self.rubric_done = threading.Event()
+        self.abort = threading.Event()
+        self._lock = threading.Lock()
+        self._live = False
+        self._latest = None
+        self._result = None
+        self._thread = threading.Thread(target=self._run, name="psychosight-experimental", daemon=True)
+
+    def start(self) -> None:
+        self._thread.start()
+
+    def _progress(self, stage: str, cur: int, tot: int) -> None:
+        with self._lock:
+            if self._live:
+                self._prog(stage, cur, tot)
+            else:
+                self._latest = (stage, cur, tot)
+
+    def _run(self) -> None:
+        speakers = self._kwargs["speakers"]
+        try:
+            self._result = run_experimental(
+                episodes=self._kwargs["episodes"], selection=self._kwargs["selection"],
+                provider=self._kwargs["provider"], store=self._kwargs["store"], llm_ran=True,
+                speakers=speakers, week_order=self._kwargs["week_order"], progress=self._progress,
+                before_merge=self.rubric_done.wait, abort=self.abort)
+        except BaseException as exc:  # noqa: BLE001 - run_experimental never raises; belt and braces
+            log.warning("experimental background stage failed type=%s", type(exc).__name__)
+            from .experimental.section import _failed_section
+            self._result = (_failed_section(speakers), ExpLLMStats())
+
+    def finish(self):
+        with self._lock:
+            self._live = True
+            if self._latest is not None:
+                self._prog(*self._latest)
+        self._thread.join()
+        return self._result
 
 
 def _tz_name(msgs) -> str:

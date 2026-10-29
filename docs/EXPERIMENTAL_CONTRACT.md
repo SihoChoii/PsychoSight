@@ -163,15 +163,18 @@ Pooling: `x = Σnum / Σden` per speaker. Rates: num = count, den = words, repor
 
 ```python
 deterministic.compute_deterministic(episodes, speakers) -> DeterministicResult                       # Track A
-llm_exp.score_llm(provider, selected, store, *, speakers, budget, progress=None, holistic=True)
+llm_exp.score_llm(provider, selected, store, *, speakers, budget, progress=None, holistic=True,
+                  before_merge=None, abort=None)
     -> ExpLLMResult                                                                                # Track B
 mock_exp.complete(system, user, run_idx=0) -> llm.LLMResult                                        # Track B
 scoring.build_section(det, llm, episodes, week_order, *, speakers, llm_ran, seed=1017) -> dict     # Track C
 scoring.not_run_section(reason, speakers=("me",)) -> dict                                          # Track C
 section.run_experimental(*, episodes, selection, provider, store, llm_ran, speakers, week_order,
-                         progress) -> Tuple[dict, ExpLLMStats]                                     # Track D
+                         progress, before_merge=None, abort=None) -> Tuple[dict, ExpLLMStats]      # Track D
 safety.lint_experimental(text) -> List[str]                                                        # Track D
 ```
+`before_merge` (called after all experimental model calls, before rubric-v1 rows are read for `me`) and `abort` (a `threading.Event` that stops new calls) are optional; the pipeline uses them to start the experimental calls alongside the main rubric when the provider is real (`PSYCHOSIGHT_EXP_OVERLAP=0` turns that off). Results do not depend on call completion order.
+
 All are `NotImplementedError` stubs on `exp/contract`. `MockProvider.complete()` sends any system prompt starting with `TASK: EXPERIMENTAL` or `TASK: HOLISTIC` to `mock_exp.complete(system, user, run_idx)` and returns its `LLMResult` unchanged (the `malformed_once`/`always_malformed` test modes still apply first).
 
 ## 6. Scoring rules (Track C)

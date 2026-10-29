@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import random
 import threading
 import time
 from dataclasses import dataclass, field
@@ -106,7 +107,7 @@ class DeepSeekProvider(Provider):
 
     def __init__(self, settings: Optional[config.LLMSettings] = None,
                  transport: Optional[httpx.BaseTransport] = None,
-                 sleep: Callable[[float], None] = time.sleep, max_attempts: int = 4):
+                 sleep: Callable[[float], None] = time.sleep, max_attempts: int = 6):
         self.settings = settings or config.llm_settings()
         if not self.settings.api_key:
             raise LLMUnavailable(MISSING_KEY_MESSAGE)
@@ -221,13 +222,32 @@ class DeepSeekProvider(Provider):
                 raise LLMUnavailable("DeepSeek reports insufficient balance (HTTP 402).")
             if status in RETRY_STATUS:
                 last = f"HTTP {status}"
-                log.warning("deepseek retryable status=%d attempt=%d", status, attempt + 1)
-                self._sleep(min(2 ** attempt, 20))
+                wait = _retry_wait(resp, attempt)
+                log.warning("deepseek retryable status=%d attempt=%d wait_s=%.1f", status, attempt + 1, wait)
+                if attempt + 1 < self._max_attempts:
+                    self._sleep(wait)
                 continue
             raise LLMUnavailable(f"DeepSeek request failed (HTTP {status}): {_provider_error(resp)}. "
                                  "Request options can be changed with DEEPSEEK_JSON_MODE, "
                                  "DEEPSEEK_SEND_TEMPERATURE, DEEPSEEK_THINKING and DEEPSEEK_REASONING_EFFORT.")
         raise LLMUnavailable(f"DeepSeek unavailable after {self._max_attempts} attempts ({last}).")
+
+
+RETRY_AFTER_CAP_S = 60.0
+
+
+def _retry_wait(resp: httpx.Response, attempt: int) -> float:
+    """Seconds to wait before retrying a 429/5xx: the server's Retry-After (seconds, capped), else
+    exponential backoff (1, 2, 4, 8, 16, capped at 30) with up to 50% jitter so parallel workers
+    do not retry in lockstep."""
+    raw = resp.headers.get("retry-after")
+    if raw:
+        try:
+            return max(0.0, min(float(raw), RETRY_AFTER_CAP_S))
+        except ValueError:
+            pass
+    base = float(min(2 ** attempt, 30))
+    return base * (1.0 + random.random() * 0.5)
 
 
 def _error_message(resp: httpx.Response) -> str:

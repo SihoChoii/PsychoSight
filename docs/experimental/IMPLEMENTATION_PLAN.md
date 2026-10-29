@@ -365,7 +365,7 @@ PR #4 ─► rich-demo ─► exp/contract ─┬─► A (deterministic) ─┐
 | 1 | `backend/rich-demo` not pushed in time | Branch `exp/contract` from its tip once pushed; otherwise from main and rebase later; we don't touch its files until it merges. |
 | 2 | WWBP lexicon unavailable offline | Removable directory; markers report `not_run`; Big Five still scored from other D markers plus H. |
 | 3 | Live DeepSeek output drift vs mock | Strict validation, one retry, stability rule; live smoke run before the PR. |
-| 4 | Cost or latency higher than expected | Separate 110-call cap, cache, concurrency 8; holistic word cap 3,000. |
+| 4 | Cost or latency higher than expected | Separate 110-call cap, cache, concurrency 24 (`PSYCHOSIGHT_EXP_LLM_CONCURRENCY`), both runs in parallel, calls overlap the main rubric; holistic word cap 3,000. |
 | 5 | Clinical-sounding wording slips in | Scoped allow-list, `EXP_BANNED`, fallback string, global lint test, prompt lint. |
 | 6 | Misuse of other-person scores | Second consent with explicit text, demo-only default, no share/export, local storage only, delete removes it. |
 | 7 | Schema compatibility | Additive 1.1.0, enum version, tests that 1.0.0 reports still load. |
