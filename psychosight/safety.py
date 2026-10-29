@@ -107,6 +107,19 @@ EXP_BANNED: List[str] = [
 ]
 
 
+def _strip_exp_allowed(text: str) -> str:
+    # Longer constants first so a short allow-listed string cannot split a longer one.
+    for allowed in sorted((a for a in EXP_ALLOW_LIST if a), key=len, reverse=True):
+        text = text.replace(allowed, " ")
+    return text
+
+
 def lint_experimental(text: str) -> List[str]:
-    """Return the EXP_BANNED patterns found in `text` after stripping EXP_ALLOW_LIST constants (Track D)."""
-    raise NotImplementedError("Track D implements lint_experimental")
+    """Return the EXP_BANNED patterns found in `text` after stripping EXP_ALLOW_LIST constants.
+
+    The allow-list is exact and is applied before normalization, same as the global lint, so a
+    zero-width character inside an allow-listed constant does not hide the words it contains.
+    Callers replace a hit with the fixed fallback and log only the pattern (the rule id).
+    """
+    t = _normalize_for_lint(_strip_exp_allowed(text or ""))
+    return [p for p in EXP_BANNED if re.search(p, t)]
