@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { buildAnalysisRequest } from "./analysis-request";
 import { ApiError, getClient } from "./api";
+import type { ConversationPage } from "./conversation-adapter";
 import { DiskAccess } from "./components/DiskAccess";
 import { OptIn } from "./components/OptIn";
 import { Picker, type PickerSelection } from "./components/Picker";
@@ -9,7 +10,7 @@ import { ReportView } from "./components/ReportView";
 import { Shell } from "./components/Shell";
 import { applyTheme, currentTheme, isMockMode, type ThemeName } from "./mode";
 import { parseHash, type Route } from "./routes";
-import type { Config, ConversationsResponse, ExperimentalChoice, Job, Report, SavedAnalysis } from "./types";
+import type { Config, ExperimentalChoice, Job, Report, SavedAnalysis } from "./types";
 
 const SEL_KEY = "psychosight-selection";
 const JOB_KEY = "psychosight-active-job";
@@ -34,7 +35,7 @@ export function App() {
   const [route, setRoute] = useState<Route>(() => parseHash(window.location.hash));
   const [config, setConfig] = useState<Config | null>(null);
   const [configError, setConfigError] = useState<string | null>(null);
-  const [conversations, setConversations] = useState<ConversationsResponse | null>(null);
+  const [catalog, setCatalog] = useState<ConversationPage | null>(null);
   const [listError, setListError] = useState<string | null>(null);
   const [saved, setSaved] = useState<SavedAnalysis[]>([]);
   const [flash, setFlash] = useState<string | null>(null);
@@ -72,10 +73,9 @@ export function App() {
   useEffect(() => {
     let stop = false;
     getClient()
-      .then((client) => Promise.all([client.getConversations(), client.listAnalyses()]))
-      .then(([nextConversations, nextSaved]) => {
+      .then((client) => client.listAnalyses())
+      .then((nextSaved) => {
         if (stop) return;
-        setConversations(nextConversations);
         setSaved(nextSaved);
         setListError(null);
       })
@@ -88,11 +88,11 @@ export function App() {
   }, [reload, route.name]);
 
   useEffect(() => {
-    if (!conversations) return;
-    const blocked = conversations.chat_db.available === false;
+    if (!catalog) return;
+    const blocked = catalog.chat_db.available === false;
     if (blocked && route.name === "picker") window.location.hash = "#/access";
     if (!blocked && route.name === "access") window.location.hash = "#/";
-  }, [conversations, route.name]);
+  }, [catalog, route.name]);
 
   useEffect(() => {
     if (route.name !== "picker" && route.name !== "access") return;
@@ -187,7 +187,7 @@ export function App() {
     }
   }
 
-  const diskError = conversations?.chat_db.available === false ? conversations.chat_db.error : null;
+  const diskError = catalog?.chat_db.available === false ? catalog.chat_db.error : null;
   const activeJobId = sessionStorage.getItem(JOB_KEY);
   const footerDisclaimer = route.name === "report" ? null : (config?.disclaimer ?? null);
 
@@ -211,7 +211,7 @@ export function App() {
   } else if (route.name === "run") {
     body = <RunScreen jobId={route.jobId} />;
   } else if (route.name === "report") {
-    body = <ReportScreen jobId={route.jobId} />;
+    body = <ReportScreen jobId={route.jobId} trendNote={config?.experimental_trend_note ?? null} />;
   } else if (listError) {
     body = (
       <section className="focus-task" aria-labelledby="page-title">
@@ -228,16 +228,7 @@ export function App() {
         </div>
       </section>
     );
-  } else if (!conversations) {
-    body = (
-      <section className="focus-task" aria-labelledby="page-title">
-        <h1 id="page-title" tabIndex={-1}>
-          Conversations
-        </h1>
-        <p className="decision-copy">Loading conversations.</p>
-      </section>
-    );
-  } else if (route.name === "access" || diskError) {
+  } else if ((route.name === "access" || diskError) && catalog) {
     body = (
       <>
         {flash ? (
@@ -253,7 +244,7 @@ export function App() {
           onRecheck={() => void recheckDisk()}
           onReveal={() => void revealApp()}
           onDemo={() => {
-            const demo = conversations.conversations.find((item) => item.id === "demo");
+            const demo = catalog.conversations.find((item) => item.id === "demo");
             rememberSelection({
               conversationId: demo?.id ?? "demo",
               label: demo?.label ?? "Demo conversation (synthetic)",
@@ -273,10 +264,11 @@ export function App() {
     body = (
       <Picker
         theme={theme}
-        conversations={conversations.conversations}
         saved={saved}
         activeJobId={activeJobId}
         flash={flash}
+        refreshKey={reload}
+        onCatalog={setCatalog}
         onContinue={(selection) => {
           rememberSelection(selection);
           setSubmitError(null);
@@ -361,7 +353,7 @@ function RunScreen({ jobId }: { jobId: string }) {
   return <ProgressView job={job} onBack={() => { window.location.hash = "#/"; }} />;
 }
 
-function ReportScreen({ jobId }: { jobId: string }) {
+function ReportScreen({ jobId, trendNote }: { jobId: string; trendNote: string | null }) {
   const [report, setReport] = useState<Report | null>(null);
   const [error, setError] = useState<ApiError | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -428,5 +420,5 @@ function ReportScreen({ jobId }: { jobId: string }) {
       </section>
     );
   }
-  return <ReportView report={report} deleting={deleting} deleteError={deleteError} onDelete={remove} />;
+  return <ReportView report={report} deleting={deleting} deleteError={deleteError} trendNote={trendNote} onDelete={remove} />;
 }

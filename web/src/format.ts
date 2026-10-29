@@ -40,6 +40,16 @@ export function formatTimestamp(iso: string): string {
   return match ? `${match[1]} ${match[2]}` : iso;
 }
 
+/** Local calendar day already provided as YYYY-MM-DD. No timezone conversion. */
+export function formatCalendarDay(day: string | null | undefined): string | null {
+  if (!day) return null;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day);
+  if (!match) return null;
+  const month = MONTHS[Number(match[2]) - 1];
+  if (!month) return null;
+  return `${month} ${Number(match[3])}, ${match[1]}`;
+}
+
 export function shortDate(iso: string): string {
   const match = iso.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (!match) return iso;

@@ -15,9 +15,6 @@ export const FAMILY_LABEL: Record<string, string> = {
 
 export const FAMILY_ORDER = ["big_five", "wellbeing_language", "interpersonal"] as const;
 
-export const TREND_NOTE =
-  "Trend. These values run lower than the overall number because a one-off AI rating feeds only the overall number. They are not on the same scale.";
-
 export function familyLabel(family: string): string {
   return FAMILY_LABEL[family] ?? family;
 }

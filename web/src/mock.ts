@@ -1,6 +1,17 @@
 import fullReport from "../../docs/sample_report.json";
 import deterministicReport from "../../docs/sample_report_deterministic_only.json";
+import liveExperimentalReport from "../../docs/sample_report_experimental.json";
 import { ApiError, type Client } from "./api";
+import {
+  buildServerPage,
+  conversationFields,
+  resolveDateRange,
+  toWire,
+  validateConversationQuery,
+  type ConversationQuery,
+} from "./conversation-adapter";
+import clampFixture from "./fixtures/date-range-clamped.json";
+import { MOCK_CATALOG, type MockConversation } from "./fixtures/conversations";
 import {
   deterministicSection,
   failedSection,
@@ -13,7 +24,7 @@ import {
 } from "./fixtures/experimental-samples";
 import mockConfig from "./fixtures/mock-config.json";
 import { queryFlag } from "./mode";
-import type { AnalysisRequest, Config, Conversation, ExperimentalScores, Job, Report, SavedAnalysis } from "./types";
+import type { AnalysisRequest, Config, DateRangeClamp, ExperimentalScores, Job, Report, SavedAnalysis } from "./types";
 
 const STEP_MS = 450;
 
@@ -68,45 +79,26 @@ interface MockJob {
   deleted: boolean;
   experimental: boolean;
   scoreOther: boolean;
+  clamp: DateRangeClamp | null;
 }
 
 const jobs = new Map<string, MockJob>();
 const removedVirtual = new Set<string>();
 
-const DEMO: Conversation = {
-  id: "demo",
-  label: "Demo conversation (synthetic)",
-  message_count: 634,
-  latest_date: "2025-11-15T22:10:00-08:00",
-  is_group: false,
-  supported: true,
-  is_demo: true,
-  participant_count: 1,
-};
+const DATE_CLAMP = clampFixture as DateRangeClamp;
 
-const MOCK_CONVERSATIONS: Conversation[] = [
-  DEMO,
-  {
-    id: "demo-jordan",
-    label: "Jordan Lee (demo data)",
-    message_count: 1204,
-    latest_date: "2026-01-18T19:04:00-08:00",
-    is_group: false,
-    supported: true,
-    is_demo: true,
-    participant_count: 1,
-  },
-  {
-    id: "demo-group",
-    label: "Family chat (demo data)",
-    message_count: 86,
-    latest_date: "2025-12-02T11:00:00-08:00",
-    is_group: true,
-    supported: false,
-    is_demo: true,
-    participant_count: 4,
-  },
-];
+function findConversation(id: string): MockConversation | undefined {
+  return MOCK_CATALOG.find((item) => item.id === id);
+}
+
+function withDateClamp(report: Report, clamp: DateRangeClamp | null): Report {
+  if (!clamp) return report;
+  report.run_meta.date_range_clamped = structuredClone(clamp);
+  report.header.requested_range = { date_from: clamp.requested.date_from, date_to: clamp.requested.date_to };
+  report.header.date_from = clamp.applied.date_from;
+  report.header.date_to = clamp.applied.date_to;
+  return report;
+}
 
 const FDA_MESSAGE =
   "Cannot read the Messages database. Grant Full Disk Access to PsychoSight, then quit and reopen it. You can use the demo conversation meanwhile.";
@@ -162,6 +154,12 @@ function virtualReport(jobId: string): Report | null {
   }
   if (jobId === "sample-det") {
     return cloneReport(deterministic, { id: jobId, mode: "deterministic_only", ...DEMO_JOB });
+  }
+  if (jobId === "sample-exp-live") {
+    return cloneReport(liveExperimentalReport as unknown as Report, { id: jobId, mode: "full", ...DEMO_JOB });
+  }
+  if (jobId === "sample-clamped") {
+    return withDateClamp(cloneReport(full, { id: jobId, mode: "full", ...DEMO_JOB }), DATE_CLAMP);
   }
   const experimental: Record<string, { mode: "full" | "deterministic_only"; source: Report; section: ExperimentalScores }> = {
     "sample-exp": { mode: "full", source: full, section: stubSection },
@@ -236,14 +234,40 @@ export const mockApi: Client = {
     return mockConfig as Config;
   },
 
-  async getConversations() {
+  async getConversations(query?: ConversationQuery) {
+    const normalized: ConversationQuery = {
+      limit: query?.limit ?? 10,
+      offset: query?.offset ?? 0,
+      q: query?.q ?? "",
+    };
+    const problem = validateConversationQuery(normalized);
+    if (problem) throw new ApiError("INVALID_REQUEST", problem, 422);
+    const demo = findConversation("demo");
+    if (!demo) throw new ApiError("INTERNAL_ERROR", "The demo conversation is missing.", 500);
     if (diskBlocked()) {
+      const q = normalized.q.trim();
       return {
-        conversations: [DEMO],
-        chat_db: { available: false, error: { code: "FULL_DISK_ACCESS_REQUIRED", message: FDA_MESSAGE } },
+        body: {
+          conversations: [toWire(demo)],
+          chat_db: { available: false, error: { code: "FULL_DISK_ACCESS_REQUIRED", message: FDA_MESSAGE } },
+          [conversationFields.total]: 1,
+          [conversationFields.limit]: normalized.limit,
+          [conversationFields.offset]: 0,
+          [conversationFields.q]: q ? q : null,
+        },
+        totalHeader: "1",
       };
     }
-    return { conversations: MOCK_CONVERSATIONS, chat_db: { available: true, error: null } };
+    if (queryFlag("legacy") === "1") {
+      return {
+        body: {
+          conversations: MOCK_CATALOG.map((item) => toWire(item)),
+          chat_db: { available: true, error: null },
+        },
+        totalHeader: null,
+      };
+    }
+    return buildServerPage(MOCK_CATALOG, normalized);
   },
 
   async listAnalyses() {
@@ -264,7 +288,7 @@ export const mockApi: Client = {
   },
 
   async createAnalysis(body: AnalysisRequest) {
-    const conversation = MOCK_CONVERSATIONS.find((item) => item.id === body.conversation_id);
+    const conversation = findConversation(body.conversation_id);
     if (!conversation) throw new ApiError("NOT_FOUND", `No conversation with id '${body.conversation_id}'.`, 404);
     if (!conversation.supported || conversation.is_group) {
       throw new ApiError("GROUP_CHAT_UNSUPPORTED", "Group chats are not supported. Choose a 1:1 conversation.", 400);
@@ -279,6 +303,8 @@ export const mockApi: Client = {
         422,
       );
     }
+    const range = resolveDateRange(body.date_from, body.date_to, conversation.first_message_date, conversation.last_message_date);
+    if (!range.ok) throw new ApiError(range.code, range.message, 422);
     const mode = body.mode === "deterministic_only" || body.llm_opt_in === false ? "deterministic_only" : "full";
     const id = `demo-${Math.random().toString(16).slice(2, 10)}`;
     jobs.set(id, {
@@ -290,6 +316,7 @@ export const mockApi: Client = {
       deleted: false,
       experimental: body.experimental_scores === true,
       scoreOther: body.experimental_scores === true && body.score_other === true,
+      clamp: range.clamp,
     });
     return { job_id: id, status: "queued" };
   },
@@ -301,7 +328,7 @@ export const mockApi: Client = {
 
   async getReport(jobId: string) {
     const virtual = virtualReport(jobId);
-    if (jobId === "sample-full" || jobId === "sample-det" || jobId.startsWith("sample-exp")) {
+    if (jobId === "sample-full" || jobId === "sample-det" || jobId === "sample-clamped" || jobId.startsWith("sample-exp")) {
       if (!virtual) throw new ApiError("NOT_FOUND", `No report with id '${jobId}'.`, 404);
       return virtual;
     }
@@ -326,13 +353,13 @@ export const mockApi: Client = {
       throw new ApiError("REPORT_NOT_READY", `Analysis '${jobId}' is still ${view.status} (stage ${view.stage}).`, 409);
     }
     const base = sourceFor(job.mode);
-    if (!job.experimental) return withSection(base, notRunSection, job);
+    if (!job.experimental) return withDateClamp(withSection(base, notRunSection, job), job.clamp);
     const section = job.mode === "deterministic_only" ? deterministicSection : stubSection;
-    return withSection(base, job.scoreOther ? section : withNullOther(section), job);
+    return withDateClamp(withSection(base, job.scoreOther ? section : withNullOther(section), job), job.clamp);
   },
 
   async deleteAnalysis(jobId: string) {
-    if (jobId === "sample-full" || jobId === "sample-det" || jobId.startsWith("sample-exp") || jobId === "preview") {
+    if (jobId === "sample-full" || jobId === "sample-det" || jobId === "sample-clamped" || jobId.startsWith("sample-exp") || jobId === "preview") {
       if (removedVirtual.has(jobId)) throw new ApiError("NOT_FOUND", `No analysis with id '${jobId}'.`, 404);
       removedVirtual.add(jobId);
       return { deleted: true, job_id: jobId };

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { formatCellLine, formatDay, formatTimestamp, orderedSeries, speakerLabel } from "../format";
-import type { Quote, Report, RubricItem } from "../types";
+import { formatCalendarDay, formatCellLine, formatDay, formatTimestamp, orderedSeries, speakerLabel } from "../format";
+import type { DateRangePair, Quote, Report, RubricItem } from "../types";
 import { DeleteDialog } from "./DeleteDialog";
 import { ExperimentalScores } from "./ExperimentalScores";
 import { TimelineChart } from "./TimelineChart";
@@ -9,11 +9,13 @@ export function ReportView({
   report,
   deleting,
   deleteError,
+  trendNote,
   onDelete,
 }: {
   report: Report;
   deleting: boolean;
   deleteError: string | null;
+  trendNote?: string | null;
   onDelete: () => void;
 }) {
   const [confirming, setConfirming] = useState(false);
@@ -30,6 +32,7 @@ export function ReportView({
         </h1>
         {header.is_demo ? <p className="status-line">Demo data</p> : null}
         <p>{range}</p>
+        {report.run_meta.date_range_clamped ? <DateRangeClampNote clamp={report.run_meta.date_range_clamped} /> : null}
         <p>
           {header.message_counts.me} messages from me, {header.message_counts.other} from the other person
         </p>
@@ -179,7 +182,9 @@ export function ReportView({
         </div>
       </section>
 
-      {report.experimental_scores ? <ExperimentalScores section={report.experimental_scores} /> : null}
+      {report.experimental_scores ? (
+        <ExperimentalScores section={report.experimental_scores} trendNote={trendNote ?? null} />
+      ) : null}
 
       <DeleteDialog
         open={confirming}
@@ -188,6 +193,24 @@ export function ReportView({
         onConfirm={onDelete}
       />
     </>
+  );
+}
+
+function boundText(value: string | null, empty: string): string {
+  if (!value) return empty;
+  return formatCalendarDay(value) ?? value;
+}
+
+function pairText(pair: DateRangePair): string {
+  return `${boundText(pair.date_from, "open start")} to ${boundText(pair.date_to, "open end")}`;
+}
+
+function DateRangeClampNote({ clamp }: { clamp: NonNullable<Report["run_meta"]["date_range_clamped"]> }) {
+  return (
+    <p className="status-line" data-testid="date-range-clamp">
+      Your range was adjusted to the dates the conversation covers. Requested {pairText(clamp.requested)}. Applied{" "}
+      {pairText(clamp.applied)}.
+    </p>
   );
 }
 
