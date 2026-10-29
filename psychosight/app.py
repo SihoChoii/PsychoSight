@@ -129,6 +129,7 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
                 "experimental_banner": exp_strings.BANNER,
                 "experimental_footer_support": exp_strings.FOOTER_SUPPORT,
                 "experimental_scale_note": exp_strings.SCALE_NOTE,
+                "experimental_trend_note": exp_strings.TREND_NOTE,
                 "experimental_how_it_works": exp_strings.HOW_IT_WORKS,
                 "experimental_enabled": pipeline.experimental_enabled(),
                 "experimental_dimensions": [

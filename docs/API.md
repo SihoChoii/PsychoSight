@@ -53,6 +53,7 @@ with `DEEPSEEK_MODEL`. `llm_configured` is kept as an alias of `llm_available`.
   "experimental_banner": "Experimental, not validated. These scores are not a diagnosis, not a personality test and not a measure of who anyone is. They come from word counts and AI ratings of this one conversation and can easily be wrong.",
   "experimental_footer_support": "If anything in this conversation is weighing on you, consider talking with someone you trust or a licensed professional.",
   "experimental_scale_note": "0–100 experimental index. 50 is the midpoint of fixed reference points, not an average person. The shaded band shows how uncertain the number is.",
+  "experimental_trend_note": "Weekly trend values are on their own scale and are not directly comparable to the overall index.",
   "experimental_how_it_works": "<multi-paragraph string, render verbatim>",
   "experimental_enabled": true,
   "experimental_dimensions": [
@@ -155,7 +156,7 @@ Additional fields:
 
 ### GET /config
 
-Additional fields, all safe to show: `experimental_opt_in_text`, `score_other_opt_in_text`, `experimental_banner`, `experimental_footer_support`, `experimental_scale_note`, `experimental_how_it_works`, `experimental_enabled`, `experimental_dimensions`.
+Additional fields, all safe to show: `experimental_opt_in_text`, `score_other_opt_in_text`, `experimental_banner`, `experimental_footer_support`, `experimental_scale_note`, `experimental_trend_note` (show next to the weekly trend), `experimental_how_it_works`, `experimental_enabled`, `experimental_dimensions`.
 
 `experimental_dimensions` is twelve objects in registry order, each `{key, label, family, evidence_strength}`. `schema_version` in this response is `"1.1.0"`.
 

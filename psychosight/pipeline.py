@@ -23,7 +23,8 @@ log = logging.getLogger("psychosight.pipeline")
 
 ProgressFn = Callable[[str, int, int], None]
 # Full-mode order. Deterministic-only skips scoring and synthesis. The experimental stage is always
-# emitted: empty (0/0) when the section is not requested or disabled, otherwise LLM-call progress.
+# emitted: empty (0/0) when the section is not requested or disabled, otherwise finished units
+# (one per selected episode plus one per holistic speaker), not LLM calls.
 STAGES = ("loading", "sessionizing", "features", "scoring", "synthesis", "experimental", "done")
 
 
