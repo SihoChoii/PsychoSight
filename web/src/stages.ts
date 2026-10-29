@@ -1,4 +1,4 @@
-export const STAGE_ORDER = ["loading", "sessionizing", "features", "scoring", "synthesis", "done"] as const;
+export const STAGE_ORDER = ["loading", "sessionizing", "features", "scoring", "synthesis", "experimental", "done"] as const;
 
 export type StageName = (typeof STAGE_ORDER)[number];
 
@@ -8,6 +8,7 @@ export const STAGE_LABEL: Record<string, string> = {
   features: "Features",
   scoring: "Scoring",
   synthesis: "Synthesis",
+  experimental: "Experimental scores",
   done: "Done",
 };
 
@@ -40,6 +41,7 @@ export function progressText(job: {
   const { current, total } = job.progress;
   if (job.stage === "scoring" && total > 1) return `${label}. ${current} of ${total} episodes.`;
   if (job.stage === "scoring" && total <= 0) return `${label}. Insufficient data.`;
+  if (job.stage === "experimental" && total > 0) return `${label}. ${current} of ${total}.`;
   return `${label}.`;
 }
 
@@ -48,5 +50,7 @@ export function showMeasuredReadout(job: {
   stage: string;
   progress: { current: number; total: number };
 }): boolean {
-  return job.stage === "scoring" && job.progress.total > 1 && job.status !== "error";
+  if (job.status === "error") return false;
+  if (job.stage === "scoring" && job.progress.total > 1) return true;
+  return job.stage === "experimental" && job.progress.total > 0;
 }

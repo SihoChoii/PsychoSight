@@ -1,9 +1,19 @@
 import fullReport from "../../docs/sample_report.json";
 import deterministicReport from "../../docs/sample_report_deterministic_only.json";
-import mockConfig from "./fixtures/mock-config.json";
 import { ApiError, type Client } from "./api";
+import {
+  deterministicSection,
+  failedSection,
+  insufficientSection,
+  notRunSection,
+  nullOtherSection,
+  realLikeSection,
+  stubSection,
+  withNullOther,
+} from "./fixtures/experimental-samples";
+import mockConfig from "./fixtures/mock-config.json";
 import { queryFlag } from "./mode";
-import type { AnalysisRequest, Config, Conversation, Job, Report, SavedAnalysis } from "./types";
+import type { AnalysisRequest, Config, Conversation, ExperimentalScores, Job, Report, SavedAnalysis } from "./types";
 
 const STEP_MS = 450;
 
@@ -27,6 +37,15 @@ const FULL_STEPS: Step[] = [
   { status: "running", stage: "scoring", current: 40, total: 40 },
   { status: "running", stage: "synthesis", current: 0, total: 1 },
   { status: "running", stage: "synthesis", current: 1, total: 1 },
+  { status: "running", stage: "experimental", current: 0, total: 8 },
+  { status: "running", stage: "experimental", current: 1, total: 8 },
+  { status: "running", stage: "experimental", current: 2, total: 8 },
+  { status: "running", stage: "experimental", current: 3, total: 8 },
+  { status: "running", stage: "experimental", current: 4, total: 8 },
+  { status: "running", stage: "experimental", current: 5, total: 8 },
+  { status: "running", stage: "experimental", current: 6, total: 8 },
+  { status: "running", stage: "experimental", current: 7, total: 8 },
+  { status: "running", stage: "experimental", current: 8, total: 8 },
   { status: "done", stage: "done", current: 1, total: 1 },
 ];
 
@@ -36,6 +55,7 @@ const LOCAL_STEPS: Step[] = [
   { status: "running", stage: "loading", current: 1, total: 1 },
   { status: "running", stage: "sessionizing", current: 1, total: 1 },
   { status: "running", stage: "features", current: 1, total: 1 },
+  { status: "running", stage: "experimental", current: 0, total: 0 },
   { status: "done", stage: "done", current: 1, total: 1 },
 ];
 
@@ -46,6 +66,8 @@ interface MockJob {
   label: string;
   started: number;
   deleted: boolean;
+  experimental: boolean;
+  scoreOther: boolean;
 }
 
 const jobs = new Map<string, MockJob>();
@@ -107,29 +129,50 @@ function cloneReport(source: Report, job: { id: string; mode: string; conversati
   return report;
 }
 
+function withSection(source: Report, section: ExperimentalScores | null, job: { id: string; mode: string; conversationId: string; label: string }): Report {
+  const report = cloneReport(source, job);
+  if (!section) {
+    delete report.experimental_scores;
+    return report;
+  }
+  report.schema_version = "1.1.0";
+  report.experimental_scores = structuredClone(section);
+  report.run_meta.experimental_opt_in = section.status !== "not_run" || section.reason !== "not requested";
+  report.run_meta.score_other_opt_in = section.speakers_scored.some((speaker) => speaker === "other");
+  return report;
+}
+
 function sourceFor(mode: string): Report {
   return (mode === "deterministic_only" ? deterministicReport : fullReport) as unknown as Report;
 }
 
+const DEMO_JOB = {
+  conversationId: "demo",
+  label: "Demo conversation (synthetic)",
+};
+
 function virtualReport(jobId: string): Report | null {
   if (removedVirtual.has(jobId)) return null;
+  const full = fullReport as unknown as Report;
+  const deterministic = deterministicReport as unknown as Report;
   if (jobId === "sample-full") {
-    return cloneReport(fullReport as unknown as Report, {
-      id: jobId,
-      mode: "full",
-      conversationId: "demo",
-      label: "Demo conversation (synthetic)",
-    });
+    return cloneReport(full, { id: jobId, mode: "full", ...DEMO_JOB });
   }
   if (jobId === "sample-det") {
-    return cloneReport(deterministicReport as unknown as Report, {
-      id: jobId,
-      mode: "deterministic_only",
-      conversationId: "demo",
-      label: "Demo conversation (synthetic)",
-    });
+    return cloneReport(deterministic, { id: jobId, mode: "deterministic_only", ...DEMO_JOB });
   }
-  return null;
+  const experimental: Record<string, { mode: "full" | "deterministic_only"; source: Report; section: ExperimentalScores }> = {
+    "sample-exp": { mode: "full", source: full, section: stubSection },
+    "sample-exp-real": { mode: "full", source: full, section: realLikeSection },
+    "sample-exp-det": { mode: "deterministic_only", source: deterministic, section: deterministicSection },
+    "sample-exp-me": { mode: "full", source: full, section: nullOtherSection },
+    "sample-exp-failed": { mode: "full", source: full, section: failedSection },
+    "sample-exp-notrun": { mode: "full", source: full, section: notRunSection },
+    "sample-exp-thin": { mode: "full", source: full, section: insufficientSection },
+  };
+  const match = experimental[jobId];
+  if (!match) return null;
+  return withSection(match.source, match.section, { id: jobId, mode: match.mode, ...DEMO_JOB });
 }
 
 function previewJob(): Job {
@@ -149,7 +192,7 @@ function previewJob(): Job {
       error: { code: "LLM_UNAVAILABLE", message: "DEEPSEEK_MODEL is not set." },
     };
   }
-  const stage = ["loading", "sessionizing", "features", "scoring", "synthesis", "done"].includes(freeze)
+  const stage = ["loading", "sessionizing", "features", "scoring", "synthesis", "experimental", "done"].includes(freeze)
     ? freeze
     : "scoring";
   if (stage === "done") {
@@ -157,6 +200,9 @@ function previewJob(): Job {
   }
   if (stage === "scoring") {
     return { ...base, status: "running", stage, progress: { current: 12, total: 40 }, error: null };
+  }
+  if (stage === "experimental") {
+    return { ...base, status: "running", stage, progress: { current: 4, total: 8 }, error: null };
   }
   return { ...base, status: "running", stage, progress: { current: 0, total: 1 }, error: null };
 }
@@ -224,6 +270,13 @@ export const mockApi: Client = {
     if (body.mode === "full" && body.llm_opt_in !== true) {
       throw new ApiError("LLM_OPT_IN_REQUIRED", "mode 'full' needs llm_opt_in=true.", 400);
     }
+    if (body.score_other && !body.experimental_scores) {
+      throw new ApiError(
+        "EXPERIMENTAL_CONSENT_REQUIRED",
+        "Scoring the other person requires the experimental scores consent.",
+        422,
+      );
+    }
     const mode = body.mode === "deterministic_only" || body.llm_opt_in === false ? "deterministic_only" : "full";
     const id = `demo-${Math.random().toString(16).slice(2, 10)}`;
     jobs.set(id, {
@@ -233,6 +286,8 @@ export const mockApi: Client = {
       label: conversation.label,
       started: Date.now(),
       deleted: false,
+      experimental: body.experimental_scores === true,
+      scoreOther: body.experimental_scores === true && body.score_other === true,
     });
     return { job_id: id, status: "queued" };
   },
@@ -244,7 +299,7 @@ export const mockApi: Client = {
 
   async getReport(jobId: string) {
     const virtual = virtualReport(jobId);
-    if (jobId === "sample-full" || jobId === "sample-det") {
+    if (jobId === "sample-full" || jobId === "sample-det" || jobId.startsWith("sample-exp")) {
       if (!virtual) throw new ApiError("NOT_FOUND", `No report with id '${jobId}'.`, 404);
       return virtual;
     }
@@ -268,11 +323,14 @@ export const mockApi: Client = {
     if (view.status !== "done") {
       throw new ApiError("REPORT_NOT_READY", `Analysis '${jobId}' is still ${view.status} (stage ${view.stage}).`, 409);
     }
-    return cloneReport(sourceFor(job.mode), job);
+    const base = sourceFor(job.mode);
+    if (!job.experimental) return withSection(base, notRunSection, job);
+    const section = job.mode === "deterministic_only" ? deterministicSection : stubSection;
+    return withSection(base, job.scoreOther ? section : withNullOther(section), job);
   },
 
   async deleteAnalysis(jobId: string) {
-    if (jobId === "sample-full" || jobId === "sample-det" || jobId === "preview") {
+    if (jobId === "sample-full" || jobId === "sample-det" || jobId.startsWith("sample-exp") || jobId === "preview") {
       if (removedVirtual.has(jobId)) throw new ApiError("NOT_FOUND", `No analysis with id '${jobId}'.`, 404);
       removedVirtual.add(jobId);
       return { deleted: true, job_id: jobId };

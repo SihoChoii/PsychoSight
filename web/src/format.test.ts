@@ -39,8 +39,19 @@ describe("progress", () => {
   it("marks skipped LLM stages when the run is deterministic only", () => {
     expect(stageMark("deterministic_only", "running", "features", "scoring")).toBe("Not run");
     expect(stageMark("deterministic_only", "done", "done", "synthesis")).toBe("Not run");
+    expect(stageMark("deterministic_only", "done", "done", "experimental")).toBe("Done");
+    expect(stageMark("deterministic_only", "running", "experimental", "experimental")).toBe("Now");
     expect(stageMark("full", "running", "scoring", "loading")).toBe("Done");
     expect(stageMark("full", "running", "scoring", "scoring")).toBe("Now");
     expect(stageMark("full", "error", "scoring", "scoring")).toBe("Failed");
+  });
+
+  it("shows experimental progress as the finished count, not a percentage", () => {
+    const text = progressText({ status: "running", stage: "experimental", progress: { current: 4, total: 8 } });
+    expect(text).toBe("Experimental scores. 4 of 8.");
+    expect(text).not.toMatch(/%/);
+    expect(progressText({ status: "running", stage: "experimental", progress: { current: 0, total: 0 } })).toBe(
+      "Experimental scores.",
+    );
   });
 });
