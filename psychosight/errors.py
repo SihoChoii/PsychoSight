@@ -8,6 +8,9 @@ class PsychoSightError(Exception):
     http_status = 500
 
     def __init__(self, message: str):
+        from .config import redact  # lazy: config must not import errors at module load
+
+        message = redact(message)  # an API key (any source) never reaches an error body, log or report
         super().__init__(message)
         self.message = message
 

@@ -68,7 +68,8 @@ class Job:
 
 
 def _err(code: str, message: str, status: int) -> JSONResponse:
-    return JSONResponse({"error": {"code": code, "message": message}}, status_code=status)
+    # Belt and braces: PsychoSightError already scrubs keys, but str(exc.detail) and others do not.
+    return JSONResponse({"error": {"code": code, "message": config.redact(message)}}, status_code=status)
 
 
 def _public_id(value: str, limit: int = 64) -> str:
@@ -122,7 +123,9 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
         s = config.llm_settings()
         return {"version": config.BACKEND_VERSION, "schema_version": config.SCHEMA_VERSION, "provider": "deepseek",
                 "model": s.model, "llm_configured": s.configured, "llm_available": s.configured,
-                "llm_key_source": s.key_source, "reasoning_effort": s.reasoning_effort,
+                "llm_key_source": s.key_source,
+                "llm_key_note": None if s.api_key else config.missing_key_message(),
+                "reasoning_effort": s.reasoning_effort,
                 "demo_provider": config.demo_provider_name(),
                 "demo_provider_note": config.demo_provider_note(), "opt_in_text": config.OPT_IN_TEXT,
                 "disclaimer": config.DISCLAIMER, "limitations_title": config.LIMITATIONS_TITLE,

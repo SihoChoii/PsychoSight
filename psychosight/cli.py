@@ -223,5 +223,5 @@ def main(argv: Optional[List[str]] = None) -> int:
         print(f"error {exc.code}: {exc.message}", file=sys.stderr)
         return 2
     except ValueError as exc:
-        print(f"error INVALID_REQUEST: {exc}", file=sys.stderr)
+        print(f"error INVALID_REQUEST: {config.redact(str(exc))}", file=sys.stderr)
         return 2
