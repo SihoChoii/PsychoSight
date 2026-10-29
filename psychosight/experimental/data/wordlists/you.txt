@@ -1,0 +1,10 @@
+# Original PsychoSight list (MIT). Data only; a count, not a label or a flag.
+you
+you'd
+you'll
+you're
+you've
+your
+yours
+yourself
+yourselves
