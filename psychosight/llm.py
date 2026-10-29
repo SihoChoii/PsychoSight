@@ -20,7 +20,7 @@ from typing import Callable, List, Optional
 
 import httpx
 
-from . import config
+from . import config, reasoning
 from .errors import LLMOptInRequired, LLMUnavailable
 
 log = logging.getLogger("psychosight.llm")
@@ -85,7 +85,13 @@ class LLMResult:
 class Provider:
     name = "base"
     model: str = ""
-    reasoning_effort: Optional[str] = None
+    reasoning_effort: Optional[str] = None  # effort actually sent to the provider (None when thinking is off)
+    reasoning_level: Optional[str] = None   # chosen level id (reasoning.REASONING_IDS)
+
+    @property
+    def cache_model(self) -> str:
+        """Model id for LLM cache keys, tagged with the reasoning level so levels never share cache rows."""
+        return reasoning.cache_model_for(self)
 
     def complete(self, system: str, user: str, *, run_idx: int = 0) -> LLMResult:  # pragma: no cover
         raise NotImplementedError
@@ -107,7 +113,8 @@ class DeepSeekProvider(Provider):
 
     def __init__(self, settings: Optional[config.LLMSettings] = None,
                  transport: Optional[httpx.BaseTransport] = None,
-                 sleep: Callable[[float], None] = time.sleep, max_attempts: int = 6):
+                 sleep: Callable[[float], None] = time.sleep, max_attempts: int = 6,
+                 reasoning_level: Optional[str] = None):
         self.settings = settings or config.llm_settings()
         config.remember_secret(self.settings.api_key)
         if not self.settings.api_key:
@@ -116,7 +123,16 @@ class DeepSeekProvider(Provider):
             raise LLMUnavailable("DEEPSEEK_MODEL is not set. Export the exact DeepSeek model id "
                                  "(see GET https://api.deepseek.com/models).")
         self.model = self.settings.model
-        self.reasoning_effort = self.settings.reasoning_effort
+        # Per-analysis level wins; else the settings' level (env default). Legacy settings with
+        # thinking=disabled mean "none". None keeps the raw settings fields (tests building settings by hand).
+        level = reasoning_level
+        if level is None and (self.settings.thinking or "").lower() == "disabled":
+            level = "none"
+        if level is None and self.settings.reasoning_effort:
+            level = self.settings.reasoning_effort
+        self.reasoning_level = reasoning.validate(level) if level is not None else None
+        self.reasoning_effort = (None if self.reasoning_level == "none"
+                                 else self.reasoning_level or self.settings.reasoning_effort)
         self._sleep = sleep
         self._max_attempts = max_attempts
         self._usage_lock = threading.Lock()
@@ -162,10 +178,13 @@ class DeepSeekProvider(Provider):
             body["temperature"] = 0
         if s.json_mode:
             body["response_format"] = {"type": "json_object"}
-        if s.thinking:
-            body["thinking"] = {"type": s.thinking}
-        if s.reasoning_effort:
-            body["reasoning_effort"] = s.reasoning_effort
+        if self.reasoning_level is not None:
+            body.update(reasoning.request_params(self.reasoning_level))
+        else:
+            if s.thinking:
+                body["thinking"] = {"type": s.thinking}
+            if s.reasoning_effort:
+                body["reasoning_effort"] = s.reasoning_effort
         if s.max_tokens:
             body["max_tokens"] = s.max_tokens
         return body
@@ -296,12 +315,15 @@ def _coerce_content(content) -> str:
     return ""
 
 
-def get_provider(is_demo: bool, llm_opt_in: bool) -> Provider:
+def get_provider(is_demo: bool, llm_opt_in: bool, reasoning_level: Optional[str] = None) -> Provider:
+    """Provider for one analysis. ``reasoning_level`` (validated id) applies to every call it makes;
+    None uses the configured default. The mock records the level but ignores it."""
     require_opt_in(llm_opt_in)
+    level = reasoning.validate(reasoning_level) if reasoning_level is not None else config.default_reasoning_level()
     if is_demo and config.demo_provider_name() == "mock":
         from .mock_provider import MockProvider
-        return MockProvider()
-    return DeepSeekProvider()
+        return MockProvider(reasoning_level=level)
+    return DeepSeekProvider(reasoning_level=level)
 
 
 def parse_json_object(text: str) -> Optional[dict]:

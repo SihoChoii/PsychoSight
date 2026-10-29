@@ -31,6 +31,7 @@ from psychosight.experimental.mock_exp import DISAGREE_DOMAIN, DISAGREE_ITEM, co
 from psychosight.features import tokenize, week_key
 from psychosight.llm import LLMResult
 from psychosight.mock_provider import MockProvider
+from psychosight import reasoning
 from psychosight.models import Msg
 from psychosight.rubric import DATA_CLOSE, CallBudget, locate_quote
 from psychosight.sessionize import exact_fingerprint, sessionize
@@ -434,7 +435,7 @@ def test_rerun_is_all_cache_hits_and_rows_hold_no_message_text(tmp_path, caplog)
     episode_rows = [row for row in rows if row[1] == c.EXP_PROMPT_VERSION]
     assert {row[3] for row in episode_rows} == {0, 1}
     assert {row[0] for row in episode_rows} == {episode.hash}
-    assert {row[2] for row in episode_rows} == {"mock-rubric-1"}
+    assert {row[2] for row in episode_rows} == {reasoning.cache_tag("mock-rubric-1", None)}  # model tagged with the reasoning level
     holistic_rows = [row for row in rows if row[1] == c.EXP_HOLISTIC_PROMPT_VERSION]
     assert len(holistic_rows) == 4  # two speakers, two runs
     assert all(len(row[0]) == 64 and row[0] != episode.hash for row in holistic_rows)
@@ -451,7 +452,7 @@ def test_rubric_v1_items_are_read_from_cache_and_not_asked_again(tmp_path):
     fp = exact_fingerprint(episode.turns)
     store = _store(tmp_path)
     for run_idx, score in ((0, 5), (1, 4)):
-        store.put_score(episode.hash, config.PROMPT_VERSION, "script-model", run_idx, {
+        store.put_score(episode.hash, config.PROMPT_VERSION, reasoning.cache_tag("script-model", None), run_idx, {
             "_exact_fp": fp,
             "items": {"validates_feelings": {"score": score, "confidence": "medium", "quote_ref": ref}},
         })
@@ -465,7 +466,7 @@ def test_rubric_v1_items_are_read_from_cache_and_not_asked_again(tmp_path):
 
     # A later rubric row is picked up on the next experimental read; the episode call stays cached.
     for run_idx in (0, 1):
-        store.put_score(episode.hash, config.PROMPT_VERSION, "script-model", run_idx, {
+        store.put_score(episode.hash, config.PROMPT_VERSION, reasoning.cache_tag("script-model", None), run_idx, {
             "_exact_fp": fp,
             "items": {"validates_feelings": {"score": 2, "confidence": "low", "quote_ref": ref}},
         })
@@ -474,11 +475,11 @@ def test_rubric_v1_items_are_read_from_cache_and_not_asked_again(tmp_path):
     assert _nums(again, "llm.validates_feelings", "me") == [2.0]
 
     # Wrong fingerprint and wrong model are not reused.
-    store.put_score(episode.hash, config.PROMPT_VERSION, "script-model", 0, {
+    store.put_score(episode.hash, config.PROMPT_VERSION, reasoning.cache_tag("script-model", None), 0, {
         "_exact_fp": "not-the-text",
         "items": {"validates_feelings": {"score": 5, "confidence": "medium", "quote_ref": ref}},
     })
-    store.put_score(episode.hash, config.PROMPT_VERSION, "script-model", 1, {
+    store.put_score(episode.hash, config.PROMPT_VERSION, reasoning.cache_tag("script-model", None), 1, {
         "_exact_fp": "not-the-text",
         "items": {"validates_feelings": {"score": 5, "confidence": "medium", "quote_ref": ref}},
     })

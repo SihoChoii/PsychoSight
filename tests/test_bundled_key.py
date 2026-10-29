@@ -50,7 +50,7 @@ def test_bundled_is_used_when_nothing_else_has_a_key(tmp_path, monkeypatch):
     _bundle(tmp_path, monkeypatch)
     s = config.llm_settings()
     assert s.api_key == BUNDLED_KEY and s.key_source == "bundled" and s.configured
-    assert s.model == "deepseek-flash" and s.reasoning_effort == "max"  # defaults kept when the bundle omits them
+    assert s.model == "deepseek-flash" and s.reasoning_effort == "low"  # defaults kept when the bundle omits them
 
 
 def test_bundled_settings_are_read_too(tmp_path, monkeypatch):

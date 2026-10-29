@@ -16,6 +16,7 @@ from psychosight.errors import InvalidRequest, LLMUnavailable
 from psychosight.features import count_absolutist, tokenize
 from psychosight.llm import DeepSeekProvider, Provider, install_log_guard
 from psychosight.mock_provider import MockProvider
+from psychosight import reasoning
 from psychosight.models import Msg
 from psychosight.storage import Store
 from tests.helpers import make_chat_db
@@ -130,7 +131,7 @@ def test_cache_does_not_reuse_offsets_when_only_normalized_text_matches(tmp_path
     record, _dropped = rubric.to_cache_record(a, cleaned)
     wrong = rubric.quote_from_ref(b, record["items"]["repair_attempts"]["quote_ref"])
     assert wrong is None or wrong[1] != "there"
-    store.put_score(a.hash, config.PROMPT_VERSION, "mock-rubric-1", 0,
+    store.put_score(a.hash, config.PROMPT_VERSION, reasoning.cache_tag("mock-rubric-1", None), 0,
                     {"items": record["items"], "_exact_fp": sessionize.exact_fingerprint(a.turns)})
     provider = MockProvider()
     again = rubric.score_one(provider, b, 0, store, rubric.ScoringStats(), rubric.CallBudget(4))
@@ -140,7 +141,7 @@ def test_cache_does_not_reuse_offsets_when_only_normalized_text_matches(tmp_path
     hit = rubric.score_one(provider, b, 0, store, rubric.ScoringStats(), rubric.CallBudget(4))
     # B has no repair cue, so that item may be null. The hit itself is the check.
     assert provider.calls == 0 and hit is not None
-    stored = store.get_score(b.hash, config.PROMPT_VERSION, "mock-rubric-1", 0)
+    stored = store.get_score(b.hash, config.PROMPT_VERSION, reasoning.cache_tag("mock-rubric-1", None), 0)
     assert stored["_exact_fp"] == sessionize.exact_fingerprint(b.turns)
 
 
