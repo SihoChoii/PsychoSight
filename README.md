@@ -27,7 +27,8 @@ cp .env.example .env      # then paste the DeepSeek key after DEEPSEEK_API_KEY=
 .venv/bin/python -m psychosight check-llm
 ```
 The key is **not in git** (judges receive it privately). It is read from the `DEEPSEEK_API_KEY` environment variable,
-else from `.env` at the repo root, else `~/.psychosight/.env` (both gitignored; no extra dependency). The default model
+else from `.env` at the repo root, else `~/.psychosight/.env` (both gitignored; no extra dependency), else (packaged
+app only) a `psychosight.env` bundled into the app at build time (see `docs/PACKAGING_KEY.md`). The default model
 is `deepseek-flash` (DeepSeek-V4.1-Flash) at the highest thinking effort (`reasoning_effort: max`). The key is only
 used after the explicit opt-in and is shown masked (`sk-…abcd`) by `check-llm`. Without a key everything else still
 works: deterministic-only reports and the offline mock demo.
@@ -124,7 +125,8 @@ An optional section can add 0–100 indexes from word counts in this conversatio
 ### Troubleshooting
 - **`FULL_DISK_ACCESS_REQUIRED`**: System Settings > Privacy & Security > Full Disk Access, enable the app that runs
   the backend (Terminal, iTerm, or your IDE), then restart it. The demo conversation works meanwhile.
-- **`LLM_UNAVAILABLE` "No DeepSeek API key found"**: `cp .env.example .env`, paste the key, restart the backend.
+- **`LLM_UNAVAILABLE` "No DeepSeek API key found"**: the message lists every place searched. `cp .env.example .env`,
+  paste the key, restart the backend (packaged app: rerun `scripts/inject_bundled_key.py`, see `docs/PACKAGING_KEY.md`).
 - **`LLM_UNAVAILABLE` "rejected the API key"**: the key in `.env` (or `DEEPSEEK_API_KEY`) is wrong or revoked;
   replace it and run `python -m psychosight check-llm`.
 - **`LLM_UNAVAILABLE` "rejected the model"**: the error lists the model ids your key can use (from DeepSeek's
