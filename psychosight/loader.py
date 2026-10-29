@@ -135,11 +135,18 @@ def load_demo(date_from: Optional[date] = None, date_to: Optional[date] = None) 
     return ConversationData(config.DEMO_CONVERSATION_ID, config.DEMO_LABEL, msgs, True, "demo")
 
 
+def _short_id(value: str, limit: int = 64) -> str:
+    cleaned = " ".join((value or "").split())
+    if len(cleaned) > limit:
+        return cleaned[:limit] + "..."
+    return cleaned or "(empty)"
+
+
 def find_conversation(conn, conversation_id: str) -> msgexport.Conversation:
     for conv in msgexport.list_conversations(conn):
         if str(conv.rowid) == str(conversation_id):
             return conv
-    raise NotFound(f"No conversation with id '{conversation_id}'.")
+    raise NotFound(f"No conversation with id '{_short_id(conversation_id)}'.")
 
 
 def check_supported(conversation_id: str, db_path: Optional[Path] = None) -> None:

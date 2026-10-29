@@ -7,6 +7,7 @@ The `reports` table stores the report JSON, which contains short verbatim eviden
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 import threading
 from datetime import datetime, timezone
@@ -50,6 +51,10 @@ class Store:
         self._conn = sqlite3.connect(str(self.path), check_same_thread=False)
         self._conn.executescript(SCHEMA)
         self._conn.commit()
+        try:
+            os.chmod(self.path, 0o600)
+        except OSError:
+            pass
 
     def close(self) -> None:
         with self._lock:

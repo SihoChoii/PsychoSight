@@ -23,6 +23,9 @@ MIN_EPISODES = 3
 MIN_REPLIES = 3
 MIN_TURNS = 10
 MAX_EPISODES_SCORED = 40
+# Characters of one message included in an LLM prompt. The rest is omitted so one huge
+# message cannot dominate memory or the request. Quotes are still checked against the original.
+MAX_MESSAGE_PROMPT_CHARS = 8000
 TOP_SIGNAL_SHARE = 0.6
 SELECTION_SEED = 1017
 ITEM_MIN_EPISODES = 3

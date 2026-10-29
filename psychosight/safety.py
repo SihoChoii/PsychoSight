@@ -3,31 +3,49 @@
 The fixed disclaimer and the limitations text are allow-listed: they must mention words like
 "diagnosis" in negation. Code identifiers (e.g. message `attachments` in msgexport) are out of scope;
 only human-readable copy is linted.
+
+Matching is on a normalized copy (compatibility forms, invisible characters, dashes, and a few
+Latin lookalikes folded) so zero-width and fullwidth tricks do not hide a banned word.
 """
 
 from __future__ import annotations
 
 import re
+import unicodedata
 from typing import Iterable, List
 
 from . import config
 
 BANNED = [
-    r"diagnos", r"disorder", r"clinical", r"\bt-?scores?\b", r"relapse", r"suicid", r"self-harm",
+    r"diagnos", r"disorder", r"clinical", r"\bt[\s-]*scores?\b", r"relapse", r"suicid", r"self[\s-]*harm",
     r"narcissis", r"impulsiv", r"\battachment\b", r"anxious attachment", r"\bavoidant\b", r"borderline",
-    r"bipolar", r"depress", r"psychopath", r"sociopath", r"personality trait", r"neuroticism", r"\bneo\b",
-    r"\bneo-pi", r"pid-5", r"hitop", r"biaffect", r"entropy", r"kalman", r"1\.40", r"patholog", r"symptom",
-    r"mental illness", r"\btoxic\b", r"gaslight", r"manipulat", r"elevation", r"\bcut-?offs?\b", r"\bpatient\b",
+    r"bipolar", r"depress", r"psychopath", r"sociopath", r"personality trait", r"\bpersonality\b",
+    r"neuroticism", r"\bneo\b", r"neo[\s-]*pi", r"pid[\s-]*5", r"hitop", r"bi[\s-]*affect", r"entropy",
+    r"kalman", r"1\.40", r"patholog", r"symptom", r"mental illness", r"\btoxic\b", r"gaslight", r"manipulat",
+    r"elevat", r"\bcut[\s-]*offs?\b", r"\bpatient\b", r"\bpsychiatr", r"\bmedical\b", r"\bnorms?\b",
+    r"\bpercentiles?\b",
 ]
 # Generalization / trait / causal / norm wording, flagged in prompts and observations.
-GENERALIZATION = [r"\balways\b", r"\bnever\b", r"is the type of person", r"tends to be"]
-OBSERVATION_ONLY = [
-    r"\btends? to\b", r"type of person", r"kind of person", r"\bpersonality\b", r"\byou are an?\b",
-    r"\b(he|she|they) (is|are) an?\b", r"\bbecause\b", r"\bcaus(e|es|ed|ing)\b", r"\bdue to\b",
-    r"\blead(s)? to\b", r"\bresult(s|ed)? in\b", r"\bmakes? (you|me|them|him|her)\b", r"\babove average\b",
-    r"\bbelow average\b", r"\b(ab)?normal\b", r"\b(un)?healthy\b", r"\bhigh\b", r"\blow\b", r"\bmost people\b",
-    r"\bpopulation\b", r"\btypical(ly)?\b",
+GENERALIZATION = [
+    r"\balways\b", r"\bnever\b", r"is the type of person", r"tends to be",
+    r"type[\s-]+of[\s-]+person", r"kind[\s-]+of[\s-]+person",
 ]
+OBSERVATION_ONLY = [
+    r"\btends?\s+to\b", r"type[\s-]+of[\s-]+person", r"kind[\s-]+of[\s-]+person", r"\bpersonality\b",
+    r"\byou are an?\b", r"\b(he|she|they) (is|are) an?\b", r"\bbecause\b", r"\bcaus(e|es|ed|ing)\b",
+    r"\bdue to\b", r"\blead(s)? to\b", r"\bresult(s|ed)? in\b", r"\bmakes? (you|me|them|him|her)\b",
+    r"\b(?:above|below)[\s-]+average\b", r"\b(ab)?normal\b", r"\b(un)?healthy\b", r"\bhigh\b", r"\blow\b",
+    r"\bmost people\b", r"\bpopulation\b", r"\btypical(ly)?\b",
+]
+
+# Lowercase Latin lookalikes folded only for the lint copy, not for stored report text.
+_CONFUSABLES = str.maketrans({
+    "а": "a", "е": "e", "о": "o", "р": "p", "с": "c", "у": "y", "х": "x", "і": "i", "ѕ": "s",
+    "һ": "h", "ԁ": "d", "α": "a", "β": "b", "ε": "e", "ι": "i", "κ": "k", "ο": "o", "ρ": "p",
+    "τ": "t", "υ": "u", "χ": "x", "ν": "v",
+})
+_INVISIBLE = re.compile(r"[\u200b-\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff\u00ad]")
+_DASHES = re.compile(r"[\u2010-\u2015\u2212\ufe58\ufe63\uff0d]")
 
 ALLOW_LIST = [config.DISCLAIMER, config.LIMITATIONS_TITLE] + list(config.LIMITATIONS)
 
@@ -38,8 +56,18 @@ def _strip_allowed(text: str) -> str:
     return text
 
 
+def _normalize_for_lint(text: str) -> str:
+    text = unicodedata.normalize("NFKC", text or "")
+    text = _INVISIBLE.sub("", text)
+    text = _DASHES.sub("-", text)
+    text = text.lower().translate(_CONFUSABLES)
+    return re.sub(r"\s+", " ", text)
+
+
 def lint(text: str, *, generalization: bool = False, observation: bool = False) -> List[str]:
-    t = _strip_allowed(text or "").lower()
+    # Allow-list is exact, before normalization, so a zero-width character inside the
+    # disclaimer does not hide the words it contains.
+    t = _normalize_for_lint(_strip_allowed(text or ""))
     patterns = list(BANNED)
     if generalization or observation:
         patterns += GENERALIZATION

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import time
 from dataclasses import dataclass, field
 from typing import Callable, List, Optional
@@ -21,6 +22,52 @@ from . import config
 from .errors import LLMOptInRequired, LLMUnavailable
 
 log = logging.getLogger("psychosight.llm")
+
+_MODEL_ERROR_PHRASES = (
+    "model not", "unknown model", "invalid model", "model name", "supported api model",
+    "does not exist", "model_not_found", "no such model",
+)
+_LOG_GUARD = False
+
+
+class _RedactSecrets(logging.Filter):
+    """Drop the API key from any psychosight log line that managed to include it."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        key = os.environ.get("DEEPSEEK_API_KEY") or ""
+        if not key:
+            return True
+        try:
+            msg = record.getMessage()
+        except Exception:  # noqa: BLE001
+            return True
+        if key in msg:
+            record.msg = msg.replace(key, "[redacted]")
+            record.args = ()
+        return True
+
+
+def install_log_guard() -> None:
+    """Keep request libraries quiet and strip the API key from log handlers.
+
+    Filters on a logger are not applied to records that propagate from a child,
+    so the redaction filter is attached to handlers, which do see those records.
+    """
+    global _LOG_GUARD
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("httpcore").setLevel(logging.WARNING)
+    redact = _RedactSecrets()
+    root = logging.getLogger()
+    for handler in list(root.handlers) + list(logging.getLogger("psychosight").handlers):
+        if not any(isinstance(f, _RedactSecrets) for f in handler.filters):
+            handler.addFilter(redact)
+    if not _LOG_GUARD:
+        # Also filter records emitted directly on the package logger.
+        logging.getLogger("psychosight").addFilter(_RedactSecrets())
+        _LOG_GUARD = True
+
+
+install_log_guard()
 
 
 def require_opt_in(flag: bool) -> None:
@@ -71,6 +118,9 @@ class DeepSeekProvider(Provider):
             headers={"Authorization": f"Bearer {self.settings.api_key}", "Content-Type": "application/json"},
         )
 
+    def close(self) -> None:
+        self._client.close()
+
     def list_models(self) -> List[str]:
         try:
             resp = self._client.get("/models")
@@ -81,9 +131,13 @@ class DeepSeekProvider(Provider):
             return []
 
     def _is_model_error(self, resp: httpx.Response) -> bool:
-        text = resp.text.lower()
-        return (self.model.lower() in text or "model name" in text or "model not" in text
-                or "unknown model" in text or "invalid model" in text or "supported api model" in text)
+        """True only when the provider message is about the model id.
+
+        Matching the model string alone is not enough: a 400 about temperature can echo the
+        model field, and the body can also echo the prompt.
+        """
+        low = _error_message(resp).lower()
+        return any(phrase in low for phrase in _MODEL_ERROR_PHRASES)
 
     def _model_rejected(self, status: int) -> LLMUnavailable:
         models = self.list_models()
@@ -121,11 +175,19 @@ class DeepSeekProvider(Provider):
                 continue
             status = resp.status_code
             if status == 200:
-                data = resp.json()
+                try:
+                    data = resp.json()
+                except ValueError:
+                    last = "invalid JSON"
+                    log.warning("deepseek invalid json attempt=%d", attempt + 1)
+                    self._sleep(min(2 ** attempt, 20))
+                    continue
                 message = (data.get("choices") or [{}])[0].get("message") or {}
-                message.pop("reasoning_content", None)  # discard reasoning trace immediately
-                content = message.get("content") or ""
-                usage = {k: v for k, v in (data.get("usage") or {}).items() if isinstance(v, (int, float))}
+                if not isinstance(message, dict):
+                    message = {}
+                content = _message_text(message)
+                usage = {k: v for k, v in (data.get("usage") or {}).items()
+                         if isinstance(v, (int, float)) and not isinstance(v, bool)}
                 log.info("deepseek ok attempt=%d chars=%d", attempt + 1, len(content))
                 return LLMResult(content=content, usage=usage)
             if status in (400, 404, 422) and self._is_model_error(resp):
@@ -145,14 +207,50 @@ class DeepSeekProvider(Provider):
         raise LLMUnavailable(f"DeepSeek unavailable after {self._max_attempts} attempts ({last}).")
 
 
-def _provider_error(resp: httpx.Response) -> str:
-    """Short provider error message (never logged; returned to the caller only)."""
+def _error_message(resp: httpx.Response) -> str:
+    """Provider error string used only for local classification. Never log or return it."""
     try:
         err = resp.json().get("error") or {}
-        msg = err.get("message") if isinstance(err, dict) else str(err)
+        msg = err.get("message") if isinstance(err, dict) else ""
     except ValueError:
-        msg = ""
-    return (msg or "no details")[:300]
+        return ""
+    return msg if isinstance(msg, str) else ""
+
+
+def _provider_error(resp: httpx.Response) -> str:
+    """Safe hint. The raw provider body is not returned: it can echo the prompt."""
+    low = _error_message(resp).lower()
+    hints = []
+    if "response_format" in low:
+        hints.append("response_format")
+    if "temperature" in low:
+        hints.append("temperature")
+    if hints:
+        return "provider rejected request options (" + ", ".join(hints) + ")"
+    return "no details"
+
+
+def _message_text(message: dict) -> str:
+    """Assistant text only. Reasoning traces are discarded and never returned."""
+    message.pop("reasoning_content", None)
+    message.pop("reasoning", None)
+    return _coerce_content(message.get("content"))
+
+
+def _coerce_content(content) -> str:
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts: List[str] = []
+        for part in content:
+            if isinstance(part, str):
+                parts.append(part)
+            elif isinstance(part, dict) and part.get("type") not in ("reasoning", "thinking"):
+                text = part.get("text")
+                if isinstance(text, str):
+                    parts.append(text)
+        return "".join(parts)
+    return ""
 
 
 def get_provider(is_demo: bool, llm_opt_in: bool) -> Provider:

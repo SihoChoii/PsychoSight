@@ -16,8 +16,10 @@ from .storage import Store
 
 def _setup_logging(verbose: bool) -> None:
     # Logs carry ids and counts only, never message text.
+    from .llm import install_log_guard
     logging.basicConfig(level=logging.INFO if verbose else logging.WARNING, stream=sys.stderr,
                         format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    install_log_guard()
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -130,17 +132,20 @@ def cmd_check_llm(args) -> int:
     from .llm import DeepSeekProvider
 
     provider = DeepSeekProvider()
-    models = provider.list_models()
-    print(f"model={provider.model} reasoning_effort={provider.reasoning_effort} base_url={provider.settings.base_url}")
-    print(f"provider models: {', '.join(models) if models else '(could not list)'}")
-    if models and provider.model not in models:
-        print("warning: DEEPSEEK_MODEL is not in the provider's model list", file=sys.stderr)
-    eps = sessionize.sessionize(loader.load_demo().msgs)
-    sel = rubric.select_episodes(eps)
-    ep = next(e for e in eps if e.id in sel)
-    store = Store(Path(tempfile.mkdtemp(prefix="ps-check-")) / "check.db")
-    stats = rubric.ScoringStats()
-    record = rubric.score_one(provider, ep, 0, store, stats, rubric.CallBudget(4))
+    try:
+        models = provider.list_models()
+        print(f"model={provider.model} reasoning_effort={provider.reasoning_effort} base_url={provider.settings.base_url}")
+        print(f"provider models: {', '.join(models) if models else '(could not list)'}")
+        if models and provider.model not in models:
+            print("warning: DEEPSEEK_MODEL is not in the provider's model list", file=sys.stderr)
+        eps = sessionize.sessionize(loader.load_demo().msgs)
+        sel = rubric.select_episodes(eps)
+        ep = next(e for e in eps if e.id in sel)
+        store = Store(Path(tempfile.mkdtemp(prefix="ps-check-")) / "check.db")
+        stats = rubric.ScoringStats()
+        record = rubric.score_one(provider, ep, 0, store, stats, rubric.CallBudget(4))
+    finally:
+        provider.close()
     ok = record is not None
     print(f"rubric call on synthetic {ep.id}: {'valid JSON' if ok else 'INVALID output'} calls={stats.llm_calls} "
           f"retries={stats.llm_retries} dropped_quotes={stats.dropped_quotes}")
@@ -149,14 +154,19 @@ def cmd_check_llm(args) -> int:
     return 0 if ok else 1
 
 
+_LOOPBACK_HOSTS = ("127.0.0.1", "localhost", "::1")
+
+
 def cmd_serve(args) -> int:
     import uvicorn
 
     from .app import create_app
 
     port = args.port or config.port()
-    if args.host not in ("127.0.0.1", "localhost", "::1"):
-        print(f"warning: binding to {args.host} exposes the API beyond this computer", file=sys.stderr)
+    if args.host not in _LOOPBACK_HOSTS:
+        print(f"error INVALID_REQUEST: refusing to bind {args.host}. "
+              "The API listens on 127.0.0.1 only.", file=sys.stderr)
+        return 2
     app = create_app(static_dir=args.static_dir)
     print(f"PsychoSight Lite on http://{args.host}:{port}  ({config.DISCLAIMER})", file=sys.stderr)
     uvicorn.run(app, host=args.host, port=port, log_level="info")
