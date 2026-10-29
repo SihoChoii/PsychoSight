@@ -21,11 +21,24 @@ python3 -m venv .venv
 .venv/bin/python -m pytest            # all offline, no network, no chat.db needed
 ```
 
+### DeepSeek key (one-time setup)
+```bash
+cp .env.example .env      # then paste the DeepSeek key after DEEPSEEK_API_KEY=
+.venv/bin/python -m psychosight check-llm
+```
+The key is **not in git** (judges receive it privately). It is read from the `DEEPSEEK_API_KEY` environment variable,
+else from `.env` at the repo root, else `~/.psychosight/.env` (both gitignored; no extra dependency). The default model
+is `deepseek-flash` (DeepSeek-V4.1-Flash) at the highest thinking effort (`reasoning_effort: max`). The key is only
+used after the explicit opt-in and is shown masked (`sk-…abcd`) by `check-llm`. Without a key everything else still
+works: deterministic-only reports and the offline mock demo.
+
 ### Environment variables
+Any of these can also go in `.env`; a real environment variable wins over the file.
+
 | Variable | Required | Meaning |
 |---|---|---|
-| `DEEPSEEK_API_KEY` | for real LLM runs | DeepSeek API key. Read from the environment only; never logged or written to disk. |
-| `DEEPSEEK_MODEL` | for real LLM runs | Exact DeepSeek model id (Siho's "4.1 flash 1017"). No default is hardcoded; placeholder: `export DEEPSEEK_MODEL="<exact model id from GET /models>"`. |
+| `DEEPSEEK_API_KEY` | for real LLM runs | DeepSeek key (env var or `.env`). Never logged, printed in full, returned by the API, or written to disk. |
+| `DEEPSEEK_MODEL` | no | Overrides the default model `deepseek-flash` (DeepSeek-V4.1-Flash, "4.1 flash 1017"). Other id on the key today: `deepseek-v4-pro`. |
 | `DEEPSEEK_BASE_URL` | no | Default `https://api.deepseek.com`. |
 | `DEEPSEEK_REASONING_EFFORT` | no | Default `max` (highest). `none` disables thinking. |
 | `DEEPSEEK_THINKING` | no | Default `enabled`. |
@@ -35,7 +48,7 @@ python3 -m venv .venv
 | `PSYCHOSIGHT_STATIC_DIR` | no | UI directory; default `web/dist`, then `web/`. |
 | `PSYCHOSIGHT_DATA_DIR` | no | Local SQLite location; default `~/.psychosight/`. |
 | `PSYCHOSIGHT_CHAT_DB` | no | Default `~/Library/Messages/chat.db`. |
-| `PSYCHOSIGHT_DEMO_PROVIDER` | no | `mock` (default) or `deepseek` for the synthetic demo conversation. |
+| `PSYCHOSIGHT_DEMO_PROVIDER` | no | `mock` (default, offline) or `deepseek` to score the synthetic demo conversation with the real API. |
 | `PSYCHOSIGHT_MAX_LLM_CALLS` | no | Per-run call ceiling (default 200). |
 
 ### Run
@@ -88,15 +101,17 @@ episodes and agreement) -> `report` (validated against the JSON Schema, a failur
 - **The LLM cache holds no message text.** `llm_scores` is keyed by (episode hash, prompt version, model, run) and
   stores scores plus quote offsets only. `episodes`/`features` tables hold counts and numbers only.
 - **No message bodies or model reasoning in logs.** DeepSeek reasoning traces are discarded on receipt and never
-  logged or stored; logs carry ids, counts and status codes only (enforced by tests). The API key is never logged.
+  logged or stored; logs carry ids, counts and status codes only (enforced by tests). The API key is never logged or returned by the API.
 - The API binds to 127.0.0.1 and only serves message text as evidence quotes inside reports.
 
 ### Troubleshooting
 - **`FULL_DISK_ACCESS_REQUIRED`**: System Settings > Privacy & Security > Full Disk Access, enable the app that runs
   the backend (Terminal, iTerm, or your IDE), then restart it. The demo conversation works meanwhile.
-- **`LLM_UNAVAILABLE` "DEEPSEEK_MODEL is not set" / "rejected the model"**: the error lists the model ids your key
-  can use (from DeepSeek's `GET /models`); set `DEEPSEEK_MODEL` to one of them and run
-  `python -m psychosight check-llm`.
+- **`LLM_UNAVAILABLE` "No DeepSeek API key found"**: `cp .env.example .env`, paste the key, restart the backend.
+- **`LLM_UNAVAILABLE` "rejected the API key"**: the key in `.env` (or `DEEPSEEK_API_KEY`) is wrong or revoked;
+  replace it and run `python -m psychosight check-llm`.
+- **`LLM_UNAVAILABLE` "rejected the model"**: the error lists the model ids your key can use (from DeepSeek's
+  `GET /models`); set `DEEPSEEK_MODEL` to one of them and run `python -m psychosight check-llm`.
 - **HTTP 400 mentioning `response_format` or `temperature`**: set `DEEPSEEK_JSON_MODE=0` or
   `DEEPSEEK_SEND_TEMPERATURE=0`.
 - **`GROUP_CHAT_UNSUPPORTED`**: only 1:1 conversations are supported in this version.

@@ -15,7 +15,7 @@ Every error response is
 | `FULL_DISK_ACCESS_REQUIRED` | 403 | chat.db missing or unreadable (grant Full Disk Access to the terminal/app running the backend). |
 | `GROUP_CHAT_UNSUPPORTED` | 400 | Conversation has more than one other participant. 1:1 only. |
 | `LLM_OPT_IN_REQUIRED` | 400 | `mode:"full"` requested without `llm_opt_in:true`. LLM stages never run without opt-in. |
-| `LLM_UNAVAILABLE` | 503 (or job error) | Opt-in given but `DEEPSEEK_API_KEY`/`DEEPSEEK_MODEL` missing, the model string was rejected (message lists the provider's models), or the provider failed. |
+| `LLM_UNAVAILABLE` | 503 (or job error) | Opt-in given but no key is configured (message: copy `.env.example` to `.env` and put the key in it, or export `DEEPSEEK_API_KEY`), the key was rejected, the model string was rejected (message lists the provider's models), or the provider failed. |
 | `NOT_FOUND` | 404 | Unknown conversation, job or report. |
 | `REPORT_NOT_READY` | 409 | Report requested before the job is `done`. |
 | `INVALID_REQUEST` | 422 | Body failed validation (e.g. bad date). |
@@ -25,14 +25,21 @@ Every error response is
 `200 {"status": "ok", "version": "0.1.0"}`
 
 ## GET /config
-No secrets.
+No secrets: the API key is never returned, not even masked. The key is not in git; set it once with
+`cp .env.example .env` and paste it (or export `DEEPSEEK_API_KEY`). `llm_available` is `true` when a key is
+configured. `llm_key_source` is `"env"` (environment variable), `"dotenv"` (`.env` at the repo root or
+`~/.psychosight/.env`) or `null` (no key: full mode on a real conversation returns `LLM_UNAVAILABLE`; the mock demo
+and deterministic-only reports still work). `model` defaults to `deepseek-flash` (DeepSeek-V4.1-Flash), overridable
+with `DEEPSEEK_MODEL`. `llm_configured` is kept as an alias of `llm_available`.
 ```json
 {
   "version": "0.1.0",
   "schema_version": "1.0.0",
   "provider": "deepseek",
-  "model": "<DEEPSEEK_MODEL or null>",
+  "model": "deepseek-flash",
   "llm_configured": true,
+  "llm_available": true,
+  "llm_key_source": "dotenv",
   "reasoning_effort": "max",
   "demo_provider": "mock",
   "opt_in_text": "<exact string, render verbatim>",
@@ -71,7 +78,7 @@ Request:
 - `mode` optional: `"full"` (requires `llm_opt_in:true`, else `400 LLM_OPT_IN_REQUIRED`) or `"deterministic_only"`.
 
 Response `202 {"job_id": "a1b2...", "status": "queued"}`. Fast-fail errors: `GROUP_CHAT_UNSUPPORTED`, `NOT_FOUND`,
-`LLM_OPT_IN_REQUIRED`, `LLM_UNAVAILABLE` (opt-in with no key/model for a real conversation).
+`LLM_OPT_IN_REQUIRED`, `LLM_UNAVAILABLE` (opt-in with no usable key/model for a real conversation).
 The demo conversation uses the offline mock LLM unless `PSYCHOSIGHT_DEMO_PROVIDER=deepseek`.
 
 ## GET /analyses/{job_id}
