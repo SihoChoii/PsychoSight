@@ -1,0 +1,358 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "sample-det-0001",
+  "mode": "deterministic_only",
+  "header": {
+    "conversation_id": "demo",
+    "conversation_label": "Demo conversation (synthetic)",
+    "is_demo": true,
+    "date_from": "2025-09-22",
+    "date_to": "2025-10-12",
+    "requested_range": {
+      "date_from": null,
+      "date_to": null
+    },
+    "timezone": "America/Los_Angeles",
+    "message_counts": {
+      "me": 140,
+      "other": 131
+    },
+    "word_counts": {
+      "me": 1187,
+      "other": 1127
+    },
+    "episode_count": 21,
+    "episodes_scored": 0,
+    "week_count": 3
+  },
+  "weeks": [
+    {
+      "week": "2025-W39",
+      "start_date": "2025-09-22",
+      "end_date": "2025-09-28",
+      "episodes": 9,
+      "messages": {
+        "me": 61,
+        "other": 58
+      },
+      "words": {
+        "me": 512,
+        "other": 488
+      }
+    },
+    {
+      "week": "2025-W40",
+      "start_date": "2025-09-29",
+      "end_date": "2025-10-05",
+      "episodes": 2,
+      "messages": {
+        "me": 9,
+        "other": 7
+      },
+      "words": {
+        "me": 71,
+        "other": 64
+      }
+    },
+    {
+      "week": "2025-W41",
+      "start_date": "2025-10-06",
+      "end_date": "2025-10-12",
+      "episodes": 10,
+      "messages": {
+        "me": 70,
+        "other": 66
+      },
+      "words": {
+        "me": 604,
+        "other": 575
+      }
+    }
+  ],
+  "series": [
+    {
+      "key": "message_count",
+      "label": "Messages",
+      "unit": "messages",
+      "count_unit": "messages",
+      "description": "Number of messages sent.",
+      "approximate": false,
+      "min_count": null,
+      "overall": {
+        "me": {
+          "value": 140,
+          "count": 140
+        },
+        "other": {
+          "value": 131,
+          "count": 131
+        }
+      },
+      "points": [
+        {
+          "week": "2025-W39",
+          "me": {
+            "value": 61,
+            "count": 61
+          },
+          "other": {
+            "value": 58,
+            "count": 58
+          }
+        },
+        {
+          "week": "2025-W40",
+          "me": {
+            "value": 9,
+            "count": 9
+          },
+          "other": {
+            "value": 7,
+            "count": 7
+          }
+        },
+        {
+          "week": "2025-W41",
+          "me": {
+            "value": 70,
+            "count": 70
+          },
+          "other": {
+            "value": 66,
+            "count": 66
+          }
+        }
+      ]
+    },
+    {
+      "key": "absolutist_pct",
+      "label": "Absolutist-word rate",
+      "unit": "% of words",
+      "count_unit": "words",
+      "description": "Share of words from the 19-word absolutist list (descriptive only).",
+      "approximate": false,
+      "min_count": 300,
+      "overall": {
+        "me": {
+          "value": 1.27,
+          "count": 1187
+        },
+        "other": {
+          "value": 0.89,
+          "count": 1127
+        }
+      },
+      "points": [
+        {
+          "week": "2025-W39",
+          "me": {
+            "value": 1.17,
+            "count": 512
+          },
+          "other": {
+            "value": 0.82,
+            "count": 488
+          }
+        },
+        {
+          "week": "2025-W40",
+          "me": {
+            "value": null,
+            "count": 71,
+            "reason": "insufficient data"
+          },
+          "other": {
+            "value": null,
+            "count": 64,
+            "reason": "insufficient data"
+          }
+        },
+        {
+          "week": "2025-W41",
+          "me": {
+            "value": 1.49,
+            "count": 604
+          },
+          "other": {
+            "value": 1.04,
+            "count": 575
+          }
+        }
+      ]
+    },
+    {
+      "key": "reply_latency_median_s",
+      "label": "Median reply time",
+      "unit": "seconds",
+      "count_unit": "replies",
+      "description": "Median seconds from the other side's last message to this side's first reply in the same episode. Approximate.",
+      "approximate": true,
+      "min_count": 3,
+      "overall": {
+        "me": {
+          "value": 74.0,
+          "count": 48
+        },
+        "other": {
+          "value": 121.5,
+          "count": 51
+        }
+      },
+      "points": [
+        {
+          "week": "2025-W39",
+          "me": {
+            "value": 66.0,
+            "count": 21
+          },
+          "other": {
+            "value": 98.0,
+            "count": 22
+          }
+        },
+        {
+          "week": "2025-W40",
+          "me": {
+            "value": null,
+            "count": 2,
+            "reason": "insufficient data"
+          },
+          "other": {
+            "value": null,
+            "count": 2,
+            "reason": "insufficient data"
+          }
+        },
+        {
+          "week": "2025-W41",
+          "me": {
+            "value": 80.0,
+            "count": 25
+          },
+          "other": {
+            "value": 140.0,
+            "count": 27
+          }
+        }
+      ]
+    }
+  ],
+  "episodes": [
+    {
+      "episode_id": "ep-0003",
+      "start": "2025-09-24T21:02:10-07:00",
+      "end": "2025-09-24T21:40:55-07:00",
+      "week": "2025-W39",
+      "initiator": "other",
+      "messages": {
+        "me": 9,
+        "other": 11
+      },
+      "words": {
+        "me": 104,
+        "other": 131
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0004",
+      "start": "2025-09-26T01:35:00-07:00",
+      "end": "2025-09-26T02:05:12-07:00",
+      "week": "2025-W39",
+      "initiator": "me",
+      "messages": {
+        "me": 6,
+        "other": 5
+      },
+      "words": {
+        "me": 58,
+        "other": 40
+      },
+      "late_night_start": true,
+      "pooled": true,
+      "scored": false,
+      "selection": null
+    },
+    {
+      "episode_id": "ep-0012",
+      "start": "2025-10-08T19:15:00-07:00",
+      "end": "2025-10-08T20:01:30-07:00",
+      "week": "2025-W41",
+      "initiator": "me",
+      "messages": {
+        "me": 12,
+        "other": 10
+      },
+      "words": {
+        "me": 150,
+        "other": 118
+      },
+      "late_night_start": false,
+      "pooled": false,
+      "scored": false,
+      "selection": null
+    }
+  ],
+  "rubric": {
+    "status": "not_run",
+    "reason": "LLM analysis was not run because the user did not opt in to sending excerpts to DeepSeek.",
+    "scored_speaker": "me",
+    "prompt_version": null,
+    "episodes_selected": 0,
+    "episodes_scored": 0,
+    "agreement_rate": null,
+    "unstable_items": [],
+    "items": []
+  },
+  "observations": {
+    "status": "not_run",
+    "reason": "LLM analysis was not run because the user did not opt in to sending excerpts to DeepSeek.",
+    "prompt_version": null,
+    "note": null,
+    "items": []
+  },
+  "quotes": [],
+  "limitations_title": "What this cannot tell you",
+  "limitations": [
+    "This is not a diagnosis and cannot detect any condition.",
+    "It describes one conversation only, not who you or the other person are.",
+    "Text messages miss tone, context and everything said in person."
+  ],
+  "disclaimer": "Experimental self-reflection, not a clinical or diagnostic tool",
+  "run_meta": {
+    "run_id": "sample-det-0001",
+    "created_at": "2025-10-13T10:00:00-07:00",
+    "finished_at": "2025-10-13T10:00:00-07:00",
+    "duration_s": 0.4,
+    "mode": "deterministic_only",
+    "llm_opt_in": false,
+    "source": "demo",
+    "provider": null,
+    "model": null,
+    "reasoning_effort": null,
+    "prompt_version": "rubric-v1",
+    "synthesis_prompt_version": "synthesis-v1",
+    "extractor_version": "features-v1",
+    "backend_version": "0.1.0",
+    "cache_hits": 0,
+    "cache_misses": 0,
+    "llm_calls": 0,
+    "llm_retries": 0,
+    "invalid_outputs": 0,
+    "dropped_quotes": 0,
+    "dropped_observations": 0,
+    "thresholds": {
+      "turn_gap_s": 30,
+      "episode_gap_s": 1200,
+      "min_words": 300,
+      "pool_episode_words": 100,
+      "min_episodes": 3,
+      "min_replies": 3,
+      "min_turns": 10,
+      "max_episodes_scored": 40
+    }
+  }
+}
