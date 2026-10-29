@@ -64,13 +64,15 @@ def test_second_run_hits_cache(tmp_path):
 
 
 def test_thin_conversation_insufficient_data_end_to_end(tmp_path):
-    rep = pipeline.run_analysis("demo", llm_opt_in=True, date_from=date(2025, 10, 6), date_to=date(2025, 10, 12),
+    rep = pipeline.run_analysis("demo", llm_opt_in=True, date_from=date(2025, 8, 7), date_to=date(2025, 8, 7),
                                 store=Store(tmp_path / "p.db"))
     check(rep)
     absol = next(f for f in rep["series"] if f["key"] == "absolutist_pct")
     assert absol["overall"]["me"]["value"] is None and absol["overall"]["me"]["reason"] == "insufficient data"
     assert rep["rubric"]["status"] == "insufficient_data"
-    assert rep["observations"]["items"] == []
+    # Only feature-based observations (e.g. reply times with enough replies) can remain; none cite rubric items.
+    assert all(not o["item_keys"] for o in rep["observations"]["items"])
+    assert all(o["confidence"] == "low" for o in rep["observations"]["items"])
 
 
 def test_report_saved_and_deleted(tmp_path):

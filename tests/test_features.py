@@ -89,13 +89,17 @@ def test_latency_initiation_double_text_late_night():
     assert st["episode_stats"]["ep-0001"]["late_night"] is True
 
 
-def test_demo_series_shape_and_thin_weeks():
+def test_demo_series_shape_and_quiet_week():
     eps = sessionize.sessionize(loader.load_demo().msgs)
     out = features.compute(eps)
-    assert len(out["weeks"]) == 8
-    absol = next(s for s in out["series"] if s["key"] == "absolutist_pct")
-    nulls = [p["week"] for p in absol["points"] if p["me"]["value"] is None]
-    assert nulls == ["2025-W41", "2025-W44"]
+    weeks = [w["week"] for w in out["weeks"]]
+    assert len(weeks) == 25 and "2025-W46" not in weeks  # the quiet week has no episodes
+    by = {s["key"]: s for s in out["series"]}
     for s in out["series"]:
         assert len(s["points"]) == len(out["weeks"])
+    # Planted arc: the conflict weeks have the highest absolutist rate, the busy weeks the slowest replies from me.
+    absol = {p["week"]: p["me"]["value"] for p in by["absolutist_pct"]["points"]}
+    assert max(absol, key=lambda w: absol[w] or 0) in ("2025-W43", "2025-W44", "2025-W45")
+    lat = {p["week"]: p["me"]["value"] for p in by["reply_latency_median_s"]["points"]}
+    assert all(lat[w] > 300 for w in ("2025-W38", "2025-W39", "2025-W40")) and lat["2025-W32"] < 120
     assert config.MIN_WORDS == 300
