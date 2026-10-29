@@ -387,7 +387,7 @@ class ExpLLMResult:
 
 
 # ---------------------------------------------------------------- cross-track signatures
-# Implemented as NotImplementedError stubs in their owner modules (tests check the parameter names):
+# Implemented in their owner modules (tests check the parameter names):
 #   deterministic.compute_deterministic(episodes, speakers) -> DeterministicResult                      Track A
 #   llm_exp.score_llm(provider, selected, store, *, speakers, budget, progress=None, holistic=True)
 #       -> ExpLLMResult                                                                                 Track B

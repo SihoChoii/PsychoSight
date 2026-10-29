@@ -1,7 +1,7 @@
 """Fakes for Tracks A–C. Track D tests patch these over the contract stubs.
 
-The real modules still raise NotImplementedError. Wiring tests install these fakes so they do not
-depend on lexicon, prompt or scoring work that is landing on other branches.
+The real modules are merged and used by the pipeline and end-to-end tests. Wiring tests still
+install these fakes so they can check call order, arguments and failure handling in isolation.
 """
 
 from __future__ import annotations
