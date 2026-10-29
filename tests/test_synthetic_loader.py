@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from psychosight import loader, synthetic
+from psychosight.models import utc
 from psychosight.errors import FullDiskAccessRequired, GroupChatUnsupported, NotFound
 from tests.helpers import make_chat_db
 
@@ -38,7 +39,7 @@ def test_normalize_drops_tapbacks_attachments_dupes():
     assert not any(m.text.startswith("Loved \u201c") for m in msgs)
     assert not any(m.text in ("", "\ufffc") for m in msgs)
     assert all(m.ts.tzinfo is not None for m in msgs)
-    assert [m.ts for m in msgs] == sorted(m.ts for m in msgs)
+    assert [utc(m.ts) for m in msgs] == sorted(utc(m.ts) for m in msgs)
     assert {m.speaker for m in msgs} == {"me", "other"}
 
 

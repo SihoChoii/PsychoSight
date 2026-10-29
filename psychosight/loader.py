@@ -11,7 +11,7 @@ from typing import Iterable, List, Optional
 
 from . import config, msgexport, synthetic
 from .errors import FullDiskAccessRequired, GroupChatUnsupported, NotFound
-from .models import ConversationData, Msg
+from .models import ConversationData, Msg, utc
 
 log = logging.getLogger("psychosight.loader")
 
@@ -117,7 +117,7 @@ def normalize_rows(
             continue
         out.append(Msg(id=row.guid or str(row.rowid), ts=ts, speaker="me" if row.sender == "Me" else "other",
                        text=text, is_group=group))
-    out.sort(key=lambda m: (m.ts, m.id))
+    out.sort(key=lambda m: (utc(m.ts), m.id))
     log.info("normalized messages kept=%d dropped=%s", len(out), dropped)
     return out
 

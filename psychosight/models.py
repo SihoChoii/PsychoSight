@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List
 
 SPEAKERS = ("me", "other")
@@ -73,3 +73,17 @@ class ConversationData:
     msgs: List[Msg]
     is_demo: bool
     source: str  # "demo" | "chat.db"
+
+
+def elapsed_s(a: datetime, b: datetime) -> float:
+    """Real elapsed seconds from a to b.
+
+    Subtracting two datetimes that share one tzinfo object (e.g. ZoneInfo) is wall-clock arithmetic in
+    Python and is wrong across DST changes, so always compare in UTC.
+    """
+    return (b.astimezone(timezone.utc) - a.astimezone(timezone.utc)).total_seconds()
+
+
+def utc(ts: datetime) -> datetime:
+    """Sort/compare key: aware datetimes sharing a tzinfo compare by wall clock, so compare in UTC."""
+    return ts.astimezone(timezone.utc)
