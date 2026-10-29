@@ -4,6 +4,7 @@ They are never logged or written anywhere by the backend."""
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 import sys
@@ -317,6 +318,25 @@ def describe_key_source(settings: "LLMSettings") -> str:
     return f"{where} ({mask_key(settings.api_key)})" if settings.api_key else where
 
 
+def default_reasoning_level() -> str:
+    """Reasoning level used when a request does not choose one.
+
+    DEEPSEEK_REASONING_EFFORT (validated against reasoning.REASONING_IDS) overrides the built-in default;
+    DEEPSEEK_THINKING=disabled means "none". An invalid value is logged and the built-in default is used."""
+    from . import reasoning
+    raw = _env("DEEPSEEK_REASONING_EFFORT")
+    if (_env("DEEPSEEK_THINKING") or "").strip().lower() == "disabled":
+        return "none"
+    if raw:
+        try:
+            return reasoning.validate(raw)
+        except reasoning.InvalidReasoningLevelValue:
+            logging.getLogger("psychosight").warning(
+                "DEEPSEEK_REASONING_EFFORT is not one of %s; using %s", ", ".join(reasoning.REASONING_IDS),
+                reasoning.DEFAULT_REASONING)
+    return reasoning.DEFAULT_REASONING
+
+
 def llm_settings() -> LLMSettings:
     max_tokens = _env("DEEPSEEK_MAX_TOKENS")
     api_key, key_source = _env_with_source("DEEPSEEK_API_KEY")
@@ -329,9 +349,9 @@ def llm_settings() -> LLMSettings:
         # Default is "DeepSeek 4.1 flash 1017" (id deepseek-flash); DEEPSEEK_MODEL overrides.
         model=_env("DEEPSEEK_MODEL") or defaults.DEFAULT_DEEPSEEK_MODEL,
         base_url=(_env("DEEPSEEK_BASE_URL") or defaults.DEFAULT_DEEPSEEK_BASE_URL).rstrip("/"),
-        # Highest documented effort by default; set DEEPSEEK_REASONING_EFFORT=none to disable thinking.
-        reasoning_effort=_env("DEEPSEEK_REASONING_EFFORT") or defaults.DEFAULT_REASONING_EFFORT,
-        thinking=_env("DEEPSEEK_THINKING") or "enabled",
+        # Default reasoning level (low unless DEEPSEEK_REASONING_EFFORT says otherwise; none = thinking off).
+        reasoning_effort=default_reasoning_level(),
+        thinking="disabled" if default_reasoning_level() == "none" else "enabled",
         json_mode=(_env("DEEPSEEK_JSON_MODE") or "1") not in ("0", "false", "no"),
         send_temperature=(_env("DEEPSEEK_SEND_TEMPERATURE") or "1") not in ("0", "false", "no"),
         timeout_s=float(_env("DEEPSEEK_TIMEOUT_S") or 300),  # max-effort synthesis took ~110 s live

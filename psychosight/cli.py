@@ -42,6 +42,13 @@ def resolve_cli_experimental(demo: bool, experimental_scores: bool, score_other:
     return experimental, other
 
 
+def _add_reasoning_arg(parser: argparse.ArgumentParser) -> None:
+    from . import reasoning
+    parser.add_argument("--reasoning-level", dest="reasoning_level", default=None, metavar="LEVEL",
+                        help=f"DeepSeek thinking level for every LLM call: {', '.join(reasoning.REASONING_IDS)} "
+                             f"(default: DEEPSEEK_REASONING_EFFORT or {reasoning.DEFAULT_REASONING})")
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="python -m psychosight", description=(
         "PsychoSight Lite: descriptive communication-pattern report for one 1:1 conversation. "
@@ -49,6 +56,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--demo", action="store_true", help="shortcut for 'analyze --demo'")
     p.add_argument("--opt-in-llm", action="store_true", help="with --demo: include LLM sections")
     _add_experimental_args(p)
+    _add_reasoning_arg(p)
     p.add_argument("-v", "--verbose", action="store_true", help="info logs (ids and counts only)")
     sub = p.add_subparsers(dest="cmd")
 
@@ -64,6 +72,7 @@ def build_parser() -> argparse.ArgumentParser:
     an.add_argument("--opt-in-llm", action="store_true",
                     help="opt in to sending excerpts of BOTH sides' messages to DeepSeek (mock for --demo)")
     _add_experimental_args(an)
+    _add_reasoning_arg(an)
     an.add_argument("--mode", choices=["full", "deterministic_only"])
     an.add_argument("--out", "-o", help="write report JSON here (default: stdout)")
     an.add_argument("--no-save", action="store_true", help="do not store the report in the local DB")
@@ -111,13 +120,17 @@ def cmd_analyze(args) -> int:
     if not args.demo and not args.conversation:
         print("error: pass --conversation ID or --demo", file=sys.stderr)
         return 2
+    from . import reasoning
+    level = getattr(args, "reasoning_level", None)
+    level = reasoning.validate(level) if level is not None else config.default_reasoning_level()
     experimental, score_other = resolve_cli_experimental(
         bool(args.demo), bool(args.experimental_scores), bool(args.score_other), bool(args.no_experimental_scores))
     rep = pipeline.run_analysis(
         args.conversation or config.DEMO_CONVERSATION_ID, demo=args.demo,
         date_from=loader.parse_date(args.date_from), date_to=loader.parse_date(args.date_to),
         llm_opt_in=bool(args.opt_in_llm), mode=args.mode, save=not args.no_save,
-        progress=_print_progress, experimental_scores=experimental, score_other=score_other)
+        progress=_print_progress, experimental_scores=experimental, score_other=score_other,
+        reasoning_level=level)
     text = json.dumps(rep, indent=2, ensure_ascii=False)
     if args.out:
         Path(args.out).write_text(text + "\n", encoding="utf-8")
@@ -126,7 +139,7 @@ def cmd_analyze(args) -> int:
     h, m = rep["header"], rep["run_meta"]
     print(f"report {rep['report_id']} mode={rep['mode']} messages={sum(h['message_counts'].values())} "
           f"episodes={h['episode_count']} scored={h['episodes_scored']} weeks={h['week_count']} "
-          f"llm_calls={m['llm_calls']} cache_hits={m['cache_hits']} "
+          f"llm_calls={m['llm_calls']} cache_hits={m['cache_hits']} reasoning={m.get('reasoning_level')} "
           f"experimental={rep['experimental_scores']['status']} schema=valid"
           + (f" -> {args.out}" if args.out else ""), file=sys.stderr)
     if not args.no_save:
@@ -157,11 +170,12 @@ def cmd_check_llm(args) -> int:
     from . import rubric, sessionize
     from .llm import DeepSeekProvider
 
-    provider = DeepSeekProvider()
+    provider = DeepSeekProvider(reasoning_level=config.default_reasoning_level())
     try:
         models = provider.list_models()
         s = provider.settings
-        print(f"model={provider.model} reasoning_effort={provider.reasoning_effort} thinking={s.thinking} "
+        print(f"model={provider.model} reasoning_level={provider.reasoning_level} "
+              f"reasoning_effort={provider.reasoning_effort} "
               f"base_url={s.base_url} key={config.mask_key(s.api_key)} ({s.key_source or 'unset'})")
         print(f"provider models: {', '.join(models) if models else '(could not list)'}")
         if models and provider.model not in models:
@@ -221,7 +235,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             ns = argparse.Namespace(conversation=None, demo=True, date_from=None, date_to=None,
                                     opt_in_llm=args.opt_in_llm, mode=None, out=None, no_save=False,
                                     experimental_scores=args.experimental_scores, score_other=args.score_other,
-                                    no_experimental_scores=args.no_experimental_scores)
+                                    no_experimental_scores=args.no_experimental_scores,
+                                    reasoning_level=args.reasoning_level)
             return cmd_analyze(ns)
         handlers = {"list-conversations": cmd_list, "analyze": cmd_analyze, "list-reports": cmd_list_reports,
                     "delete-report": cmd_delete, "serve": cmd_serve, "check-llm": cmd_check_llm,

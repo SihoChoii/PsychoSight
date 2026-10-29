@@ -95,7 +95,10 @@ cache_misses, llm_calls, llm_retries, invalid_outputs, dropped_quotes, dropped_o
 
 Optional on 1.1.0 (all may be omitted on a 1.0.0 report): `experimental_opt_in` (bool), `score_other_opt_in` (bool),
 `experimental_scoring_version` (string or null), `experimental_prompt_versions` (`{episode, holistic}` or null),
-`experimental_llm_calls` (int), `experimental_cache_hits` (int), `date_range_clamped` (null, or
+`experimental_llm_calls` (int), `experimental_cache_hits` (int), `reasoning_level` (`none` | `low` | `high` | `max` |
+null: the reasoning level used for every LLM call of the run, next to `model` and `reasoning_effort`, which is the
+effort actually sent and is null when thinking was off or for the mock; null in deterministic-only runs),
+`date_range_clamped` (null, or
 `{requested, applied, bounds}`, each `{date_from, date_to}` local dates or null; set when `POST /analyses` clamped a
 range that was partly outside the conversation's first..last message dates).
 
