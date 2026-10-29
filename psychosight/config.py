@@ -223,7 +223,18 @@ def static_dir() -> Optional[Path]:
     override = _env("PSYCHOSIGHT_STATIC_DIR")
     if override:
         return Path(override).expanduser()
-    for candidate in (REPO_ROOT / "web" / "dist", REPO_ROOT / "web"):
-        if candidate.is_dir():
-            return candidate
+    web = REPO_ROOT / "web"
+    if (web / "dist").is_dir():
+        return web / "dist"
+    # web/ is only served as-is when it is plain static files; a Vite project (package.json) must be built first,
+    # otherwise its raw index.html would load /src/main.tsx and show a blank page.
+    if web.is_dir() and (web / "index.html").is_file() and not (web / "package.json").is_file():
+        return web
+    return None
+
+
+def unbuilt_ui_hint() -> Optional[str]:
+    web = REPO_ROOT / "web"
+    if not _env("PSYCHOSIGHT_STATIC_DIR") and (web / "package.json").is_file() and not (web / "dist").is_dir():
+        return "web UI is not built: run `cd web && npm install && npm run build`, then restart serve"
     return None

@@ -180,3 +180,17 @@ def test_cli_commands(tmp_path, capsys):
     assert main(["list-conversations"]) == 0
     assert main(["check-llm"]) == 2  # no key in tests -> LLM_UNAVAILABLE
     assert "LLM_UNAVAILABLE" in capsys.readouterr().err
+
+
+def test_static_dir_skips_unbuilt_vite_source(tmp_path, monkeypatch):
+    monkeypatch.delenv("PSYCHOSIGHT_STATIC_DIR", raising=False)
+    monkeypatch.setattr(config, "REPO_ROOT", tmp_path)
+    assert config.static_dir() is None and config.unbuilt_ui_hint() is None
+    web = tmp_path / "web"
+    web.mkdir()
+    (web / "index.html").write_text("<html></html>", encoding="utf-8")
+    assert config.static_dir() == web  # plain static files are served as-is
+    (web / "package.json").write_text("{}", encoding="utf-8")
+    assert config.static_dir() is None and "npm run build" in config.unbuilt_ui_hint()
+    (web / "dist").mkdir()
+    assert config.static_dir() == web / "dist" and config.unbuilt_ui_hint() is None

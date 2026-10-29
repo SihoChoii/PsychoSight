@@ -231,6 +231,7 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
         def root_note():
             return ("<!doctype html><title>PsychoSight Lite</title><h1>PsychoSight Lite backend</h1>"
                     "<p>The API is running. No UI build found (expected <code>web/dist</code> or <code>web/</code>, "
-                    "or set PSYCHOSIGHT_STATIC_DIR). See <a href='/docs'>/docs</a> and <code>docs/API.md</code>.</p>"
+                    "or set PSYCHOSIGHT_STATIC_DIR). To build the UI: <code>cd web &amp;&amp; npm install &amp;&amp; npm run build</code>, "
+                    "then restart. See <a href='/docs'>/docs</a> and <code>docs/API.md</code>.</p>"
                     f"<p>{config.DISCLAIMER}.</p>")
     return app

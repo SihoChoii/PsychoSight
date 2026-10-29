@@ -107,5 +107,7 @@ the report (verbatim snippets with `episode_id`, `speaker`, `timestamp`).
 
 ## Static UI
 FastAPI mounts a static directory at `/` **after** the API routes: `--static-dir` / `PSYCHOSIGHT_STATIC_DIR`,
-default `web/dist` if it exists, else `web/`. If neither exists, `GET /` returns a short HTML note and the API still
-works. Frontend builds into `web/` on branch `frontend/ui`.
+default `web/dist` if it exists, else `web/` when it holds plain static files (an unbuilt Vite project with
+`web/package.json` is skipped, because its raw `index.html` cannot run; build it with `cd web && npm install && npm run build`).
+If no UI is found, `GET /` returns a short HTML note and the API still
+works. The frontend (branch `frontend/ui`) is a Vite app that builds into `web/dist`.

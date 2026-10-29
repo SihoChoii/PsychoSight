@@ -170,6 +170,9 @@ def cmd_serve(args) -> int:
               "The API listens on 127.0.0.1 only.", file=sys.stderr)
         return 2
     app = create_app(static_dir=args.static_dir)
+    hint = None if args.static_dir else config.unbuilt_ui_hint()
+    if hint:
+        print(f"note: {hint}", file=sys.stderr)
     print(f"PsychoSight Lite on http://{args.host}:{port}  ({config.DISCLAIMER})", file=sys.stderr)
     uvicorn.run(app, host=args.host, port=port, log_level="info")
     return 0
