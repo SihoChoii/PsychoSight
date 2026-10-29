@@ -16,7 +16,7 @@ from __future__ import annotations
 import hashlib
 import logging
 import threading
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import lru_cache
 from typing import Callable, Dict, List, NamedTuple, Optional, Sequence, Tuple
 
@@ -910,8 +910,12 @@ def score_llm(provider, selected, store: Store, *, speakers: Sequence[str], budg
         ]
 
     if episodes:
+        # Progress counts episodes as they finish (not in submission order), so one slow episode does
+        # not hold the bar at 0. Results are keyed by episode id, so order does not matter.
         with ThreadPoolExecutor(max_workers=_workers(provider)) as pool:
-            for eid, pair in pool.map(work, episodes):
+            futures = [pool.submit(work, episode) for episode in episodes]
+            for future in as_completed(futures):
+                eid, pair = future.result()
                 runs[eid] = pair
                 done += 1
                 if progress:
