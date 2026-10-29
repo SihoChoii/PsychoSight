@@ -86,6 +86,6 @@ agreeing at >= 0.8.
 text that ever leaves the backend.
 
 ## run_meta
-`run_id, created_at, finished_at, duration_s, mode, llm_opt_in, source (demo|chat.db), provider (deepseek|mock|null),
+`run_id, created_at, finished_at, duration_s, mode, llm_opt_in, source (demo|chat.db), provider (deepseek|mock|null), provider_note (null, or a "not real model ..." label when the mock produced the LLM sections),
 model, reasoning_effort, prompt_version, synthesis_prompt_version, extractor_version, backend_version, cache_hits,
 cache_misses, llm_calls, llm_retries, invalid_outputs, dropped_quotes, dropped_observations, thresholds{...}`.

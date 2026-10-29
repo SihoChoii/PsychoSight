@@ -31,6 +31,10 @@ configured. `llm_key_source` is `"env"` (environment variable), `"dotenv"` (`.en
 `~/.psychosight/.env`) or `null` (no key: full mode on a real conversation returns `LLM_UNAVAILABLE`; the mock demo
 and deterministic-only reports still work). `model` defaults to `deepseek-flash` (DeepSeek-V4.1-Flash), overridable
 with `DEEPSEEK_MODEL`. `llm_configured` is kept as an alias of `llm_available`.
+`demo_provider` is the provider the synthetic demo will use: `"deepseek"` whenever a key is configured, else `"mock"`
+(override with `PSYCHOSIGHT_DEMO_PROVIDER=mock|deepseek`). `demo_provider_note` is `null` for the real model and a
+user-visible string starting with `"not real model"` when the demo falls back to the offline mock; show it next to
+the opt-in. The opt-in text itself says the demo excerpts are synthetic.
 ```json
 {
   "version": "0.1.0",
@@ -41,7 +45,8 @@ with `DEEPSEEK_MODEL`. `llm_configured` is kept as an alias of `llm_available`.
   "llm_available": true,
   "llm_key_source": "dotenv",
   "reasoning_effort": "max",
-  "demo_provider": "mock",
+  "demo_provider": "deepseek",
+  "demo_provider_note": null,
   "opt_in_text": "<exact string, render verbatim>",
   "disclaimer": "Experimental self-reflection, not a clinical or diagnostic tool",
   "limitations_title": "What this cannot tell you",
@@ -56,7 +61,7 @@ with `DEEPSEEK_MODEL`. `llm_configured` is kept as an alias of `llm_available`.
 ```json
 {
   "conversations": [
-    {"id": "demo", "label": "Demo conversation (synthetic)", "message_count": 812, "latest_date": "2025-11-16T22:10:00-08:00",
+    {"id": "demo", "label": "Demo conversation (synthetic)", "message_count": 4259, "latest_date": "2026-02-01T20:17:46-08:00",
      "is_group": false, "supported": true, "is_demo": true, "participant_count": 1},
     {"id": "42", "label": "+1 555-0100", "message_count": 3021, "latest_date": "...", "is_group": false, "supported": true, "is_demo": false, "participant_count": 1}
   ],
@@ -79,7 +84,8 @@ Request:
 
 Response `202 {"job_id": "a1b2...", "status": "queued"}`. Fast-fail errors: `GROUP_CHAT_UNSUPPORTED`, `NOT_FOUND`,
 `LLM_OPT_IN_REQUIRED`, `LLM_UNAVAILABLE` (opt-in with no usable key/model for a real conversation).
-The demo conversation uses the offline mock LLM unless `PSYCHOSIGHT_DEMO_PROVIDER=deepseek`.
+The demo conversation uses the real DeepSeek model when a key is configured and the offline mock otherwise
+(`run_meta.provider` is `"mock"` and `run_meta.provider_note` starts with `"not real model"`).
 
 ## GET /analyses/{job_id}
 ```json
