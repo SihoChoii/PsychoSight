@@ -11,7 +11,7 @@ from typing import Optional
 from . import __version__, defaults
 
 BACKEND_VERSION = __version__
-SCHEMA_VERSION = "1.0.0"
+SCHEMA_VERSION = "1.1.0"
 PROMPT_VERSION = "rubric-v1"
 SYNTHESIS_PROMPT_VERSION = "synthesis-v2"
 EXTRACTOR_VERSION = "features-v1"

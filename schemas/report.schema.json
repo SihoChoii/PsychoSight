@@ -7,7 +7,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "report_id", "mode", "header", "weeks", "series", "episodes", "rubric", "observations", "quotes", "limitations_title", "limitations", "disclaimer", "run_meta"],
   "properties": {
-    "schema_version": {"const": "1.0.0"},
+    "schema_version": {"enum": ["1.0.0", "1.1.0"], "description": "1.1.0 adds the optional experimental_scores section; 1.0.0 reports still load."},
     "report_id": {"type": "string", "minLength": 1, "description": "Same as the analysis job_id."},
     "mode": {"enum": ["full", "deterministic_only"], "description": "full = LLM sections ran after opt-in; deterministic_only = no LLM call was made."},
     "header": {
@@ -112,7 +112,8 @@
     "limitations_title": {"const": "What this cannot tell you"},
     "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}},
     "disclaimer": {"const": "Experimental self-reflection, not a clinical or diagnostic tool"},
-    "run_meta": {"$ref": "#/$defs/runMeta"}
+    "run_meta": {"$ref": "#/$defs/runMeta"},
+    "experimental_scores": {"$ref": "#/$defs/experimentalScores", "description": "Optional (schema 1.1.0). Absent in 1.0.0 reports."}
   },
   "$defs": {
     "speaker": {"enum": ["me", "other"]},
@@ -235,6 +236,12 @@
         "provider": {"enum": [null, "deepseek", "mock"]},
         "model": {"type": ["string", "null"]},
         "provider_note": {"type": ["string", "null"], "description": "Set when the LLM sections came from the offline mock (starts with 'not real model'); null for the real model."},
+        "experimental_opt_in": {"type": "boolean"},
+        "score_other_opt_in": {"type": "boolean"},
+        "experimental_scoring_version": {"type": ["string", "null"]},
+        "experimental_prompt_versions": {"oneOf": [{"type": "null"}, {"type": "object", "additionalProperties": false, "required": ["episode", "holistic"], "properties": {"episode": {"type": "string"}, "holistic": {"type": "string"}}}]},
+        "experimental_llm_calls": {"type": "integer", "minimum": 0},
+        "experimental_cache_hits": {"type": "integer", "minimum": 0},
         "reasoning_effort": {"type": ["string", "null"]},
         "prompt_version": {"type": "string"},
         "synthesis_prompt_version": {"type": "string"},
@@ -255,6 +262,966 @@
             "pool_episode_words": {"type": "integer"}, "min_episodes": {"type": "integer"}, "min_replies": {"type": "integer"},
             "min_turns": {"type": "integer"}, "max_episodes_scored": {"type": "integer"}
           }
+        }
+      }
+    },
+    "experimentalScores": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Optional experimental section (schema 1.1.0). Not validated; separate from observations and top-level quotes.",
+      "required": [
+        "status",
+        "reason",
+        "banner",
+        "title",
+        "scale_note",
+        "footer_support",
+        "how_it_works",
+        "scoring_version",
+        "prompt_versions",
+        "anchors_version",
+        "speakers_scored",
+        "thresholds",
+        "dimensions",
+        "quotes"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/sectionStatus"
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "banner": {
+          "const": "Experimental, not validated. These scores are not a diagnosis, not a personality test and not a measure of who anyone is. They come from word counts and AI ratings of this one conversation and can easily be wrong."
+        },
+        "title": {
+          "const": "Experimental scores"
+        },
+        "scale_note": {
+          "const": "0–100 experimental index. 50 is the midpoint of fixed reference points, not an average person. The shaded band shows how uncertain the number is."
+        },
+        "footer_support": {
+          "const": "If anything in this conversation is weighing on you, consider talking with someone you trust or a licensed professional."
+        },
+        "how_it_works": {
+          "const": "These numbers come from word counts and AI ratings of text messages. The research behind them looked at essays, Facebook posts, blogs and forums, mostly from large groups of people. Nobody has tested these formulas on iMessage conversations.\n\nThe best published language-based personality models are modest. Agreement with self-report questionnaires is around r = .3 to .4 (Park et al. 2015; Azucar et al. 2018), and AI models asked directly come in around r = .29 (Peters & Matz 2024). Two people with the same true trait can easily get very different scores.\n\nNarcissism, attachment and addiction language have much weaker or exploratory evidence. Some popular ideas have failed outright: saying \"I\" a lot is not linked to narcissism (Carey et al. 2015, r = .01).\n\nOne conversation reflects the relationship and the moment as much as the person. Your score with one person and your score with another can differ.\n\nThe 0–100 scale is our own construction. 50 is the midpoint of fixed reference anchors. It is not an average person, and nothing on the scale is a dividing line.\n\nPeople tend to find vague personality feedback accurate (the Barnum effect, Forer 1949). Treat these scores as conversation starters, not facts."
+        },
+        "scoring_version": {
+          "const": "exp-scores-v1"
+        },
+        "prompt_versions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "episode",
+            "holistic"
+          ],
+          "properties": {
+            "episode": {
+              "const": "traits-exp-v1"
+            },
+            "holistic": {
+              "const": "exp-holistic-v1"
+            }
+          }
+        },
+        "anchors_version": {
+          "const": "exp-anchors-v1"
+        },
+        "speakers_scored": {
+          "enum": [
+            [
+              "me"
+            ],
+            [
+              "me",
+              "other"
+            ]
+          ]
+        },
+        "thresholds": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "min_episodes",
+            "min_words",
+            "max_confidence"
+          ],
+          "properties": {
+            "min_episodes": {
+              "const": 20
+            },
+            "min_words": {
+              "const": 1500
+            },
+            "max_confidence": {
+              "const": "medium"
+            }
+          }
+        },
+        "dimensions": {
+          "type": "array",
+          "minItems": 12,
+          "maxItems": 12,
+          "prefixItems": [
+            {
+              "properties": {
+                "key": {
+                  "const": "openness"
+                },
+                "label": {
+                  "const": "Openness (experimental language index)"
+                },
+                "family": {
+                  "const": "big_five"
+                },
+                "evidence_strength": {
+                  "const": "moderate"
+                },
+                "evidence_note": {
+                  "const": "Language markers associated in research with openness; evidence: moderate"
+                }
+              }
+            },
+            {
+              "properties": {
+                "key": {
+                  "const": "conscientiousness"
+                },
+                "label": {
+                  "const": "Conscientiousness (experimental language index)"
+                },
+                "family": {
+                  "const": "big_five"
+                },
+                "evidence_strength": {
+                  "const": "moderate"
+                },
+                "evidence_note": {
+                  "const": "Language markers associated in research with conscientiousness; evidence: moderate"
+                }
+              }
+            },
+            {
+              "properties": {
+                "key": {
+                  "const": "extraversion"
+                },
+                "label": {
+                  "const": "Extraversion (experimental language index)"
+                },
+                "family": {
+                  "const": "big_five"
+                },
+                "evidence_strength": {
+                  "const": "moderate"
+                },
+                "evidence_note": {
+                  "const": "Language markers associated in research with extraversion; evidence: moderate"
+                }
+              }
+            },
+            {
+              "properties": {
+                "key": {
+                  "const": "agreeableness"
+                },
+                "label": {
+                  "const": "Agreeableness (experimental language index)"
+                },
+                "family": {
+                  "const": "big_five"
+                },
+                "evidence_strength": {
+                  "const": "moderate"
+                },
+                "evidence_note": {
+                  "const": "Language markers associated in research with agreeableness; evidence: moderate"
+                }
+              }
+            },
+            {
+              "properties": {
+                "key": {
+                  "const": "neuroticism"
+                },
+                "label": {
+                  "const": "Neuroticism (experimental language index)"
+                },
+                "family": {
+                  "const": "big_five"
+                },
+                "evidence_strength": {
+                  "const": "moderate"
+                },
+                "evidence_note": {
+                  "const": "Language markers associated in research with neuroticism; evidence: moderate"
+                }
+              }
+            },
+            {
+              "properties": {
+                "key": {
+                  "const": "depression_language"
+                },
+                "label": {
+                  "const": "Depression-related language (experimental language index)"
+                },
+                "family": {
+                  "const": "wellbeing_language"
+                },
+                "evidence_strength": {
+                  "const": "small"
+                },
+                "evidence_note": {
+                  "const": "Language markers associated in research with depression; evidence: small"
+                },
+                "per_speaker": {
+                  "properties": {
+                    "me": {
+                      "properties": {
+                        "confidence": {
+                          "enum": [
+                            "low",
+                            null
+                          ]
+                        }
+                      }
+                    },
+                    "other": {
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "properties": {
+                            "confidence": {
+                              "enum": [
+                                "low",
+                                null
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "key": {
+                  "const": "anxiety_language"
+                },
+                "label": {
+                  "const": "Anxiety-related language (experimental language index)"
+                },
+                "family": {
+                  "const": "wellbeing_language"
+                },
+                "evidence_strength": {
+                  "const": "small"
+                },
+                "evidence_note": {
+                  "const": "Language markers associated in research with anxiety; evidence: small"
+                },
+                "per_speaker": {
+                  "properties": {
+                    "me": {
+                      "properties": {
+                        "confidence": {
+                          "enum": [
+                            "low",
+                            null
+                          ]
+                        }
+                      }
+                    },
+                    "other": {
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "properties": {
+                            "confidence": {
+                              "enum": [
+                                "low",
+                                null
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "key": {
+                  "const": "addictive_language"
+                },
+                "label": {
+                  "const": "Addictive-tendency language (experimental language index)"
+                },
+                "family": {
+                  "const": "wellbeing_language"
+                },
+                "evidence_strength": {
+                  "const": "very_weak"
+                },
+                "evidence_note": {
+                  "const": "Language markers associated in research with addictive tendencies; evidence: very weak"
+                },
+                "per_speaker": {
+                  "properties": {
+                    "me": {
+                      "properties": {
+                        "confidence": {
+                          "enum": [
+                            "low",
+                            null
+                          ]
+                        }
+                      }
+                    },
+                    "other": {
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "properties": {
+                            "confidence": {
+                              "enum": [
+                                "low",
+                                null
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "key": {
+                  "const": "anger_hostility_language"
+                },
+                "label": {
+                  "const": "Anger/hostility language (experimental language index)"
+                },
+                "family": {
+                  "const": "interpersonal"
+                },
+                "evidence_strength": {
+                  "const": "small"
+                },
+                "evidence_note": {
+                  "const": "Language markers associated in research with anger and hostility; evidence: small"
+                },
+                "per_speaker": {
+                  "properties": {
+                    "me": {
+                      "properties": {
+                        "confidence": {
+                          "enum": [
+                            "low",
+                            null
+                          ]
+                        }
+                      }
+                    },
+                    "other": {
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "properties": {
+                            "confidence": {
+                              "enum": [
+                                "low",
+                                null
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "key": {
+                  "const": "narcissism_language"
+                },
+                "label": {
+                  "const": "Narcissism-related language (experimental language index)"
+                },
+                "family": {
+                  "const": "interpersonal"
+                },
+                "evidence_strength": {
+                  "const": "very_weak"
+                },
+                "evidence_note": {
+                  "const": "Language markers associated in research with narcissism; evidence: very weak"
+                },
+                "per_speaker": {
+                  "properties": {
+                    "me": {
+                      "properties": {
+                        "confidence": {
+                          "enum": [
+                            "low",
+                            null
+                          ]
+                        }
+                      }
+                    },
+                    "other": {
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "properties": {
+                            "confidence": {
+                              "enum": [
+                                "low",
+                                null
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "key": {
+                  "const": "attachment_anxious_language"
+                },
+                "label": {
+                  "const": "Anxious-attachment-related language (experimental language index)"
+                },
+                "family": {
+                  "const": "interpersonal"
+                },
+                "evidence_strength": {
+                  "const": "very_weak"
+                },
+                "evidence_note": {
+                  "const": "Language markers associated in research with anxious attachment; evidence: very weak"
+                },
+                "per_speaker": {
+                  "properties": {
+                    "me": {
+                      "properties": {
+                        "confidence": {
+                          "enum": [
+                            "low",
+                            null
+                          ]
+                        }
+                      }
+                    },
+                    "other": {
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "properties": {
+                            "confidence": {
+                              "enum": [
+                                "low",
+                                null
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "key": {
+                  "const": "attachment_avoidant_language"
+                },
+                "label": {
+                  "const": "Avoidant-attachment-related language (experimental language index)"
+                },
+                "family": {
+                  "const": "interpersonal"
+                },
+                "evidence_strength": {
+                  "const": "very_weak"
+                },
+                "evidence_note": {
+                  "const": "Language markers associated in research with avoidant attachment; evidence: very weak"
+                },
+                "per_speaker": {
+                  "properties": {
+                    "me": {
+                      "properties": {
+                        "confidence": {
+                          "enum": [
+                            "low",
+                            null
+                          ]
+                        }
+                      }
+                    },
+                    "other": {
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "properties": {
+                            "confidence": {
+                              "enum": [
+                                "low",
+                                null
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "items": false,
+          "description": "Exactly the 12 registry dimensions, in registry order."
+        },
+        "quotes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/expQuote"
+          }
+        }
+      }
+    },
+    "expDimension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "label",
+        "family",
+        "evidence_strength",
+        "evidence_note",
+        "citations",
+        "per_speaker"
+      ],
+      "properties": {
+        "key": {
+          "enum": [
+            "openness",
+            "conscientiousness",
+            "extraversion",
+            "agreeableness",
+            "neuroticism",
+            "depression_language",
+            "anxiety_language",
+            "addictive_language",
+            "anger_hostility_language",
+            "narcissism_language",
+            "attachment_anxious_language",
+            "attachment_avoidant_language"
+          ]
+        },
+        "label": {
+          "type": "string"
+        },
+        "family": {
+          "enum": [
+            "big_five",
+            "wellbeing_language",
+            "interpersonal"
+          ]
+        },
+        "evidence_strength": {
+          "enum": [
+            "moderate",
+            "small",
+            "weak",
+            "very_weak"
+          ]
+        },
+        "evidence_note": {
+          "type": "string"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/expCitation"
+          }
+        },
+        "per_speaker": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "me",
+            "other"
+          ],
+          "properties": {
+            "me": {
+              "$ref": "#/$defs/expSpeakerScore"
+            },
+            "other": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/expSpeakerScore"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "expCitation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "short",
+        "doi"
+      ],
+      "properties": {
+        "short": {
+          "type": "string"
+        },
+        "doi": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "expSpeakerScore": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reason",
+        "score",
+        "band",
+        "confidence",
+        "n_episodes",
+        "n_words",
+        "contributions",
+        "trend",
+        "quote_ids"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/sectionStatus"
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "score": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "band": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "lo",
+                "hi"
+              ],
+              "properties": {
+                "lo": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "hi": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              }
+            }
+          ]
+        },
+        "confidence": {
+          "enum": [
+            "low",
+            "medium",
+            null
+          ],
+          "description": "low or medium only; null unless status is ok."
+        },
+        "n_episodes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_words": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "contributions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/expContribution"
+          }
+        },
+        "trend": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/expTrendPoint"
+          }
+        },
+        "quote_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "ok"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "score": {
+                "type": "integer"
+              },
+              "band": {
+                "type": "object"
+              },
+              "confidence": {
+                "enum": [
+                  "low",
+                  "medium"
+                ]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "score": {
+                "type": "null"
+              },
+              "band": {
+                "type": "null"
+              },
+              "confidence": {
+                "type": "null"
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "expContribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "marker_key",
+        "label",
+        "source",
+        "direction",
+        "weight",
+        "value",
+        "unit",
+        "sub_score",
+        "anchor_source",
+        "status",
+        "quote_ids"
+      ],
+      "properties": {
+        "marker_key": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "D",
+            "R",
+            "H"
+          ],
+          "description": "D word counts, R AI episode rating, H overall AI rating."
+        },
+        "direction": {
+          "enum": [
+            "up",
+            "down"
+          ]
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Effective share of the index after caps; 0 when the marker has no data."
+        },
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "unit": {
+          "enum": [
+            "% of words",
+            "% of messages",
+            "1-5 rubric",
+            "lexicon units per 100 words",
+            "share of episodes",
+            "valence"
+          ]
+        },
+        "sub_score": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "anchor_source": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "not_run",
+            "no_data"
+          ]
+        },
+        "quote_ids": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "expTrendPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "week",
+        "score",
+        "n_episodes",
+        "n_words",
+        "reason"
+      ],
+      "properties": {
+        "week": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-W[0-9]{2}$"
+        },
+        "score": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "n_episodes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_words": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "expQuote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "speaker",
+        "episode_id",
+        "marker_key",
+        "text",
+        "ts"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^xq_[0-9]{3,}$"
+        },
+        "speaker": {
+          "$ref": "#/$defs/speaker"
+        },
+        "episode_id": {
+          "type": "string"
+        },
+        "marker_key": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Verbatim span of one message by this speaker."
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     }
