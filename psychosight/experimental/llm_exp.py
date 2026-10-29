@@ -7,7 +7,7 @@ by rubric-v1, so those five behaviors are asked only for ``other``.
 Cache rows store scores and quote offsets only: no message bodies, no reasoning, no raw replies.
 Keys are the episode hash (or a hash of the holistic transcript), prompt version, model, and run
 index. Track D should pass :func:`call_budget` so the experimental cap stays separate from the
-main rubric cap, and should append :data:`HOLISTIC_SYSTEM_PROMPT` to ``safety.EXP_ALLOW_LIST``.
+main rubric cap. :data:`HOLISTIC_SYSTEM_PROMPT` is appended to ``safety.EXP_ALLOW_LIST`` in safety.py.
 The episode prompt must not be allow-listed: it passes the global banned-word lint as written.
 """
 
@@ -280,8 +280,8 @@ def episode_user_prompt(episode, speakers: Sequence[str]) -> str:
 
 
 # Original adjective anchors for the five domains. Not copied from a published instrument.
-# Track D: append this exact string to safety.EXP_ALLOW_LIST. It is the only experimental prompt
-# that names a domain the global lint bans (neuroticism). Do not allow-list the episode prompt.
+# safety.EXP_ALLOW_LIST includes this exact string (appended in safety.py). It is the only experimental
+# prompt that names a domain the global lint bans (neuroticism). The episode prompt is not allow-listed.
 HOLISTIC_SYSTEM_PROMPT = (
     f"TASK: HOLISTIC (prompt {EXP_HOLISTIC_PROMPT_VERSION})\n"
     "You rate five language domains from one speaker's text messages in one conversation.\n"

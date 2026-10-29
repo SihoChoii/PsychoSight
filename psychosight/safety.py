@@ -123,3 +123,12 @@ def lint_experimental(text: str) -> List[str]:
     """
     t = _normalize_for_lint(_strip_exp_allowed(text or ""))
     return [p for p in EXP_BANNED if re.search(p, t)]
+
+
+# The exp-holistic-v1 prompt is the only experimental prompt that names a domain the global lint bans
+# (neuroticism). It is allow-listed for the experimental lint only; the episode prompt is not.
+# Imported at the end: psychosight.experimental never imports this module at load time.
+from .experimental.llm_exp import HOLISTIC_SYSTEM_PROMPT  # noqa: E402
+
+if HOLISTIC_SYSTEM_PROMPT not in EXP_ALLOW_LIST:
+    EXP_ALLOW_LIST.append(HOLISTIC_SYSTEM_PROMPT)

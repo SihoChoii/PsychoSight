@@ -70,3 +70,13 @@ def test_run_experimental_scrubs_before_return(tmp_path, caplog, monkeypatch):
     assert section["dimensions"][0]["per_speaker"]["me"]["contributions"][0]["label"] == T.LINT_FALLBACK
     assert "you are a narcissist" not in caplog.text
     assert stats.llm_calls == 0
+
+
+def test_holistic_prompt_is_exp_allow_listed_and_episode_prompt_is_not():
+    from psychosight import safety
+    from psychosight.experimental import llm_exp
+    assert llm_exp.HOLISTIC_SYSTEM_PROMPT in safety.EXP_ALLOW_LIST
+    assert safety.lint_experimental(llm_exp.HOLISTIC_SYSTEM_PROMPT) == []
+    assert llm_exp.HOLISTIC_SYSTEM_PROMPT not in safety.ALLOW_LIST
+    for speakers in (("me",), ("me", "other")):
+        assert llm_exp.episode_system_prompt(speakers) not in safety.EXP_ALLOW_LIST
