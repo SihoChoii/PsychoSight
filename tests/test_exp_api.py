@@ -46,7 +46,7 @@ def test_shell_sections_validate():
     assert _section_is_valid(shell_section("failed", T.REASON_FAILED, ("me", "other")))
     me_only = shell_section("not_run", T.REASON_DISABLED, ("me",))
     assert me_only["speakers_scored"] == ["me"]
-    assert me_only["dimensions"][0]["per_speaker"]["other"]["status"] == "not_run"
+    assert all(d["per_speaker"]["other"] is None for d in me_only["dimensions"])
     assert [d["key"] for d in me_only["dimensions"]] == list(DIMENSION_KEYS)
 
 
@@ -247,7 +247,20 @@ def test_pipeline_hook_after_synthesis_uses_same_selection_and_new_budget(tmp_pa
     assert "xq_001" not in json.dumps(rep["quotes"])
 
 
-def test_demo_default_runs_and_stub_failure_keeps_the_report(tmp_path):
+def test_demo_default_runs_with_real_tracks(tmp_path):
+    rep = pipeline.run_analysis("demo", llm_opt_in=False, store=Store(tmp_path / "p.db"))
+    check(rep)
+    assert rep["schema_version"] == "1.1.0"
+    assert rep["experimental_scores"]["status"] == "ok"
+    assert rep["experimental_scores"]["speakers_scored"] == ["me", "other"]
+    assert len(rep["experimental_scores"]["dimensions"]) == 12
+
+
+def test_demo_default_runs_and_stage_failure_keeps_the_report(tmp_path, monkeypatch):
+    def boom(*args, **kwargs):
+        raise RuntimeError("scoring blew up")
+
+    monkeypatch.setattr(scoring, "build_section", boom)
     stages = []
     rep = pipeline.run_analysis("demo", llm_opt_in=False, store=Store(tmp_path / "p.db"),
                                 progress=lambda s, c, t: stages.append(s))

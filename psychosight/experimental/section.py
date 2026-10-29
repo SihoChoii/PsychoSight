@@ -43,9 +43,8 @@ def shell_section(status: str, reason: str, speakers: Sequence[str] = ("me",)) -
     ``not_run`` because that enum has no ``failed``.
     """
     scored = scored_speakers(speakers)
-    # speakers_scored records who was requested. The other person's block is still an object when they
-    # were not requested. On low-max dimensions the schema oneOf also matches null, because that
-    # confidence branch has no ``type: object``, so ``other: null`` does not validate.
+    # speakers_scored records who was requested. The other person's block is null when not requested,
+    # matching Track C's build_section and not_run_section.
 
     def speaker_block(dimension, block_status: str, block_reason: str) -> dict:
         return {
@@ -64,10 +63,7 @@ def shell_section(status: str, reason: str, speakers: Sequence[str] = ("me",)) -
     dimensions = []
     for dim in DIMENSIONS:
         me = speaker_block(dim, status, reason)
-        if "other" in scored:
-            other = speaker_block(dim, status, reason)
-        else:
-            other = speaker_block(dim, "not_run", exp_strings.REASON_NOT_REQUESTED)
+        other = speaker_block(dim, status, reason) if "other" in scored else None
         dimensions.append({
             "key": dim.key,
             "label": dim.label,
