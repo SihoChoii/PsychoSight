@@ -20,6 +20,25 @@ export class ApiError extends Error {
   }
 }
 
+export interface DiskAccessRecheck {
+  granted: boolean;
+  relaunch_required: boolean;
+  reason: string;
+  settings_url: string;
+  message: string;
+}
+
+export interface DiskAccessOpen {
+  opened: boolean;
+  url: string;
+  reason?: string | null;
+}
+
+export interface DiskAccessReveal {
+  revealed: boolean;
+  reason?: string | null;
+}
+
 export interface Client {
   getConfig(): Promise<Config>;
   getConversations(): Promise<ConversationsResponse>;
@@ -28,6 +47,9 @@ export interface Client {
   getAnalysis(jobId: string): Promise<Job>;
   getReport(jobId: string): Promise<Report>;
   deleteAnalysis(jobId: string): Promise<{ deleted: boolean; job_id: string }>;
+  recheckDiskAccess(): Promise<DiskAccessRecheck>;
+  openDiskAccessSettings(): Promise<DiskAccessOpen>;
+  revealDiskAccessApp(): Promise<DiskAccessReveal>;
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -73,6 +95,9 @@ export const httpApi: Client = {
   getReport: (jobId) => request<Report>(`/analyses/${encodeURIComponent(jobId)}/report`),
   deleteAnalysis: (jobId) =>
     request<{ deleted: boolean; job_id: string }>(`/analyses/${encodeURIComponent(jobId)}`, { method: "DELETE" }),
+  recheckDiskAccess: () => request<DiskAccessRecheck>("/disk-access/recheck", { method: "POST" }),
+  openDiskAccessSettings: () => request<DiskAccessOpen>("/disk-access/open-settings", { method: "POST" }),
+  revealDiskAccessApp: () => request<DiskAccessReveal>("/disk-access/reveal", { method: "POST" }),
 };
 
 let clientPromise: Promise<Client> | null = null;

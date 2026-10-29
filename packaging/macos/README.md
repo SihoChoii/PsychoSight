@@ -31,13 +31,16 @@ Logs are `~/Library/Logs/PsychoSight/server.log` and `launcher.log`. They are no
 
 ## Full Disk Access
 
-Reading `~/Library/Messages/chat.db` needs Full Disk Access. The backend is a child of `PsychoSight.app/Contents/MacOS/PsychoSight`, the app's own signed executable, so grant access to **PsychoSight**, not to Terminal or a system Python.
+Reading `~/Library/Messages/chat.db` needs Full Disk Access. macOS has no public API that shows a permission prompt for it. On launch, both the signed PsychoSight process and its backend child open `chat.db` read-only and read a few bytes, before the window loads. That is what adds PsychoSight under Privacy & Security → Full Disk Access (the switch stays off until you turn it on). The bytes are discarded. Logs record only `granted`, `reason`, and an error type name — never message text.
 
-1. Quit PsychoSight.
-2. Open System Settings → Privacy & Security → Full Disk Access.
-3. Turn PsychoSight on. If it is not listed, click + (or drag the app in) and choose `/Applications/PsychoSight.app`.
-4. Open PsychoSight again.
+The backend is a child of `PsychoSight.app/Contents/MacOS/PsychoSight`, the app's own signed executable, so grant access to **PsychoSight**, not to Terminal or a system Python.
 
-If access is missing, conversation listing returns `FULL_DISK_ACCESS_REQUIRED` and the UI shows the Full Disk Access screen. The demo conversation works without the grant.
+If access is missing, the UI shows the Full Disk Access screen:
+
+1. Choose **Open Full Disk Access Settings**. That runs `open` on `x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles`.
+2. Turn on PsychoSight. If it is not listed, choose **Show in Finder** and drag PsychoSight into the list.
+3. Quit PsychoSight and open it again.
+
+**Recheck** probes again without a full restart when this process can already read the file. If a new process can read it and this one cannot, the screen says to quit and reopen — macOS often keeps the denial for the life of the process. The demo conversation works without the grant.
 
 An ad-hoc signature changes every rebuild, so Full Disk Access must be granted again after each ad-hoc rebuild. A Developer ID signature keeps the grant across rebuilds. Re-grant it if macOS shows the app as a new item.

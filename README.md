@@ -147,9 +147,10 @@ An optional section can add 0–100 indexes from word counts in this conversatio
 - The API binds to 127.0.0.1 and only serves message text as evidence quotes inside reports.
 
 ### Troubleshooting
-- **`FULL_DISK_ACCESS_REQUIRED`**: System Settings > Privacy & Security > Full Disk Access, enable PsychoSight.app
-  (or Terminal, iTerm, or your IDE if you started the backend there), then quit and reopen it. The demo conversation
-  works meanwhile. Steps for the packaged app are in `packaging/macos/README.md`.
+- **`FULL_DISK_ACCESS_REQUIRED`**: the packaged app reads a few bytes of `chat.db` on launch so macOS can list
+  PsychoSight under Full Disk Access. Use **Open Full Disk Access Settings** in the app, turn PsychoSight on, then
+  quit and reopen. **Recheck** tells you if a relaunch is still required. From a terminal, grant access to that
+  terminal instead. The demo conversation works meanwhile. Details: `packaging/macos/README.md`.
 - **`LLM_UNAVAILABLE` "No DeepSeek API key found"**: `cp .env.example .env`, paste the key, restart the backend.
 - **`LLM_UNAVAILABLE` "rejected the API key"**: the key in `.env` (or `DEEPSEEK_API_KEY`) is wrong or revoked;
   replace it and run `python -m psychosight check-llm`.

@@ -229,6 +229,18 @@ h3 {
   white-space: pre-wrap;
 }
 
+.access-steps {
+  margin: var(--space-4) 0 0;
+  padding-left: 1.25rem;
+  max-width: 65ch;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.access-note {
+  margin-top: var(--space-4);
+}
+
 .form-column {
   max-width: 560px;
   display: flex;

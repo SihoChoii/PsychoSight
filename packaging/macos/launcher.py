@@ -309,8 +309,23 @@ def run_browser(url: str, proc: subprocess.Popen) -> None:
         pass
 
 
+def launch_probe() -> None:
+    """Register this signed process with Full Disk Access before the window opens."""
+    try:
+        from psychosight.disk_access import probe_and_report, probe_log_line
+        _log(probe_log_line(probe_and_report()))
+    except Exception as exc:
+        _log(f"disk access probe error_type={type(exc).__name__}")
+
+
+def run_probe() -> int:
+    from psychosight.disk_access import emit_status, probe_chat_db
+    return emit_status(probe_chat_db())
+
+
 def run_app() -> int:
     install_env_example()
+    launch_probe()
     show_note = note_needed()
     if show_note:
         write_first_run_note()
@@ -351,6 +366,8 @@ def run_app() -> int:
 
 def main(argv: Optional[List[str]] = None) -> int:
     args = list(sys.argv[1:] if argv is None else argv)
+    if "--ps-probe-disk" in args:
+        return run_probe()
     if "--ps-serve" in args:
         return run_server(args)
     if "--ps-check" in args:

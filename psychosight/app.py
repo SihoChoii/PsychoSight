@@ -18,7 +18,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, StrictBool
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from . import config, loader, pipeline
+from . import config, disk_access, loader, pipeline
 from .errors import (
     ExperimentalConsentRequired, FullDiskAccessRequired, InvalidRequest, NotFound, PsychoSightError, ReportNotReady,
 )
@@ -145,6 +145,18 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
         except FullDiskAccessRequired as exc:
             chat_db = {"available": False, "error": {"code": exc.code, "message": exc.message}}
         return {"conversations": items, "chat_db": chat_db}
+
+    @app.post("/disk-access/recheck")
+    def recheck_disk_access():
+        return disk_access.recheck()
+
+    @app.post("/disk-access/open-settings")
+    def open_disk_access_settings():
+        return disk_access.open_settings()
+
+    @app.post("/disk-access/reveal")
+    def reveal_disk_access_app():
+        return disk_access.reveal_app()
 
     def _run(job: Job, req: AnalysisRequest, provider, date_from, date_to, experimental: bool,
              score_other: bool) -> None:

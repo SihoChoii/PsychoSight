@@ -109,7 +109,9 @@ const MOCK_CONVERSATIONS: Conversation[] = [
 ];
 
 const FDA_MESSAGE =
-  "Cannot read the Messages database at ~/Library/Messages/chat.db (FileNotFoundError). On macOS, grant Full Disk Access to the app running the backend (System Settings > Privacy & Security > Full Disk Access), then restart it. You can use the demo conversation meanwhile.";
+  "Cannot read the Messages database. Grant Full Disk Access to PsychoSight, then quit and reopen it. You can use the demo conversation meanwhile.";
+
+const SETTINGS_URL = "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles";
 
 function diskBlocked(): boolean {
   const flag = queryFlag("disk");
@@ -339,5 +341,24 @@ export const mockApi: Client = {
     if (!job || job.deleted) throw new ApiError("NOT_FOUND", `No analysis with id '${jobId}'.`, 404);
     job.deleted = true;
     return { deleted: true, job_id: jobId };
+  },
+
+  async recheckDiskAccess() {
+    return {
+      granted: false,
+      relaunch_required: false,
+      reason: "denied",
+      settings_url: SETTINGS_URL,
+      message:
+        "PsychoSight still cannot read Messages. Turn on PsychoSight in Full Disk Access, then quit and reopen the app.",
+    };
+  },
+
+  async openDiskAccessSettings() {
+    return { opened: true, url: SETTINGS_URL, reason: null };
+  },
+
+  async revealDiskAccessApp() {
+    return { revealed: true, reason: null };
   },
 };

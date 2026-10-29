@@ -73,6 +73,7 @@ def build_parser() -> argparse.ArgumentParser:
     dr.add_argument("report_id")
 
     sub.add_parser("check-llm", help="smoke-test DeepSeek with ONE synthetic demo episode (no real messages)")
+    sub.add_parser("probe-disk", help="read a few bytes of chat.db and print access status (no message text)")
 
     sv = sub.add_parser("serve", help="serve the API and static UI on localhost")
     sv.add_argument("--host", default=config.DEFAULT_HOST)
@@ -184,16 +185,25 @@ def cmd_check_llm(args) -> int:
 _LOOPBACK_HOSTS = ("127.0.0.1", "localhost", "::1")
 
 
+def cmd_probe_disk(_args) -> int:
+    from .disk_access import emit_status, probe_chat_db
+    return emit_status(probe_chat_db())
+
+
 def cmd_serve(args) -> int:
     import uvicorn
 
     from .app import create_app
+    from .disk_access import probe_and_report, probe_log_line
 
     port = args.port or config.port()
     if args.host not in _LOOPBACK_HOSTS:
         print(f"error INVALID_REQUEST: refusing to bind {args.host}. "
               "The API listens on 127.0.0.1 only.", file=sys.stderr)
         return 2
+    # Touch chat.db before accepting requests so macOS can list this process
+    # under Full Disk Access before the UI shows an error.
+    print(probe_log_line(probe_and_report()), file=sys.stderr)
     app = create_app(static_dir=args.static_dir)
     hint = None if args.static_dir else config.unbuilt_ui_hint()
     if hint:
@@ -214,7 +224,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                                     no_experimental_scores=args.no_experimental_scores)
             return cmd_analyze(ns)
         handlers = {"list-conversations": cmd_list, "analyze": cmd_analyze, "list-reports": cmd_list_reports,
-                    "delete-report": cmd_delete, "serve": cmd_serve, "check-llm": cmd_check_llm}
+                    "delete-report": cmd_delete, "serve": cmd_serve, "check-llm": cmd_check_llm,
+                    "probe-disk": cmd_probe_disk}
         if args.cmd not in handlers:
             build_parser().print_help()
             return 2

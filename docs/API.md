@@ -12,7 +12,7 @@ Every error response is
 ```
 | code | HTTP | when |
 |---|---|---|
-| `FULL_DISK_ACCESS_REQUIRED` | 403 | chat.db missing or unreadable (grant Full Disk Access to the terminal/app running the backend). |
+| `FULL_DISK_ACCESS_REQUIRED` | 403 | chat.db missing or unreadable. The packaged app probes it on launch and the UI can open Full Disk Access settings. |
 | `GROUP_CHAT_UNSUPPORTED` | 400 | Conversation has more than one other participant. 1:1 only. |
 | `LLM_OPT_IN_REQUIRED` | 400 | `mode:"full"` requested without `llm_opt_in:true`. LLM stages never run without opt-in. |
 | `LLM_UNAVAILABLE` | 503 (or job error) | Opt-in given but no key is configured (message: copy `.env.example` to `.env` and put the key in it, or export `DEEPSEEK_API_KEY`), the key was rejected, the model string was rejected (message lists the provider's models), or the provider failed. |
@@ -95,6 +95,28 @@ the opt-in. The opt-in text itself says the demo excerpts are synthetic.
 The demo entry is always first. If chat.db cannot be read the response is still `200` with only the demo entry and
 `chat_db: {"available": false, "error": {"code": "FULL_DISK_ACCESS_REQUIRED", "message": "..."}}` so the UI can show
 setup help and offer the demo. Group chats are listed with `is_group: true, supported: false`.
+
+`python -m psychosight serve` reads a few bytes of chat.db before it accepts connections, so macOS can list the
+process under Full Disk Access. The bytes are discarded and are not logged. `probe-disk` prints only
+`{"granted": true|false, "reason": "ok|denied|missing|error", "error_type": "..."}`.
+
+## POST /disk-access/recheck
+Probes again in this process. If this process is still blocked, it probes in a new process. A grant that only the
+new process can see sets `relaunch_required` (quit and reopen). No message text is returned.
+```json
+{"granted": false, "relaunch_required": true, "reason": "relaunch_required",
+ "settings_url": "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles",
+ "message": "Full Disk Access is on for a new PsychoSight process, but this one still cannot read Messages. Quit PsychoSight and open it again."}
+```
+
+## POST /disk-access/open-settings
+Opens the Full Disk Access pane with `open` on
+`x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles`. The URL is fixed.
+`{"opened": true, "url": "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles", "reason": null}`
+
+## POST /disk-access/reveal
+Reveals `PsychoSight.app` in Finder (`open -R`) so it can be dragged into the Full Disk Access list.
+`{"revealed": true, "reason": null}` The path is the running app bundle, or `/Applications/PsychoSight.app` when that exists. A path in the request body is ignored.
 
 ## POST /analyses
 Request:

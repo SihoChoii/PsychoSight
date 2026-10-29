@@ -41,6 +41,8 @@ export function App() {
   const [busy, setBusy] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [reload, setReload] = useState(0);
+  const [accessNote, setAccessNote] = useState<string | null>(null);
+  const [accessBusy, setAccessBusy] = useState(false);
 
   useEffect(() => {
     const onHash = () => setRoute(parseHash(window.location.hash));
@@ -136,6 +138,55 @@ export function App() {
     }
   }
 
+  async function openDiskSettings() {
+    setAccessBusy(true);
+    try {
+      const client = await getClient();
+      const result = await client.openDiskAccessSettings();
+      setAccessNote(
+        result.opened
+          ? "System Settings should be open at Full Disk Access. Turn on PsychoSight, then quit and reopen the app."
+          : "System Settings did not open. Go to Privacy & Security, Full Disk Access, and turn on PsychoSight.",
+      );
+    } catch (error: unknown) {
+      setAccessNote(error instanceof Error ? error.message : "System Settings did not open.");
+    } finally {
+      setAccessBusy(false);
+    }
+  }
+
+  async function recheckDisk() {
+    setAccessBusy(true);
+    setAccessNote("Checking Full Disk Access.");
+    try {
+      const client = await getClient();
+      const result = await client.recheckDiskAccess();
+      setAccessNote(result.message);
+      if (result.granted) setReload((value) => value + 1);
+    } catch (error: unknown) {
+      setAccessNote(error instanceof Error ? error.message : "Full Disk Access could not be checked.");
+    } finally {
+      setAccessBusy(false);
+    }
+  }
+
+  async function revealApp() {
+    setAccessBusy(true);
+    try {
+      const client = await getClient();
+      const result = await client.revealDiskAccessApp();
+      setAccessNote(
+        result.revealed
+          ? "PsychoSight is selected in Finder. Drag it into the Full Disk Access list if it is missing, turn it on, then quit and reopen."
+          : "PsychoSight could not be shown in Finder. Look in /Applications, then drag PsychoSight.app into the Full Disk Access list.",
+      );
+    } catch (error: unknown) {
+      setAccessNote(error instanceof Error ? error.message : "PsychoSight could not be shown in Finder.");
+    } finally {
+      setAccessBusy(false);
+    }
+  }
+
   const diskError = conversations?.chat_db.available === false ? conversations.chat_db.error : null;
   const activeJobId = sessionStorage.getItem(JOB_KEY);
   const footerDisclaimer = route.name === "report" ? null : (config?.disclaimer ?? null);
@@ -196,6 +247,11 @@ export function App() {
         ) : null}
         <DiskAccess
           message={diskError?.message ?? "Full Disk Access is required to read Messages."}
+          note={accessNote}
+          busy={accessBusy}
+          onOpenSettings={() => void openDiskSettings()}
+          onRecheck={() => void recheckDisk()}
+          onReveal={() => void revealApp()}
           onDemo={() => {
             const demo = conversations.conversations.find((item) => item.id === "demo");
             rememberSelection({
