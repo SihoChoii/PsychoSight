@@ -1,0 +1,30 @@
+# Original PsychoSight list (MIT). Data only; a count, not a label or a flag.
+apparently
+doubtful
+dunno
+guess
+hopefully
+idk
+kind of
+kinda
+likely
+maybe
+perhaps
+possibly
+probably
+roughly
+seem
+seemed
+seeming
+seems
+somewhat
+sort of
+sorta
+suppose
+supposed
+tentatively
+uncertain
+unclear
+unlikely
+unsure
+wondering

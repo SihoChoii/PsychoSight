@@ -1,0 +1,16 @@
+# Original PsychoSight list (MIT). Data only; a count, not a label or a flag.
+concern
+concerned
+concerning
+dread
+dreaded
+dreading
+fret
+fretful
+fretting
+unease
+uneasy
+worried
+worries
+worry
+worrying

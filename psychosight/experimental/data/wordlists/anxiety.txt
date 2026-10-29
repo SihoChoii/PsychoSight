@@ -1,0 +1,21 @@
+# Original PsychoSight list (MIT). Data only; a count, not a label or a flag.
+afraid
+anxiety
+anxious
+apprehensive
+fear
+fearful
+fears
+jittery
+nervous
+nervously
+nervousness
+overwhelm
+overwhelmed
+panic
+panicked
+panicking
+restless
+scared
+tense
+tension

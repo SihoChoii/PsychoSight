@@ -1,0 +1,19 @@
+# Original PsychoSight list (MIT). Data only; a count, not a label or a flag.
+# The bare word bet is omitted: "I bet" is an ordinary idiom, and the first-person rule would count it.
+blackjack
+bookie
+casino
+gamble
+gambled
+gambling
+jackpot
+lottery
+lotto
+parlay
+poker
+roulette
+slots
+sportsbook
+wager
+wagered
+wagers
