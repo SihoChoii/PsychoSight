@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { formatCalendarDay, formatCellLine, formatDay, formatTimestamp, orderedSeries, speakerLabel } from "../format";
+import { levelLabel } from "../reasoning-adapter";
 import type { DateRangePair, Quote, Report, RubricItem } from "../types";
 import { DeleteDialog } from "./DeleteDialog";
 import { ExperimentalScores } from "./ExperimentalScores";
@@ -10,12 +11,14 @@ export function ReportView({
   deleting,
   deleteError,
   trendNote,
+  reasoningLevels = [],
   onDelete,
 }: {
   report: Report;
   deleting: boolean;
   deleteError: string | null;
   trendNote?: string | null;
+  reasoningLevels?: readonly { id: string; label: string }[];
   onDelete: () => void;
 }) {
   const [confirming, setConfirming] = useState(false);
@@ -23,6 +26,8 @@ export function ReportView({
   const range =
     header.date_from && header.date_to ? `${header.date_from} – ${header.date_to}` : "Insufficient data";
   const quotes = new Map(report.quotes.map((quote) => [quote.quote_id, quote]));
+  const levelId = report.run_meta.reasoning_level;
+  const reasoningText = typeof levelId === "string" && levelId.length > 0 ? levelLabel(reasoningLevels, levelId) : null;
 
   return (
     <>
@@ -37,6 +42,7 @@ export function ReportView({
           {header.message_counts.me} messages from me, {header.message_counts.other} from the other person
         </p>
         <p>{header.episode_count} episodes</p>
+        {reasoningText ? <p data-testid="reasoning-used">Reasoning {reasoningText}</p> : null}
       </header>
 
       <section className="section" aria-labelledby="weeks-title">

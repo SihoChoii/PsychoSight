@@ -1,3 +1,5 @@
+import { reasoningFields } from "./reasoning-adapter";
+
 export interface Cell {
   value: number | null;
   count: number;
@@ -116,6 +118,8 @@ export interface Report {
     experimental_cache_hits?: number;
     provider_note?: string | null;
     date_range_clamped?: DateRangeClamp | null;
+    reasoning_level?: string | null;
+    reasoning_effort?: string | null;
   };
 }
 
@@ -289,7 +293,7 @@ export interface SavedAnalysis {
   created_at: string;
 }
 
-export interface AnalysisRequest {
+export type AnalysisRequest = {
   conversation_id: string;
   date_from?: string;
   date_to?: string;
@@ -300,7 +304,12 @@ export interface AnalysisRequest {
   score_other?: boolean;
   experimental_opt_in_text?: string;
   score_other_opt_in_text?: string;
-}
+} & Partial<Record<(typeof reasoningFields)["requestLevel"], string>>;
+
+export type CreatedAnalysis = {
+  job_id: string;
+  status: string;
+} & Partial<Record<(typeof reasoningFields)["requestLevel"], string>>;
 
 export interface ExperimentalChoice {
   experimental: boolean;

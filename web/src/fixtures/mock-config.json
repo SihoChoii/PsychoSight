@@ -4,7 +4,30 @@
   "provider": "deepseek",
   "model": null,
   "llm_configured": false,
-  "reasoning_effort": "max",
+  "reasoning_effort": "low",
+  "reasoning_levels": [
+    {
+      "id": "none",
+      "label": "Off (fastest)",
+      "description": "Thinking turned off: quickest and cheapest, but the least careful scoring."
+    },
+    {
+      "id": "low",
+      "label": "Low (default)",
+      "description": "A short thinking pass (DeepSeek effort 'low'): a good balance of speed and care."
+    },
+    {
+      "id": "high",
+      "label": "High",
+      "description": "DeepSeek's standard thinking depth (its own default; 'medium' and 'xhigh' also run as high)."
+    },
+    {
+      "id": "max",
+      "label": "Max (slowest)",
+      "description": "Deepest thinking (DeepSeek effort 'max'): slowest and most tokens; the demo took ~8 minutes."
+    }
+  ],
+  "default_reasoning": "low",
   "demo_provider": "mock",
   "demo_provider_note": "not real model: offline mock scores for the synthetic demo, because no DeepSeek key was found (copy .env.example to .env and add the key to run the real model)",
   "opt_in_text": "To score communication patterns, PsychoSight will send excerpts of this conversation to DeepSeek (an external AI service). The excerpts include messages from BOTH sides: your messages and the other person's messages, which are sent as context. Up to 40 short episodes are sent; nothing else from your Messages library leaves this computer. DeepSeek processes the excerpts under its own terms. Evidence quotes from the analysis are saved in the local report until you delete it. The demo conversation is synthetic: its excerpts are fictional messages written for the demo. If you do not opt in, you still get a local-only report without the AI sections.",

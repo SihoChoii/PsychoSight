@@ -5,7 +5,7 @@ import {
   type ConversationsFetch,
 } from "./conversation-adapter";
 import { apiBase, isMockMode } from "./mode";
-import type { AnalysisRequest, Config, Job, Report, SavedAnalysis } from "./types";
+import type { AnalysisRequest, Config, CreatedAnalysis, Job, Report, SavedAnalysis } from "./types";
 
 export class ApiError extends Error {
   readonly code: string;
@@ -42,7 +42,7 @@ export interface Client {
   getConfig(): Promise<Config>;
   getConversations(query?: ConversationQuery): Promise<ConversationsFetch>;
   listAnalyses(): Promise<SavedAnalysis[]>;
-  createAnalysis(body: AnalysisRequest): Promise<{ job_id: string; status: string }>;
+  createAnalysis(body: AnalysisRequest): Promise<CreatedAnalysis>;
   getAnalysis(jobId: string): Promise<Job>;
   getReport(jobId: string): Promise<Report>;
   deleteAnalysis(jobId: string): Promise<{ deleted: boolean; job_id: string }>;
@@ -98,7 +98,7 @@ export const httpApi: Client = {
     return body.analyses;
   },
   createAnalysis: (body) =>
-    request<{ job_id: string; status: string }>("/analyses", { method: "POST", body: JSON.stringify(body) }),
+    request<CreatedAnalysis>("/analyses", { method: "POST", body: JSON.stringify(body) }),
   getAnalysis: (jobId) => request<Job>(`/analyses/${encodeURIComponent(jobId)}`),
   getReport: (jobId) => request<Report>(`/analyses/${encodeURIComponent(jobId)}/report`),
   deleteAnalysis: (jobId) =>
