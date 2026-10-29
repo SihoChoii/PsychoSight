@@ -100,4 +100,29 @@ episodes and agreement) -> `report` (validated against the JSON Schema, a failur
 - **HTTP 400 mentioning `response_format` or `temperature`**: set `DEEPSEEK_JSON_MODE=0` or
   `DEEPSEEK_SEND_TEMPERATURE=0`.
 - **`GROUP_CHAT_UNSUPPORTED`**: only 1:1 conversations are supported in this version.
-- **Port in use**: `python -m psychosight serve --port 8766` (the UI expects 8765 by default).
+- **Port in use**: `python -m psychosight serve --port 8766` (the UI expects 8765 by default; set `VITE_API_BASE` if the API is not same-origin).
+
+## Web UI
+
+Local interface in `web/` (Vite + React + TypeScript). It builds to `web/dist`, which `python -m psychosight serve` mounts at `http://127.0.0.1:8765`. The API base is same-origin unless `VITE_API_BASE` is set. Nothing in the UI calls a third party, a CDN, or an analytics endpoint.
+
+```bash
+cd web
+npm install
+npm test
+npm run dev          # http://127.0.0.1:5173 — proxies /config, /conversations, /analyses to :8765
+npm run build        # writes web/dist
+```
+
+Mock mode uses `docs/sample_report.json`, `docs/sample_report_deterministic_only.json`, and a snapshot of `opt_in_text`. It does not need the backend.
+
+```bash
+npm run dev
+# open http://127.0.0.1:5173/?mock=1
+VITE_MOCK=1 npm run dev
+# ?mock=0 forces the real API. ?mock=1&disk=1 shows the Full Disk Access screen.
+# ?theme=black or ?theme=white. #/report/sample-full and #/report/sample-det open the fixtures.
+# ?mock=1&freeze=scoring#/run/preview holds measured demo progress at 12 of 40 episodes.
+```
+
+Dev and build notes also live in `web/README.md`.
