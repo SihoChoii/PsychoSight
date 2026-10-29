@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { buildAnalysisRequest } from "./analysis-request";
 import { ApiError, getClient } from "./api";
 import { DiskAccess } from "./components/DiskAccess";
 import { OptIn } from "./components/OptIn";
@@ -8,7 +9,7 @@ import { ReportView } from "./components/ReportView";
 import { Shell } from "./components/Shell";
 import { applyTheme, currentTheme, isMockMode, type ThemeName } from "./mode";
 import { parseHash, type Route } from "./routes";
-import type { Config, ConversationsResponse, Job, Report, SavedAnalysis } from "./types";
+import type { Config, ConversationsResponse, ExperimentalChoice, Job, Report, SavedAnalysis } from "./types";
 
 const SEL_KEY = "psychosight-selection";
 const JOB_KEY = "psychosight-active-job";
@@ -105,7 +106,7 @@ export function App() {
     setTheme(next);
   }
 
-  async function start(optIn: boolean) {
+  async function start(optIn: boolean, choice: ExperimentalChoice) {
     const selection = readSelection();
     if (!selection) {
       window.location.hash = "#/";
@@ -115,14 +116,17 @@ export function App() {
     setSubmitError(null);
     try {
       const client = await getClient();
-      const created = await client.createAnalysis({
-        conversation_id: selection.conversationId,
-        llm_opt_in: optIn,
-        mode: optIn ? "full" : "deterministic_only",
-        demo: selection.isDemo || selection.conversationId === "demo",
-        ...(selection.dateFrom ? { date_from: selection.dateFrom } : {}),
-        ...(selection.dateTo ? { date_to: selection.dateTo } : {}),
-      });
+      const created = await client.createAnalysis(
+        buildAnalysisRequest({
+          conversationId: selection.conversationId,
+          isDemo: selection.isDemo,
+          dateFrom: selection.dateFrom,
+          dateTo: selection.dateTo,
+          llmOptIn: optIn,
+          choice,
+          config,
+        }),
+      );
       sessionStorage.setItem(JOB_KEY, created.job_id);
       window.location.hash = `#/run/${encodeURIComponent(created.job_id)}`;
     } catch (error: unknown) {
@@ -138,13 +142,19 @@ export function App() {
 
   let body = null;
   if (route.name === "optin") {
+    const selection = readSelection();
     body = (
       <OptIn
         text={config?.opt_in_text ?? null}
         busy={busy}
         error={submitError ?? configError}
-        onOptIn={() => start(true)}
-        onLocalOnly={() => start(false)}
+        isDemo={Boolean(selection?.isDemo || selection?.conversationId === "demo")}
+        experimentalEnabled={config?.experimental_enabled === true}
+        experimentalText={config?.experimental_opt_in_text ?? null}
+        scoreOtherText={config?.score_other_opt_in_text ?? null}
+        demoProviderNote={config?.demo_provider_note ?? null}
+        onOptIn={(choice) => start(true, choice)}
+        onLocalOnly={(choice) => start(false, choice)}
       />
     );
   } else if (route.name === "run") {
