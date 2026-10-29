@@ -13,3 +13,9 @@ psychosight-report*.json
 .DS_Store
 web/node_modules/
 web/dist/
+# Build-time bundled DeepSeek key (scripts/inject_bundled_key.py): app bundle only, never in git.
+psychosight/_bundled/
+**/psychosight.env
+*.app/
+dist/
+build/
