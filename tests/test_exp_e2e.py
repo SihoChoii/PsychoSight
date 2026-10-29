@@ -1,8 +1,7 @@
 """End-to-end experimental scores.
 
-Direction, gating, quote separation, and forbidden keys call the pipeline and skip until
-Tracks A–D replace the NotImplementedError stubs. Fixture size checks and the stored
-1.0.0 report check in test_exp_schema.py run before that merge.
+Direction, gating, quote separation, and forbidden keys call the real pipeline with the
+merged Track A–D implementations (no fakes, no skips).
 
 The pipeline call uses the frozen API field names as keyword arguments:
 ``experimental_scores=True`` and ``score_other=True``.
@@ -40,33 +39,6 @@ def _validator():
         from psychosight import config
         _SCHEMA = json.loads(config.SCHEMA_PATH.read_text())
     return jsonschema.Draft202012Validator(_SCHEMA, format_checker=jsonschema.FormatChecker())
-
-
-def _tracks_ad_ready() -> bool:
-    """False while any A–D stub still raises NotImplementedError."""
-    try:
-        from psychosight.experimental import deterministic, llm_exp, mock_exp, scoring, section
-    except Exception:
-        return False
-    probes = (
-        (deterministic.compute_deterministic, ([], ("me",)), {}),
-        (mock_exp.complete, ("TASK: EXPERIMENTAL", "x", 0), {}),
-        (scoring.not_run_section, ("not requested",), {}),
-        (scoring.build_section, (None, None, [], []), {"speakers": ("me",), "llm_ran": False}),
-        (llm_exp.score_llm, (None, [], None), {"speakers": ("me",), "budget": None, "holistic": False}),
-        (section.run_experimental, (), {
-            "episodes": [], "selection": {}, "provider": None, "store": None,
-            "llm_ran": False, "speakers": ("me",), "week_order": [], "progress": None,
-        }),
-    )
-    for fn, args, kwargs in probes:
-        try:
-            fn(*args, **kwargs)
-        except NotImplementedError:
-            return False
-        except Exception:
-            continue
-    return True
 
 
 def _walk_keys(node):
@@ -216,7 +188,6 @@ def test_fixture_sizes_straddle_thresholds_and_plant_markers():
     assert set(NEUTRAL_WORDS).isdisjoint(ME_MARKER_WORDS + OTHER_MARKER_WORDS)
 
 
-@pytest.mark.skipif(not _tracks_ad_ready(), reason="tracks A-D not merged")
 class TestExperimentalPipeline:
     def test_planted_dimensions_move_against_control_without_llm(self, monkeypatch, tmp_path):
         kwargs = dict(n_episodes=28, words_me=2800, words_other=2800)
