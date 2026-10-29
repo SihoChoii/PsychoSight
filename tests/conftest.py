@@ -14,6 +14,9 @@ def _isolated_env(tmp_path, monkeypatch):
         monkeypatch.delenv(name, raising=False)
     # A developer's real .env (repo root or ~/.psychosight/.env) must never reach tests.
     monkeypatch.setenv("PSYCHOSIGHT_DOTENV", str(tmp_path / "no-such.env"))
+    # The demo would use the real model whenever a key is configured; tests pin the offline mock.
+    # Tests of the automatic choice delete this explicitly.
+    monkeypatch.setenv("PSYCHOSIGHT_DEMO_PROVIDER", "mock")
 
     real_connect = socket.socket.connect
 
