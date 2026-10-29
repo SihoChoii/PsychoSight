@@ -117,6 +117,7 @@
   },
   "$defs": {
     "speaker": {"enum": ["me", "other"]},
+    "dateRange": {"type": "object", "additionalProperties": false, "required": ["date_from", "date_to"], "properties": {"date_from": {"type": ["string", "null"], "format": "date"}, "date_to": {"type": ["string", "null"], "format": "date"}}},
     "sideCounts": {
       "type": "object", "additionalProperties": false,
       "required": ["me", "other"],
@@ -242,6 +243,7 @@
         "experimental_prompt_versions": {"oneOf": [{"type": "null"}, {"type": "object", "additionalProperties": false, "required": ["episode", "holistic"], "properties": {"episode": {"type": "string"}, "holistic": {"type": "string"}}}]},
         "experimental_llm_calls": {"type": "integer", "minimum": 0},
         "experimental_cache_hits": {"type": "integer", "minimum": 0},
+        "date_range_clamped": {"description": "Set when POST /analyses clamped a date range that was partly outside the conversation's first..last message dates; null otherwise.", "oneOf": [{"type": "null"}, {"type": "object", "additionalProperties": false, "required": ["requested", "applied", "bounds"], "properties": {"requested": {"$ref": "#/$defs/dateRange"}, "applied": {"$ref": "#/$defs/dateRange"}, "bounds": {"$ref": "#/$defs/dateRange"}}}]},
         "reasoning_effort": {"type": ["string", "null"]},
         "prompt_version": {"type": "string"},
         "synthesis_prompt_version": {"type": "string"},

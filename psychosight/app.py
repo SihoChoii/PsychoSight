@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Optional
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -20,7 +20,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from . import config, disk_access, loader, pipeline
 from .errors import (
-    ExperimentalConsentRequired, FullDiskAccessRequired, InvalidRequest, NotFound, PsychoSightError, ReportNotReady,
+    DateRangeInvalid, ExperimentalConsentRequired, FullDiskAccessRequired, InvalidRequest, NotFound, PsychoSightError, ReportNotReady,
 )
 from .experimental.contract import DIMENSIONS
 from .experimental import strings as exp_strings
@@ -30,6 +30,9 @@ from .storage import Store
 log = logging.getLogger("psychosight.app")
 
 LOCAL_ORIGINS = r"^http://(localhost|127\.0\.0\.1)(:\d+)?$"
+CONVERSATIONS_DEFAULT_LIMIT = 50  # used when offset or q is given without limit
+CONVERSATIONS_MAX_LIMIT = 200
+CONVERSATIONS_MAX_Q = 200
 
 
 class AnalysisRequest(BaseModel):
@@ -129,6 +132,7 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
                 "experimental_banner": exp_strings.BANNER,
                 "experimental_footer_support": exp_strings.FOOTER_SUPPORT,
                 "experimental_scale_note": exp_strings.SCALE_NOTE,
+                "experimental_trend_note": exp_strings.TREND_NOTE,
                 "experimental_how_it_works": exp_strings.HOW_IT_WORKS,
                 "experimental_enabled": pipeline.experimental_enabled(),
                 "experimental_dimensions": [
@@ -137,14 +141,29 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
                 ]}
 
     @app.get("/conversations")
-    def conversations():
-        items = [loader.demo_summary()]
+    def conversations(response: Response, limit: Optional[int] = None, offset: Optional[int] = None,
+                      q: Optional[str] = None):
+        paged = limit is not None or offset is not None or q is not None
+        if limit is not None and not 1 <= limit <= CONVERSATIONS_MAX_LIMIT:
+            raise InvalidRequest(f"limit must be between 1 and {CONVERSATIONS_MAX_LIMIT}.")
+        if offset is not None and offset < 0:
+            raise InvalidRequest("offset must be 0 or greater.")
+        if q is not None and len(q) > CONVERSATIONS_MAX_Q:
+            raise InvalidRequest(f"q must be at most {CONVERSATIONS_MAX_Q} characters.")
+        if paged and limit is None:
+            limit = CONVERSATIONS_DEFAULT_LIMIT
+        offset = offset or 0
+        items = [loader.demo_summary()] if loader.demo_matches(q) else []
         chat_db = {"available": True, "error": None}
         try:
-            items += loader.list_conversations()
+            items += loader.list_conversations(q=q)
         except FullDiskAccessRequired as exc:
             chat_db = {"available": False, "error": {"code": exc.code, "message": exc.message}}
-        return {"conversations": items, "chat_db": chat_db}
+        total = len(items)
+        page = items[offset:offset + limit] if limit is not None else items[offset:]
+        response.headers["X-Total-Count"] = str(total)
+        return {"conversations": page, "chat_db": chat_db, "total": total, "limit": limit, "offset": offset,
+                "q": (q.strip() or None) if q is not None else None}
 
     @app.post("/disk-access/recheck")
     def recheck_disk_access():
@@ -159,7 +178,7 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
         return disk_access.reveal_app()
 
     def _run(job: Job, req: AnalysisRequest, provider, date_from, date_to, experimental: bool,
-             score_other: bool) -> None:
+             score_other: bool, date_range_clamped: Optional[dict] = None) -> None:
         def progress(stage: str, cur: int, tot: int) -> None:
             job.stage, job.progress = stage, {"current": cur, "total": tot}
 
@@ -168,7 +187,8 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
             pipeline.run_analysis(req.conversation_id, date_from=date_from, date_to=date_to,
                                   llm_opt_in=req.llm_opt_in, demo=req.demo, mode=job.mode, report_id=job.job_id,
                                   progress=progress, store=get_store(), provider=provider,
-                                  experimental_scores=experimental, score_other=score_other)
+                                  experimental_scores=experimental, score_other=score_other,
+                                  date_range_clamped=date_range_clamped)
             job.status, job.stage = "done", "done"
             if job.deleted:
                 get_store().delete_report(job.job_id)
@@ -194,7 +214,7 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
         except ValueError:
             raise InvalidRequest("date_from/date_to must be YYYY-MM-DD.")
         if date_from and date_to and date_from > date_to:
-            raise InvalidRequest("date_from must be on or before date_to.")
+            raise DateRangeInvalid("date_from must be on or before date_to.")
         if req.demo:
             req.conversation_id = config.DEMO_CONVERSATION_ID
         is_demo = req.conversation_id == config.DEMO_CONVERSATION_ID
@@ -207,7 +227,8 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
             if score_other and req.score_other_opt_in_text != exp_strings.SCORE_OTHER_CONSENT:
                 raise ExperimentalConsentRequired(exp_strings.CONSENT_MISMATCH_MESSAGE)
         run_mode = pipeline.resolve_mode(req.llm_opt_in, req.mode)
-        loader.check_supported(req.conversation_id)
+        first, last = loader.check_supported(req.conversation_id)
+        date_from, date_to, date_range_clamped = loader.resolve_date_range(date_from, date_to, first, last)
         provider = None
         if run_mode == "full":
             provider = get_provider(req.conversation_id == config.DEMO_CONVERSATION_ID, req.llm_opt_in)
@@ -215,7 +236,8 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
                   created_at=datetime.now(timezone.utc).astimezone().isoformat())
         with lock:
             jobs[job.job_id] = job
-        threading.Thread(target=_run, args=(job, req, provider, date_from, date_to, experimental, score_other),
+        threading.Thread(target=_run, args=(job, req, provider, date_from, date_to, experimental, score_other,
+                                                   date_range_clamped),
                          daemon=True).start()
         log.info("job=%s queued mode=%s", job.job_id, run_mode)
         return {"job_id": job.job_id, "status": job.status}

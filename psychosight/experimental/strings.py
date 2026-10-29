@@ -21,6 +21,12 @@ SCALE_NOTE = (
     "The shaded band shows how uncertain the number is."
 )
 
+# Shown next to the weekly trend sparkline (GET /config `experimental_trend_note`). Neutral on purpose:
+# weekly values can sit above or below the overall index.
+TREND_NOTE = (
+    "Weekly trend values are on their own scale and are not directly comparable to the overall index."
+)
+
 EXPERIMENTAL_CONSENT = (
     "Show experimental personality and well-being language scores. These are 0–100 numbers built from word "
     "counts and AI ratings. They are not validated and are not a diagnosis. With AI scoring on, the same "
@@ -118,7 +124,7 @@ CONSENT_MISMATCH_MESSAGE = "The experimental consent text does not match the cur
 # Every exact constant that may contain words the global lint bans. Applies only to strings under
 # `experimental_scores` and to the holistic prompt (Track B appends its prompt in safety.EXP_ALLOW_LIST).
 ALLOW_LIST_CONSTANTS: Tuple[str, ...] = (
-    (BANNER, SCALE_NOTE, EXPERIMENTAL_CONSENT, SCORE_OTHER_CONSENT, FOOTER_SUPPORT, HOW_IT_WORKS, TITLE)
+    (BANNER, SCALE_NOTE, TREND_NOTE, EXPERIMENTAL_CONSENT, SCORE_OTHER_CONSENT, FOOTER_SUPPORT, HOW_IT_WORKS, TITLE)
     + tuple(DIMENSION_LABELS.values())
     + tuple(EVIDENCE_NOTES.values())
 )

@@ -249,7 +249,8 @@ def run_experimental(*, episodes, selection, provider, store, llm_ran: bool, spe
     stage in the background, before the main rubric has finished).
 
     Never raises. Progress is ``(stage, done, total)`` with stage ``experimental``. ``done/total``
-    are experimental LLM calls. A failure yields status ``failed`` and ``strings.REASON_FAILED``.
+    count finished units, not LLM calls: one per selected episode (once both of its scoring runs
+    finish) plus one per holistic speaker, in completion order. A failure yields status ``failed`` and ``strings.REASON_FAILED``.
     """
     speakers = scored_speakers(speakers)
     stats = ExpLLMStats()

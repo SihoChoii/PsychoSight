@@ -18,7 +18,9 @@ Every error response is
 | `LLM_UNAVAILABLE` | 503 (or job error) | Opt-in given but no key is configured (message: copy `.env.example` to `.env` and put the key in it, or export `DEEPSEEK_API_KEY`), the key was rejected, the model string was rejected (message lists the provider's models), or the provider failed. |
 | `NOT_FOUND` | 404 | Unknown conversation, job or report. |
 | `REPORT_NOT_READY` | 409 | Report requested before the job is `done`. |
-| `INVALID_REQUEST` | 422 | Body failed validation (e.g. bad date). |
+| `INVALID_REQUEST` | 422 | Body or query failed validation (e.g. bad date format, `limit`/`offset`/`q` out of range on `GET /conversations`). |
+| `DATE_RANGE_INVALID` | 422 | `date_from` is after `date_to`. |
+| `DATE_RANGE_OUT_OF_BOUNDS` | 422 | The requested range does not overlap the conversation's first..last message dates at all. The message states the valid bounds, e.g. "The date range does not overlap this conversation. Messages run from 2025-08-04 to 2026-02-01 (inclusive, local dates)." |
 | `EXPERIMENTAL_CONSENT_REQUIRED` | 422 | `score_other` is true while `experimental_scores` is false, or an echoed experimental consent string does not match the current text from `GET /config`. |
 | `INTERNAL_ERROR` | 500 | Unexpected failure (no message text in the message). |
 
@@ -57,6 +59,7 @@ the opt-in. The opt-in text itself says the demo excerpts are synthetic.
   "experimental_banner": "Experimental, not validated. These scores are not a diagnosis, not a personality test and not a measure of who anyone is. They come from word counts and AI ratings of this one conversation and can easily be wrong.",
   "experimental_footer_support": "If anything in this conversation is weighing on you, consider talking with someone you trust or a licensed professional.",
   "experimental_scale_note": "0–100 experimental index. 50 is the midpoint of fixed reference points, not an average person. The shaded band shows how uncertain the number is.",
+  "experimental_trend_note": "Weekly trend values are on their own scale and are not directly comparable to the overall index.",
   "experimental_how_it_works": "<multi-paragraph string, render verbatim>",
   "experimental_enabled": true,
   "experimental_dimensions": [
@@ -82,17 +85,45 @@ the opt-in. The opt-in text itself says the demo excerpts are synthetic.
 `demo_provider` is `"deepseek"` when a key is configured (the demo runs a real analysis) and `"mock"` otherwise; override with `PSYCHOSIGHT_DEMO_PROVIDER=mock|deepseek`. `demo_provider_note` is `null` with the real model and a short explanation string when the demo falls back to the mock (show it next to the demo entry). Sample captured from the running server with a key in `.env`; `experimental_*` fields are described under [Experimental scores](#experimental-scores).
 
 ## GET /conversations
+Query params (all optional):
+
+| param | type | default | rule |
+|---|---|---|---|
+| `limit` | int | none (whole list) when no paging param is given; `50` when `offset` or `q` is given | 1..200, else `422 INVALID_REQUEST` |
+| `offset` | int | `0` | `>= 0`, else `422 INVALID_REQUEST` |
+| `q` | string | none | case-insensitive substring over the display name/label and handles (chat identifier, participant phone numbers/emails). The demo entry matches its label ("Demo conversation (synthetic)") or `demo`. Max 200 chars. Blank = no filter. |
+
+With no params the body is the same list as before (every conversation), so existing callers are unchanged.
+
 ```json
 {
   "conversations": [
-    {"id": "demo", "label": "Demo conversation (synthetic)", "message_count": 4259, "latest_date": "2026-02-01T13:48:05-08:00",
+    {"id": "demo", "label": "Demo conversation (synthetic)", "message_count": 4259,
+     "latest_date": "2026-02-01T13:48:05-08:00",
+     "first_message_at": "2025-08-04T20:29:09-07:00", "last_message_at": "2026-02-01T13:48:05-08:00",
+     "first_message_date": "2025-08-04", "last_message_date": "2026-02-01",
      "is_group": false, "supported": true, "is_demo": true, "participant_count": 1},
-    {"id": "42", "label": "+1 555-0100", "message_count": 3021, "latest_date": "...", "is_group": false, "supported": true, "is_demo": false, "participant_count": 1}
+    {"id": "42", "label": "+1 555-0100", "message_count": 3021, "latest_date": "...",
+     "first_message_at": "...", "last_message_at": "...", "first_message_date": "...", "last_message_date": "...",
+     "is_group": false, "supported": true, "is_demo": false, "participant_count": 1}
   ],
-  "chat_db": {"available": true, "error": null}
+  "chat_db": {"available": true, "error": null},
+  "total": 2, "limit": null, "offset": 0, "q": null
 }
 ```
-The demo entry is always first. If chat.db cannot be read the response is still `200` with only the demo entry and
+Per conversation:
+- `message_count`: messages in chat.db for that chat (all rows, including reactions/attachments; the analysis later drops those).
+- `first_message_at` / `last_message_at`: ISO 8601 timestamps of the earliest/latest message, with the Mac's local UTC offset (same convention as `latest_date`, which equals `last_message_at`). `null` if the chat has no dated message.
+- `first_message_date` / `last_message_date`: the same instants as local dates `YYYY-MM-DD`. These are the inclusive bounds that `POST /analyses` validates `date_from`/`date_to` against; use them to default the date picker.
+
+Paging: `total` is the number of matching conversations (demo included) before `limit`/`offset`; `limit` is the applied page size (`null` = no limit); `offset` the applied offset; `q` the applied filter (trimmed, `null` if none). The header `X-Total-Count` carries `total` too. Order is stable: demo first, then most recent activity first (`latest_date` desc, then id desc).
+
+Paged example, `GET /conversations?limit=2&offset=0&q=bob`:
+```json
+{"conversations": [{"id": "1", "label": "Bob Smith", "...": "..."}],
+ "chat_db": {"available": true, "error": null}, "total": 1, "limit": 2, "offset": 0, "q": "bob"}
+```
+The demo entry is always first (when it matches `q`). If chat.db cannot be read the response is still `200` with only the demo entry and
 `chat_db: {"available": false, "error": {"code": "FULL_DISK_ACCESS_REQUIRED", "message": "..."}}` so the UI can show
 setup help and offer the demo. Group chats are listed with `is_group: true, supported: false`.
 
@@ -124,12 +155,18 @@ Request:
 {"conversation_id": "demo", "date_from": "2025-09-01", "date_to": "2025-11-30", "llm_opt_in": true, "demo": false, "mode": null}
 ```
 - `conversation_id` required (`"demo"` or an id from `/conversations`). `demo: true` forces the synthetic conversation.
-- `date_from`/`date_to` optional, inclusive local dates `YYYY-MM-DD`.
+- `date_from`/`date_to` optional, inclusive local dates `YYYY-MM-DD`. Validated against the conversation's
+  `first_message_date`..`last_message_date` (demo included):
+  - `date_from > date_to`: `422 DATE_RANGE_INVALID`.
+  - no overlap with the bounds (open ends count as the bound): `422 DATE_RANGE_OUT_OF_BOUNDS`, message names the bounds.
+  - partly outside: the given end(s) are clamped to the bounds and the run proceeds. The report records it in
+    `run_meta.date_range_clamped = {"requested": {"date_from", "date_to"}, "applied": {...}, "bounds": {...}}`
+    (`null` when nothing was clamped); `header.requested_range` keeps what the client sent. Omitted ends stay open.
 - `llm_opt_in` required boolean. `false` gives a full deterministic-only report (rubric and observations `not_run`).
 - `mode` optional: `"full"` (requires `llm_opt_in:true`, else `400 LLM_OPT_IN_REQUIRED`) or `"deterministic_only"`.
 
 Response `202 {"job_id": "a1b2...", "status": "queued"}`. Fast-fail errors: `GROUP_CHAT_UNSUPPORTED`, `NOT_FOUND`,
-`LLM_OPT_IN_REQUIRED`, `LLM_UNAVAILABLE` (opt-in with no usable key/model for a real conversation).
+`DATE_RANGE_INVALID`, `DATE_RANGE_OUT_OF_BOUNDS`, `LLM_OPT_IN_REQUIRED`, `LLM_UNAVAILABLE` (opt-in with no usable key/model for a real conversation).
 The demo conversation uses the real DeepSeek model when a key is configured and the offline mock otherwise
 (`run_meta.provider` is `"mock"` and `run_meta.provider_note` starts with `"not real model"`).
 Experimental score fields, demo defaults, and `EXPERIMENTAL_CONSENT_REQUIRED` are in [Experimental scores](#experimental-scores).
@@ -182,7 +219,7 @@ Additional fields:
 
 ### GET /config
 
-Additional fields, all safe to show: `experimental_opt_in_text`, `score_other_opt_in_text`, `experimental_banner`, `experimental_footer_support`, `experimental_scale_note`, `experimental_how_it_works`, `experimental_enabled`, `experimental_dimensions`.
+Additional fields, all safe to show: `experimental_opt_in_text`, `score_other_opt_in_text`, `experimental_banner`, `experimental_footer_support`, `experimental_scale_note`, `experimental_trend_note` (show next to the weekly trend), `experimental_how_it_works`, `experimental_enabled`, `experimental_dimensions`.
 
 `experimental_dimensions` is twelve objects in registry order, each `{key, label, family, evidence_strength}`. `schema_version` in this response is `"1.1.0"`.
 

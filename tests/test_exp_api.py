@@ -307,6 +307,8 @@ def test_config_fields_and_enabled_flag(tmp_path, monkeypatch):
     assert cfg["experimental_banner"] == T.BANNER
     assert cfg["experimental_footer_support"] == T.FOOTER_SUPPORT
     assert cfg["experimental_scale_note"] == T.SCALE_NOTE
+    assert cfg["experimental_trend_note"] == T.TREND_NOTE
+    assert "lower" not in T.TREND_NOTE and "higher" not in T.TREND_NOTE
     assert cfg["experimental_how_it_works"] == T.HOW_IT_WORKS
     assert cfg["experimental_enabled"] is True
     assert [d["key"] for d in cfg["experimental_dimensions"]] == list(DIMENSION_KEYS)
