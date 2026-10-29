@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en" data-theme="black">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>PsychoSight</title>
+<link id="favicon" rel="icon" href="/logos/black/favicon.svg" type="image/svg+xml">
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var queryTheme = params.get("theme");
+  var stored = null;
+  try { stored = localStorage.getItem("psychosight-theme"); } catch (e) {}
+  var theme = queryTheme === "white" || queryTheme === "black" ? queryTheme : stored;
+  if (theme !== "white" && theme !== "black") theme = "black";
+  if (queryTheme === "white" || queryTheme === "black") {
+    try { localStorage.setItem("psychosight-theme", theme); } catch (e) {}
+  }
+  document.documentElement.setAttribute("data-theme", theme);
+  var icon = document.getElementById("favicon");
+  if (icon) icon.setAttribute("href", "/logos/" + theme + "/favicon.svg");
+})();
+</script>
+</head>
+<body>
+<div id="root"></div>
+<script type="module" src="/src/main.tsx"></script>
+</body>
+</html>
