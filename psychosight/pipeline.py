@@ -10,7 +10,7 @@ from datetime import date, datetime, timezone
 from typing import Callable, Optional, Tuple
 
 from . import config, features, loader, report, rubric, sessionize, synthesize
-from .errors import ExperimentalConsentRequired, InvalidRequest, LLMOptInRequired
+from .errors import DateRangeInvalid, ExperimentalConsentRequired, LLMOptInRequired
 from .experimental.contract import (
     ENV_EXPERIMENTAL, EXP_HOLISTIC_PROMPT_VERSION, EXP_PROMPT_VERSION, EXP_SCORING_VERSION, ExpLLMStats,
 )
@@ -77,13 +77,14 @@ def run_analysis(
     save: bool = True,
     experimental_scores: Optional[bool] = None,
     score_other: Optional[bool] = None,
+    date_range_clamped: Optional[dict] = None,
 ) -> dict:
     t0 = time.monotonic()
     created_at = _iso_now()
     report_id = report_id or uuid.uuid4().hex[:12]
     prog = progress or (lambda stage, cur, tot: None)
     if date_from and date_to and date_from > date_to:
-        raise InvalidRequest("date_from must be on or before date_to.")
+        raise DateRangeInvalid("date_from must be on or before date_to.")
     if demo:
         conversation_id = config.DEMO_CONVERSATION_ID
     is_demo = demo or conversation_id == config.DEMO_CONVERSATION_ID
@@ -196,8 +197,9 @@ def run_analysis(
             "conversation_id": data.conversation_id, "conversation_label": data.label, "is_demo": data.is_demo,
             "date_from": local_dates[0].isoformat() if local_dates else None,
             "date_to": local_dates[-1].isoformat() if local_dates else None,
-            "requested_range": {"date_from": date_from.isoformat() if date_from else None,
-                                "date_to": date_to.isoformat() if date_to else None},
+            "requested_range": (dict(date_range_clamped["requested"]) if date_range_clamped else
+                                {"date_from": date_from.isoformat() if date_from else None,
+                                 "date_to": date_to.isoformat() if date_to else None}),
             "timezone": _tz_name(data.msgs), "message_counts": msgs, "word_counts": words,
             "episode_count": len(episodes), "episodes_scored": rub["episodes_scored"], "week_count": len(feats["weeks"]),
         }
@@ -222,6 +224,8 @@ def run_analysis(
                 {"episode": EXP_PROMPT_VERSION, "holistic": EXP_HOLISTIC_PROMPT_VERSION} if exp_attempted else None),
             "experimental_llm_calls": exp_stats.llm_calls if exp_attempted else 0,
             "experimental_cache_hits": exp_stats.cache_hits if exp_attempted else 0,
+            # Set when POST /analyses clamped a partly out-of-bounds date range: {requested, applied, bounds}.
+            "date_range_clamped": date_range_clamped,
         }
         rep = report.assemble(
             report_id=report_id, mode=run_mode, header=header, weeks=feats["weeks"], series=feats["series"],

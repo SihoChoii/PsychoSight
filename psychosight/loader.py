@@ -7,10 +7,10 @@ import re
 import sqlite3
 from datetime import date, datetime
 from pathlib import Path
-from typing import Iterable, List, Optional
+from typing import Iterable, List, Optional, Tuple
 
 from . import config, msgexport, synthetic
-from .errors import FullDiskAccessRequired, GroupChatUnsupported, NotFound
+from .errors import DateRangeInvalid, DateRangeOutOfBounds, FullDiskAccessRequired, GroupChatUnsupported, NotFound
 from .models import ConversationData, Msg, utc
 
 log = logging.getLogger("psychosight.loader")
@@ -42,13 +42,33 @@ def is_group(conv: msgexport.Conversation) -> bool:
     return len(conv.participants) > 1
 
 
+def _iso(dt: Optional[datetime]) -> Optional[str]:
+    return dt.isoformat() if dt else None
+
+
+def _day(dt: Optional[datetime]) -> Optional[str]:
+    return dt.date().isoformat() if dt else None
+
+
+def _bounds_fields(first: Optional[datetime], last: Optional[datetime]) -> dict:
+    """first/last message timestamps (ISO 8601 with the local UTC offset, like ``latest_date``) and their
+    local dates (YYYY-MM-DD, the same day convention ``date_from``/``date_to`` filter on)."""
+    return {
+        "first_message_at": _iso(first),
+        "last_message_at": _iso(last),
+        "first_message_date": _day(first),
+        "last_message_date": _day(last),
+    }
+
+
 def conversation_summary(conv: msgexport.Conversation) -> dict:
     group = is_group(conv)
     return {
         "id": str(conv.rowid),
         "label": msgexport.conversation_title(conv),
         "message_count": conv.message_count,
-        "latest_date": conv.latest_date.isoformat() if conv.latest_date else None,
+        "latest_date": _iso(conv.latest_date),
+        **_bounds_fields(conv.earliest_date, conv.latest_date),
         "is_group": group,
         "supported": not group,
         "is_demo": False,
@@ -56,13 +76,20 @@ def conversation_summary(conv: msgexport.Conversation) -> dict:
     }
 
 
+def _demo_msgs() -> List[Msg]:
+    return normalize_rows(synthetic.generate_rows())
+
+
 def demo_summary() -> dict:
-    msgs = normalize_rows(synthetic.generate_rows())
+    msgs = _demo_msgs()
+    first = msgs[0].ts if msgs else None
+    last = msgs[-1].ts if msgs else None
     return {
         "id": config.DEMO_CONVERSATION_ID,
         "label": config.DEMO_LABEL,
         "message_count": len(msgs),
-        "latest_date": msgs[-1].ts.isoformat() if msgs else None,
+        "latest_date": _iso(last),
+        **_bounds_fields(first, last),
         "is_group": False,
         "supported": True,
         "is_demo": True,
@@ -70,15 +97,67 @@ def demo_summary() -> dict:
     }
 
 
-def list_conversations(db_path: Optional[Path] = None) -> List[dict]:
+def demo_matches(q: Optional[str]) -> bool:
+    needle = (q or "").casefold().strip()
+    return not needle or needle in f"{config.DEMO_LABEL} {config.DEMO_CONVERSATION_ID}".casefold()
+
+
+def _conv_matches(conv: msgexport.Conversation, needle: str) -> bool:
+    """Case-insensitive substring over display name/label and handles (chat identifier, participants)."""
+    hay = " ".join((msgexport.conversation_title(conv), conv.label, conv.chat_name, conv.chat_identifier,
+                    " ".join(conv.participants))).casefold()
+    return needle in hay
+
+
+def list_conversations(db_path: Optional[Path] = None, q: Optional[str] = None) -> List[dict]:
+    """chat.db conversations, most recent activity first. ``q`` filters by display name or handle."""
     db_path = db_path or config.chat_db_path()
     try:
         with msgexport.snapshot_connection(db_path) as conn:
             convs = msgexport.list_conversations(conn)
     except (OSError, sqlite3.Error) as exc:
         raise _fda_error(db_path, exc)
-    log.info("listed conversations count=%d", len(convs))
+    needle = (q or "").casefold().strip()
+    if needle:
+        convs = [c for c in convs if _conv_matches(c, needle)]
+    log.info("listed conversations count=%d filtered=%s", len(convs), bool(needle))
     return [conversation_summary(c) for c in convs]
+
+
+def resolve_date_range(
+    date_from: Optional[date],
+    date_to: Optional[date],
+    first: Optional[datetime],
+    last: Optional[datetime],
+) -> Tuple[Optional[date], Optional[date], Optional[dict]]:
+    """Validate/clamp an inclusive local-date range against a conversation's first..last message.
+
+    - ``date_from > date_to``: ``DateRangeInvalid``.
+    - No overlap with [first day, last day]: ``DateRangeOutOfBounds`` (message states the valid bounds).
+    - Partly outside: the given end(s) are clamped to the bounds; returns a ``date_range_clamped`` record
+      ``{requested, applied, bounds}`` (each ``{date_from, date_to}``), else None.
+    Open ends (None) stay open. Without bounds (no dated messages) the range is returned unchanged.
+    """
+    if date_from and date_to and date_from > date_to:
+        raise DateRangeInvalid("date_from must be on or before date_to.")
+    if first is None or last is None:
+        return date_from, date_to, None
+    lo, hi = first.date(), last.date()
+    eff_from, eff_to = date_from or lo, date_to or hi
+    if eff_from > hi or eff_to < lo:
+        raise DateRangeOutOfBounds(
+            f"The date range does not overlap this conversation. Messages run from {lo.isoformat()} "
+            f"to {hi.isoformat()} (inclusive, local dates).")
+    applied_from = max(date_from, lo) if date_from else None
+    applied_to = min(date_to, hi) if date_to else None
+    if (applied_from, applied_to) == (date_from, date_to):
+        return date_from, date_to, None
+
+    def pair(a, b):
+        return {"date_from": a.isoformat() if a else None, "date_to": b.isoformat() if b else None}
+
+    return applied_from, applied_to, {"requested": pair(date_from, date_to), "applied": pair(applied_from, applied_to),
+                                      "bounds": pair(lo, hi)}
 
 
 def _clean_body(body: str) -> str:
@@ -149,10 +228,16 @@ def find_conversation(conn, conversation_id: str) -> msgexport.Conversation:
     raise NotFound(f"No conversation with id '{_short_id(conversation_id)}'.")
 
 
-def check_supported(conversation_id: str, db_path: Optional[Path] = None) -> None:
-    """Fast pre-check for the API: raises NotFound / GroupChatUnsupported / FullDiskAccessRequired."""
+def check_supported(
+    conversation_id: str, db_path: Optional[Path] = None,
+) -> Tuple[Optional[datetime], Optional[datetime]]:
+    """Fast pre-check for the API: raises NotFound / GroupChatUnsupported / FullDiskAccessRequired.
+
+    Returns the conversation's (first, last) message timestamps for date-range validation.
+    """
     if conversation_id == config.DEMO_CONVERSATION_ID:
-        return
+        msgs = _demo_msgs()
+        return (msgs[0].ts, msgs[-1].ts) if msgs else (None, None)
     db_path = db_path or config.chat_db_path()
     try:
         with msgexport.snapshot_connection(db_path) as conn:
@@ -161,6 +246,7 @@ def check_supported(conversation_id: str, db_path: Optional[Path] = None) -> Non
         raise _fda_error(db_path, exc)
     if is_group(conv):
         raise GroupChatUnsupported("Group chats are not supported yet; pick a 1:1 conversation.")
+    return conv.earliest_date, conv.latest_date
 
 
 def load_conversation(

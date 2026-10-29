@@ -50,6 +50,20 @@ class InvalidRequest(PsychoSightError):
     http_status = 422
 
 
+class DateRangeInvalid(InvalidRequest):
+    """date_from is after date_to."""
+
+    code = "DATE_RANGE_INVALID"
+    http_status = 422
+
+
+class DateRangeOutOfBounds(InvalidRequest):
+    """The requested range does not overlap the conversation's first..last message dates."""
+
+    code = "DATE_RANGE_OUT_OF_BOUNDS"
+    http_status = 422
+
+
 class ExperimentalConsentRequired(PsychoSightError):
     """score_other without experimental scores, or a consent echo that does not match /config."""
 

@@ -375,7 +375,7 @@ def test_api_bad_inputs_cors_and_errors(tmp_path, monkeypatch):
     assert res.status_code == 422 and huge not in res.text
     res = client.post("/analyses", json={"conversation_id": "demo", "llm_opt_in": False,
                                         "date_from": "2025-10-10", "date_to": "2025-10-01"})
-    assert res.status_code == 422 and res.json()["error"]["code"] == "INVALID_REQUEST"
+    assert res.status_code == 422 and res.json()["error"]["code"] == "DATE_RANGE_INVALID"
     res = client.post("/analyses", json={"conversation_id": "demo", "llm_opt_in": False,
                                         "date_from": "SECRETQUOTE not a date"})
     assert res.status_code == 422 and "SECRETQUOTE" not in res.text
