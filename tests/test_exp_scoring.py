@@ -62,15 +62,8 @@ def _def_validator(name):
     return jsonschema.Draft202012Validator(sub, format_checker=jsonschema.FormatChecker())
 
 
-def _null_other_schema_bug(error):
-    """prefixItems for low-max dimensions put ``other`` in a oneOf whose second branch has no
-    ``type: object``, so null matches both branches. The frozen schema rejects a me-only section.
-    """
-    return error.validator == "oneOf" and error.instance is None and "per_speaker" in str(error.json_path)
-
-
 def _assert_section(section):
-    errors = [err for err in _validator().iter_errors(section) if not _null_other_schema_bug(err)]
+    errors = list(_validator().iter_errors(section))
     assert not errors, errors[0]
     for dim in section["dimensions"]:
         _def_validator("expDimension").validate({

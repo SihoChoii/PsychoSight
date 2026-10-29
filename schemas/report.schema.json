@@ -504,6 +504,7 @@
                           "type": "null"
                         },
                         {
+                          "type": "object",
                           "properties": {
                             "confidence": {
                               "enum": [
@@ -555,6 +556,7 @@
                           "type": "null"
                         },
                         {
+                          "type": "object",
                           "properties": {
                             "confidence": {
                               "enum": [
@@ -606,6 +608,7 @@
                           "type": "null"
                         },
                         {
+                          "type": "object",
                           "properties": {
                             "confidence": {
                               "enum": [
@@ -657,6 +660,7 @@
                           "type": "null"
                         },
                         {
+                          "type": "object",
                           "properties": {
                             "confidence": {
                               "enum": [
@@ -708,6 +712,7 @@
                           "type": "null"
                         },
                         {
+                          "type": "object",
                           "properties": {
                             "confidence": {
                               "enum": [
@@ -759,6 +764,7 @@
                           "type": "null"
                         },
                         {
+                          "type": "object",
                           "properties": {
                             "confidence": {
                               "enum": [
@@ -810,6 +816,7 @@
                           "type": "null"
                         },
                         {
+                          "type": "object",
                           "properties": {
                             "confidence": {
                               "enum": [
