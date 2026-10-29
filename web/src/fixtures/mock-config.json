@@ -1,0 +1,13 @@
+{
+  "version": "0.1.0",
+  "schema_version": "1.0.0",
+  "provider": "deepseek",
+  "model": null,
+  "llm_configured": false,
+  "reasoning_effort": "max",
+  "demo_provider": "mock",
+  "opt_in_text": "To score communication patterns, PsychoSight will send excerpts of this conversation to DeepSeek (an external AI service). The excerpts include messages from BOTH sides: your messages and the other person's messages, which are sent as context. Up to 40 short episodes are sent; nothing else from your Messages library leaves this computer. DeepSeek processes the excerpts under its own terms. Evidence quotes from the analysis are saved in the local report until you delete it. If you do not opt in, you still get a local-only report without the AI sections.",
+  "disclaimer": "Experimental self-reflection, not a clinical or diagnostic tool",
+  "limitations_title": "What this cannot tell you",
+  "max_episodes_scored": 40
+}

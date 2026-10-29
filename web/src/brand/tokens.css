@@ -1,0 +1,91 @@
+@font-face {
+  font-family: Geist;
+  src: url("./fonts/Geist-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Mono";
+  src: url("./fonts/GeistMono-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Pixel";
+  src: url("./fonts/GeistPixel-Square.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "ASIX Founder";
+  src: url("./fonts/ASIX-FOUNDER.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+:root {
+  --font-body: Geist, Arial, sans-serif;
+  --font-mono: "Geist Mono", monospace;
+  --font-pixel: "Geist Pixel", monospace;
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-6: 48px;
+  --space-8: 64px;
+  --space-12: 96px;
+  --space-16: 128px;
+  --space-20: 160px;
+  --content-width: 1248px;
+  --page-gutter: 64px;
+  --section-space: 160px;
+  --line-width: 1px;
+  --control-radius: 2px;
+  --display-size: clamp(64px, 7.5vw, 104px);
+  --heading-size: clamp(36px, 4.4vw, 60px);
+  --body-size: 18px;
+  --body-leading: 1.6;
+  --iris: #8f7cff;
+  --tide: #5fc9b8;
+  --mist: #e4deff;
+  --motion-duration: 160ms;
+}
+:root,
+[data-theme="black"] {
+  color-scheme: dark;
+  --background: #000000;
+  --foreground: #ffffff;
+  --secondary: #a3a3a3;
+  --line: #292929;
+  --control-line: #777777;
+  --focus: #b3a6ff;
+  --accent-text: #b3a6ff;
+  --wireframe-filter: none;
+}
+[data-theme="white"] {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #000000;
+  --secondary: #5b5b5b;
+  --line: #d7d7d7;
+  --control-line: #777777;
+  --focus: #5236d1;
+  --accent-text: #5236d1;
+  --wireframe-filter: invert(1);
+}
+@media (max-width: 700px) {
+  :root {
+    --page-gutter: 24px;
+    --section-space: 88px;
+    --display-size: 64px;
+    --body-size: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-duration: 0ms;
+  }
+}
