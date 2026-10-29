@@ -369,6 +369,7 @@
           "maxItems": 12,
           "prefixItems": [
             {
+              "$ref": "#/$defs/expDimension",
               "properties": {
                 "key": {
                   "const": "openness"
@@ -388,6 +389,7 @@
               }
             },
             {
+              "$ref": "#/$defs/expDimension",
               "properties": {
                 "key": {
                   "const": "conscientiousness"
@@ -407,6 +409,7 @@
               }
             },
             {
+              "$ref": "#/$defs/expDimension",
               "properties": {
                 "key": {
                   "const": "extraversion"
@@ -426,6 +429,7 @@
               }
             },
             {
+              "$ref": "#/$defs/expDimension",
               "properties": {
                 "key": {
                   "const": "agreeableness"
@@ -445,6 +449,7 @@
               }
             },
             {
+              "$ref": "#/$defs/expDimension",
               "properties": {
                 "key": {
                   "const": "neuroticism"
@@ -464,6 +469,7 @@
               }
             },
             {
+              "$ref": "#/$defs/expDimension",
               "properties": {
                 "key": {
                   "const": "depression_language"
@@ -514,6 +520,7 @@
               }
             },
             {
+              "$ref": "#/$defs/expDimension",
               "properties": {
                 "key": {
                   "const": "anxiety_language"
@@ -564,6 +571,7 @@
               }
             },
             {
+              "$ref": "#/$defs/expDimension",
               "properties": {
                 "key": {
                   "const": "addictive_language"
@@ -614,6 +622,7 @@
               }
             },
             {
+              "$ref": "#/$defs/expDimension",
               "properties": {
                 "key": {
                   "const": "anger_hostility_language"
@@ -664,6 +673,7 @@
               }
             },
             {
+              "$ref": "#/$defs/expDimension",
               "properties": {
                 "key": {
                   "const": "narcissism_language"
@@ -714,6 +724,7 @@
               }
             },
             {
+              "$ref": "#/$defs/expDimension",
               "properties": {
                 "key": {
                   "const": "attachment_anxious_language"
@@ -764,6 +775,7 @@
               }
             },
             {
+              "$ref": "#/$defs/expDimension",
               "properties": {
                 "key": {
                   "const": "attachment_avoidant_language"
