@@ -32,6 +32,8 @@ To rotate the key, put the new value in the gitignored `.env` or the environment
 
 The first launch writes `~/.psychosight/.env.example` if that file is missing, and writes `~/.psychosight/FIRST_RUN.txt` when no key is configured. It does not create or overwrite `~/.psychosight/.env`. Without a key, deterministic reports and the demo (offline mock, labelled "not real model") still work.
 
+The packaged UI includes paged conversation search and a reasoning slider. Levels are `none`, `low`, `high`, and `max`. The default is `low` unless `DEEPSEEK_REASONING_EFFORT` is set. `GET /config` returns `reasoning_levels` and `default_reasoning`. The slider sends `reasoning_level` on `POST /analyses`.
+
 Logs are `~/Library/Logs/PsychoSight/server.log` and `launcher.log`. They are not given the API key or message text.
 
 ## Full Disk Access
