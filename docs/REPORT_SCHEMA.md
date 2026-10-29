@@ -76,7 +76,8 @@ as "not stable enough to report". An item with fewer than 3 agreeing episodes is
 `{status, reason, prompt_version, note, items[]}`; each item:
 `{observation_id, text, confidence: low|medium|high, supporting_episodes, episode_ids[], item_keys[], feature_keys[], quotes[quote]}`.
 Text is scoped ("In this conversation, in the N episodes reviewed, ..."); no trait language or causal claims.
-Confidence is computed in code: low < 5 supporting episodes, medium 5-12, high > 12 with all cited rubric items
+Confidence is computed in code from `supporting_episodes` (the larger of: cited episodes, agreeing episodes behind
+the cited rubric items, and all analyzed episodes when a conversation-level feature is cited): low < 5, medium 5-12, high > 12 with all cited rubric items
 agreeing at >= 0.8.
 
 ## quote

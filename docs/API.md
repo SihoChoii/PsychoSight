@@ -34,6 +34,7 @@ No secrets.
   "model": "<DEEPSEEK_MODEL or null>",
   "llm_configured": true,
   "reasoning_effort": "max",
+  "demo_provider": "mock",
   "opt_in_text": "<exact string, render verbatim>",
   "disclaimer": "Experimental self-reflection, not a clinical or diagnostic tool",
   "limitations_title": "What this cannot tell you",
