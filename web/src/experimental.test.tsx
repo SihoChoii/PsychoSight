@@ -420,7 +420,7 @@ describe("experimental opt-in", () => {
     );
   }
 
-  it("pre-checks both boxes only for the demo and disables the second until the first is checked", () => {
+  it("pre-checks both boxes for the demo and disables the second until the first is checked", () => {
     renderOptIn();
     const experimental = screen.getByRole("checkbox", { name: config.experimental_opt_in_text });
     const other = screen.getByRole("checkbox", { name: config.score_other_opt_in_text });
@@ -438,10 +438,11 @@ describe("experimental opt-in", () => {
     expect(other).not.toBeChecked();
   });
 
-  it("leaves both unchecked off the demo, and hides them when the feature is off", () => {
+  it("includes experimental scores for real conversations, leaves Other optional, and respects the feature switch", () => {
     const first = renderOptIn({ isDemo: false, demoProviderNote: null });
-    expect(screen.getByRole("checkbox", { name: config.experimental_opt_in_text })).not.toBeChecked();
-    expect(screen.getByRole("checkbox", { name: config.score_other_opt_in_text })).toBeDisabled();
+    expect(screen.getByRole("checkbox", { name: config.experimental_opt_in_text })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: config.score_other_opt_in_text })).not.toBeChecked();
+    expect(screen.getByRole("checkbox", { name: config.score_other_opt_in_text })).toBeEnabled();
     expect(screen.queryByTestId("demo-provider-note")).not.toBeInTheDocument();
     first.unmount();
 

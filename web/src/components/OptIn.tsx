@@ -39,9 +39,8 @@ export function OptIn({
   reasoningConfig?: unknown;
 }) {
   const showExperimental = experimentalEnabled && !!experimentalText && !!scoreOtherText;
-  const demoDefault = showExperimental && isDemo;
-  const [experimental, setExperimental] = useState(demoDefault);
-  const [scoreOther, setScoreOther] = useState(demoDefault);
+  const [experimental, setExperimental] = useState(showExperimental);
+  const [scoreOther, setScoreOther] = useState(showExperimental && isDemo);
   const control = useMemo(() => readReasoningControl(reasoningConfig), [reasoningConfig]);
   const [tracked, setTracked] = useState(control);
   const [index, setIndex] = useState(control.defaultIndex);

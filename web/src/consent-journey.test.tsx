@@ -26,11 +26,11 @@ describe("consent journey", () => {
       render(<App />);
       const me = await screen.findByRole("checkbox", { name: config.experimental_opt_in_text });
       const other = screen.getByRole("checkbox", { name: config.score_other_opt_in_text });
-      expect(me).toHaveProperty("checked", isDemo);
+      expect(me).toBeChecked();
       expect(other).toHaveProperty("checked", isDemo);
       expect(screen.getByText("Feb 29, 2024 to Nov 2, 2025")).toBeInTheDocument();
-      if (isDemo !== experimental) fireEvent.click(me);
-      // A second, explicit check is required after enabling non-demo experimental scores.
+      if (!experimental) fireEvent.click(me);
+      // Scoring the other person still needs its own choice outside the demo.
       if (experimental && !(other as HTMLInputElement).checked) fireEvent.click(other);
       fireEvent.click(screen.getByRole("button", { name: full ? "Send excerpts and analyze" : "Deterministic only, no LLM" }));
       await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
@@ -47,17 +47,35 @@ describe("consent journey", () => {
       expect(screen.getByRole("button", { name: "Deterministic only, no LLM" })).toBeDisabled();
     });
   }
-  it("initializes demo defaults when config arrives after the saved selection", async () => {
+  it.each([false, true])("initializes defaults after a delayed config: demo=%s", async (isDemo) => {
     let resolve: (value: Config) => void = () => {};
     client(() => new Promise((yes) => { resolve = yes; }));
-    sessionStorage.setItem("psychosight-selection", JSON.stringify({ ...selected, isDemo: true }));
+    sessionStorage.setItem("psychosight-selection", JSON.stringify({ ...selected, isDemo }));
     render(<App />); await act(async () => {});
     expect(screen.getByText("Loading the disclosure.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Send excerpts and analyze" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Deterministic only, no LLM" })).toBeEnabled();
     await act(async () => resolve(config));
     expect(screen.getByRole("checkbox", { name: config.experimental_opt_in_text })).toBeChecked();
-    expect(screen.getByRole("checkbox", { name: config.score_other_opt_in_text })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: config.score_other_opt_in_text })).toHaveProperty("checked", isDemo);
+    expect(create).not.toHaveBeenCalled();
+  });
+  it.each([false, true])("submits the default experimental choice only after confirmation: full=%s", async (full) => {
+    sessionStorage.setItem("psychosight-selection", JSON.stringify(selected));
+    render(<App />);
+    await screen.findByRole("checkbox", { name: config.experimental_opt_in_text });
+    expect(create).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: full ? "Send excerpts and analyze" : "Deterministic only, no LLM" }));
+    await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
+    expect(create.mock.calls[0][0]).toMatchObject({
+      conversation_id: selected.conversationId,
+      llm_opt_in: full,
+      mode: full ? "full" : "deterministic_only",
+      experimental_scores: true,
+      experimental_opt_in_text: config.experimental_opt_in_text,
+      score_other: false,
+    });
+    expect(create.mock.calls[0][0]).not.toHaveProperty("score_other_opt_in_text");
   });
   it("keeps direct-link fallback usable and does not fabricate conversation metadata", async () => {
     render(<App />); await screen.findByTestId("opt-in-text");
@@ -75,7 +93,8 @@ describe("consent journey", () => {
     expect(screen.getByTestId("demo-provider-note").textContent).toBe("Provider note.\nSecond line.");
     const [me, other] = screen.getAllByRole("checkbox");
     expect(other.nextSibling?.textContent).toBe("Other consent.\nExplicit choice.");
-    expect(other).toBeDisabled(); fireEvent.click(me); fireEvent.click(other); fireEvent.click(me); fireEvent.click(me);
+    expect(other).toBeEnabled(); fireEvent.click(other); fireEvent.click(me);
+    expect(other).toBeDisabled(); fireEvent.click(me);
     expect(other).not.toBeChecked();
     for (const button of screen.getAllByRole("button")) expect(button).toHaveAttribute("aria-describedby", "submission-error");
     fireEvent.click(screen.getByRole("button", { name: "Send excerpts and analyze" }));
