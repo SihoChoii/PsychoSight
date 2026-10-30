@@ -16,7 +16,7 @@ KEY_SHAPE = re.compile(r"sk-[A-Za-z0-9]{20,}")
 ALLOWED_KEY_SHAPES = {
     "sk-abcdefghijklmnop1234",  # tests/test_llm.py::test_mask_key
 }
-ASSIGNMENT = re.compile(r"DEEPSEEK_API_KEY\s*=['\"]?([^\s'\"\\)`]*)")
+ASSIGNMENT = re.compile(r"DEEPSEEK_API_KEY\s*=['\"]?([^\s'\"\\)`]*)")  # `DEEPSEEK_API_KEY=` in prose is fine
 PLACEHOLDERS = {"", "your-key-here"}
 
 

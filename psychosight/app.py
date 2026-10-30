@@ -18,7 +18,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, StrictBool
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from . import config, disk_access, loader, pipeline
+from . import config, disk_access, loader, pipeline, reasoning
 from .errors import (
     DateRangeInvalid, ExperimentalConsentRequired, FullDiskAccessRequired, InvalidRequest, NotFound, PsychoSightError, ReportNotReady,
 )
@@ -48,6 +48,8 @@ class AnalysisRequest(BaseModel):
     score_other: Optional[StrictBool] = None
     experimental_opt_in_text: Optional[str] = None
     score_other_opt_in_text: Optional[str] = None
+    # One of GET /config reasoning_levels[].id; None uses default_reasoning. Applies to every LLM call.
+    reasoning_level: Optional[str] = None
 
 
 @dataclass
@@ -127,7 +129,9 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
                 "model": s.model, "llm_configured": s.configured, "llm_available": s.configured,
                 "llm_key_source": s.key_source,
                 "llm_key_note": None if s.api_key else config.missing_key_message(),
-                "reasoning_effort": s.reasoning_effort,
+                "reasoning_effort": s.reasoning_effort,  # legacy: same value as default_reasoning
+                "reasoning_levels": reasoning.levels_for_config(),
+                "default_reasoning": config.default_reasoning_level(),
                 "demo_provider": config.demo_provider_name(),
                 "demo_provider_note": config.demo_provider_note(), "opt_in_text": config.OPT_IN_TEXT,
                 "disclaimer": config.DISCLAIMER, "limitations_title": config.LIMITATIONS_TITLE,
@@ -214,6 +218,8 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
             raise InvalidRequest("mode must be 'full', 'deterministic_only' or null.")
         if not req.conversation_id or len(req.conversation_id) > 128:
             raise InvalidRequest("conversation_id is missing or too long.")
+        reasoning_level = (reasoning.validate(req.reasoning_level) if req.reasoning_level is not None
+                           else config.default_reasoning_level())  # INVALID_REASONING_LEVEL (422)
         try:
             date_from, date_to = loader.parse_date(req.date_from), loader.parse_date(req.date_to)
         except ValueError:
@@ -236,7 +242,8 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
         date_from, date_to, date_range_clamped = loader.resolve_date_range(date_from, date_to, first, last)
         provider = None
         if run_mode == "full":
-            provider = get_provider(req.conversation_id == config.DEMO_CONVERSATION_ID, req.llm_opt_in)
+            provider = get_provider(req.conversation_id == config.DEMO_CONVERSATION_ID, req.llm_opt_in,
+                                    reasoning_level=reasoning_level)
         job = Job(job_id=uuid.uuid4().hex[:12], conversation_id=req.conversation_id, mode=run_mode,
                   created_at=datetime.now(timezone.utc).astimezone().isoformat())
         with lock:

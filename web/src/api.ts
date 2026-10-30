@@ -5,7 +5,7 @@ import {
   type ConversationsFetch,
 } from "./conversation-adapter";
 import { apiBase, isMockMode } from "./mode";
-import type { AnalysisRequest, Config, Job, MessagePage, Report, SavedAnalysis } from "./types";
+import type { AnalysisRequest, Config, CreatedAnalysis, Job, MessagePage, Report, SavedAnalysis } from "./types";
 
 export class ApiError extends Error {
   readonly code: string;
@@ -42,7 +42,7 @@ export interface Client {
   getConfig(): Promise<Config>;
   getConversations(query?: ConversationQuery): Promise<ConversationsFetch>;
   listAnalyses(): Promise<SavedAnalysis[]>;
-  createAnalysis(body: AnalysisRequest): Promise<{ job_id: string; status: string }>;
+  createAnalysis(body: AnalysisRequest): Promise<CreatedAnalysis>;
   getAnalysis(jobId: string, signal?: AbortSignal): Promise<Job>;
   getReport(jobId: string): Promise<Report>;
   getEpisodeMessages(jobId: string, episodeId: string, offset?: number, signal?: AbortSignal, range?: {start:number;end:number}): Promise<MessagePage>;
@@ -100,7 +100,7 @@ export const httpApi: Client = {
     return body.analyses;
   },
   createAnalysis: (body) =>
-    request<{ job_id: string; status: string }>("/analyses", { method: "POST", body: JSON.stringify(body) }),
+    request<CreatedAnalysis>("/analyses", { method: "POST", body: JSON.stringify(body) }),
   getAnalysis: (jobId, signal) => request<Job>(`/analyses/${encodeURIComponent(jobId)}`, { signal }),
   getReport: (jobId) => request<Report>(`/analyses/${encodeURIComponent(jobId)}/report`),
   getEpisodeMessages: (jobId, episodeId, offset = 0, signal, range) => request<MessagePage>(`/analyses/${encodeURIComponent(jobId)}/episodes/${encodeURIComponent(episodeId)}/messages?offset=${offset}&limit=500${range ? `&start_ms=${range.start}&end_ms=${range.end}` : ""}`, { signal, cache: "no-store" }),

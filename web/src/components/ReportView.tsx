@@ -25,6 +25,7 @@ interface ReportViewProps {
   deleting: boolean;
   deleteError: string | null;
   trendNote?: string | null;
+  reasoningLevels?: readonly { id: string; label: string }[];
   onDelete: () => void;
 }
 
@@ -32,7 +33,7 @@ export function ReportView(props: ReportViewProps) {
   return <ReportContent key={props.report.report_id} {...props} />;
 }
 
-function ReportContent({ report, deleting, deleteError, trendNote, onDelete }: ReportViewProps) {
+function ReportContent({ report, deleting, deleteError, trendNote, reasoningLevels = [], onDelete }: ReportViewProps) {
   const [confirming, setConfirming] = useState(false);
   const { header } = report;
   const charts = useMemo(() => buildReportCharts(report), [report]);
@@ -136,7 +137,7 @@ function ReportContent({ report, deleting, deleteError, trendNote, onDelete }: R
         </div>);
   return (
     <>
-      <ReportOverview report={report}>
+      <ReportOverview report={report} reasoningLevels={reasoningLevels}>
         {report.run_meta.date_range_clamped ? <DateRangeClampNote clamp={report.run_meta.date_range_clamped} /> : null}
       </ReportOverview>
       <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</div>

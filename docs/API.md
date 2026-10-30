@@ -20,6 +20,7 @@ Every error response is
 | `REPORT_NOT_READY` | 409 | Report requested before the job is `done`. |
 | `TIMELINE_UNAVAILABLE` | 409 | Source messages no longer match the saved episode; run a new analysis to refresh the timeline. |
 | `INVALID_REQUEST` | 422 | Body or query failed validation (e.g. bad date format, `limit`/`offset`/`q` out of range on `GET /conversations`). |
+| `INVALID_REASONING_LEVEL` | 422 | `reasoning_level` on `POST /analyses` is not one of `GET /config` `reasoning_levels[].id`. Message: "reasoning_level 'medium' is not supported. Valid values: none, low, high, max (default low)." (A non-string value is `INVALID_REQUEST`.) |
 | `DATE_RANGE_INVALID` | 422 | `date_from` is after `date_to`. |
 | `DATE_RANGE_OUT_OF_BOUNDS` | 422 | The requested range does not overlap the conversation's first..last message dates at all. The message states the valid bounds, e.g. "The date range does not overlap this conversation. Messages run from 2025-08-04 to 2026-02-01 (inclusive, local dates)." |
 | `EXPERIMENTAL_CONSENT_REQUIRED` | 422 | `score_other` is true while `experimental_scores` is false, or an echoed experimental consent string does not match the current text from `GET /config`. |
@@ -41,6 +42,13 @@ with `DEEPSEEK_MODEL`. `llm_configured` is kept as an alias of `llm_available`.
 (override with `PSYCHOSIGHT_DEMO_PROVIDER=mock|deepseek`). `demo_provider_note` is `null` for the real model and a
 user-visible string starting with `"not real model"` when the demo falls back to the offline mock; show it next to
 the opt-in. The opt-in text itself says the demo excerpts are synthetic.
+
+Reasoning (additive): `reasoning_levels` lists the DeepSeek thinking levels a client may send as
+`POST /analyses` `reasoning_level`, in order from fastest to slowest, each `{id, label, description}` (show `label`,
+optionally `description`). Only levels the provider really distinguishes are listed: `none` (thinking off), `low`,
+`high`, `max` (DeepSeek runs `medium`/`xhigh` as `high`, so they are not offered). `default_reasoning` is the id used
+when a request omits `reasoning_level` (`low`; `DEEPSEEK_REASONING_EFFORT` overrides it). `reasoning_effort` is kept
+for older clients and equals `default_reasoning`.
 ```json
 {
   "version": "0.1.0",
@@ -51,7 +59,14 @@ the opt-in. The opt-in text itself says the demo excerpts are synthetic.
   "llm_available": true,
   "llm_key_source": "dotenv",
   "llm_key_note": null,
-  "reasoning_effort": "max",
+  "reasoning_effort": "low",
+  "reasoning_levels": [
+    {"id": "none", "label": "Off (fastest)", "description": "Thinking turned off: quickest and cheapest, but the least careful scoring."},
+    {"id": "low", "label": "Low (default)", "description": "A short thinking pass (DeepSeek effort 'low'): a good balance of speed and care."},
+    {"id": "high", "label": "High", "description": "DeepSeek's standard thinking depth (its own default; 'medium' and 'xhigh' also run as high)."},
+    {"id": "max", "label": "Max (slowest)", "description": "Deepest thinking (DeepSeek effort 'max'): slowest and most tokens; the demo took ~8 minutes."}
+  ],
+  "default_reasoning": "low",
   "demo_provider": "deepseek",
   "demo_provider_note": null,
   "opt_in_text": "<exact string, render verbatim; see below>",
@@ -156,7 +171,8 @@ Reveals `PsychoSight.app` in Finder (`open -R`) so it can be dragged into the Fu
 ## POST /analyses
 Request:
 ```json
-{"conversation_id": "demo", "date_from": "2025-09-01", "date_to": "2025-11-30", "llm_opt_in": true, "demo": false, "mode": null}
+{"conversation_id": "demo", "date_from": "2025-09-01", "date_to": "2025-11-30", "llm_opt_in": true, "demo": false, "mode": null,
+ "reasoning_level": "low"}
 ```
 - `conversation_id` required (`"demo"` or an id from `/conversations`). `demo: true` forces the synthetic conversation.
 - `date_from`/`date_to` optional, inclusive local dates `YYYY-MM-DD`. Validated against the conversation's
@@ -168,9 +184,17 @@ Request:
     (`null` when nothing was clamped); `header.requested_range` keeps what the client sent. Omitted ends stay open.
 - `llm_opt_in` required boolean. `false` gives a full deterministic-only report (rubric and observations `not_run`).
 - `mode` optional: `"full"` (requires `llm_opt_in:true`, else `400 LLM_OPT_IN_REQUIRED`) or `"deterministic_only"`.
+- `reasoning_level` optional: one of `GET /config` `reasoning_levels[].id` (`none` | `low` | `high` | `max`,
+  case-insensitive); omitted or `null` uses `default_reasoning`. Anything else: `422 INVALID_REASONING_LEVEL` (checked
+  before the job starts, in every mode). It applies to **every** LLM call of the analysis: main rubric, synthesis and
+  the experimental stage (episode and holistic calls), demo included when the demo uses DeepSeek. `none` sends
+  `thinking: {type: "disabled"}` and no `reasoning_effort`; the others send `thinking: {type: "enabled"}` with
+  `reasoning_effort` set to the id. With the offline mock the level is recorded but has no effect. The level used is
+  in `run_meta.reasoning_level` (`null` in deterministic-only runs). Score cache rows are keyed per level, so changing
+  the level re-asks the model instead of reusing results from another level.
 
 Response `202 {"job_id": "a1b2...", "status": "queued"}`. Fast-fail errors: `GROUP_CHAT_UNSUPPORTED`, `NOT_FOUND`,
-`DATE_RANGE_INVALID`, `DATE_RANGE_OUT_OF_BOUNDS`, `LLM_OPT_IN_REQUIRED`, `LLM_UNAVAILABLE` (opt-in with no usable key/model for a real conversation).
+`INVALID_REASONING_LEVEL`, `DATE_RANGE_INVALID`, `DATE_RANGE_OUT_OF_BOUNDS`, `LLM_OPT_IN_REQUIRED`, `LLM_UNAVAILABLE` (opt-in with no usable key/model for a real conversation).
 The demo conversation uses the real DeepSeek model when a key is configured and the offline mock otherwise
 (`run_meta.provider` is `"mock"` and `run_meta.provider_note` starts with `"not real model"`).
 Experimental score fields, demo defaults, and `EXPERIMENTAL_CONSENT_REQUIRED` are in [Experimental scores](#experimental-scores).
@@ -275,6 +299,10 @@ Experimental, not validated. These scores are not a diagnosis, not a personality
 ### CLI
 
 `python -m psychosight analyze --experimental-scores [--score-other]`. `--demo` implies both unless `--no-experimental-scores` (which also turns off scoring the other person). `--score-other` without `--experimental-scores` exits 2 with `EXPERIMENTAL_CONSENT_REQUIRED`.
+
+`--reasoning-level none|low|high|max` (on `analyze` and on the top-level `--demo` shortcut) sets the level for the
+run; default `DEEPSEEK_REASONING_EFFORT`, else `low`. An unknown value exits 2 with
+`error INVALID_REASONING_LEVEL: reasoning_level 'x' is not supported. Valid values: none, low, high, max (default low).`
 
 ## Message text
 The episode messages endpoint returns full original text to the local timeline on demand. Saved reports still contain only their existing evidence `quotes` (verbatim snippets with `episode_id`, `speaker`, `timestamp`), not a copy of every message. Timeline reads do not send messages to an AI provider.

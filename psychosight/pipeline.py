@@ -9,7 +9,7 @@ import uuid
 from datetime import date, datetime, timezone
 from typing import Callable, Optional, Tuple
 
-from . import config, features, loader, report, rubric, sessionize, synthesize
+from . import config, features, loader, reasoning, report, rubric, sessionize, synthesize
 from .errors import DateRangeInvalid, ExperimentalConsentRequired, LLMOptInRequired
 from .experimental.contract import (
     ENV_EXPERIMENTAL, EXP_HOLISTIC_PROMPT_VERSION, EXP_PROMPT_VERSION, EXP_SCORING_VERSION, ExpLLMStats,
@@ -78,7 +78,10 @@ def run_analysis(
     experimental_scores: Optional[bool] = None,
     score_other: Optional[bool] = None,
     date_range_clamped: Optional[dict] = None,
+    reasoning_level: Optional[str] = None,
 ) -> dict:
+    if reasoning_level is not None:
+        reasoning_level = reasoning.validate(reasoning_level)  # INVALID_REASONING_LEVEL before any work
     t0 = time.monotonic()
     created_at = _iso_now()
     report_id = report_id or uuid.uuid4().hex[:12]
@@ -92,7 +95,7 @@ def run_analysis(
     run_mode = resolve_mode(llm_opt_in, mode)
     owns_provider = False
     if run_mode == "full" and provider is None:
-        provider = get_provider(is_demo, llm_opt_in)  # fails fast if not configured
+        provider = get_provider(is_demo, llm_opt_in, reasoning_level=reasoning_level)  # fails fast if not configured
         owns_provider = True
     store = store or Store()
     budget = rubric.CallBudget(int(config._env("PSYCHOSIGHT_MAX_LLM_CALLS") or config.MAX_LLM_CALLS))
@@ -211,6 +214,8 @@ def run_analysis(
             "provider_note": (config.demo_provider_note() or config.MOCK_NOTE_FORCED)
             if (provider and run_mode == "full" and provider.name == "mock") else None,
             "reasoning_effort": provider.reasoning_effort if (provider and run_mode == "full") else None,
+            # Level id used for every LLM call of this run (none/low/high/max); recorded but inert for the mock.
+            "reasoning_level": getattr(provider, "reasoning_level", None) if (provider and run_mode == "full") else None,
             "prompt_version": config.PROMPT_VERSION, "synthesis_prompt_version": config.SYNTHESIS_PROMPT_VERSION,
             "extractor_version": config.EXTRACTOR_VERSION, "backend_version": config.BACKEND_VERSION,
             "cache_hits": stats.cache_hits, "cache_misses": stats.cache_misses, "llm_calls": stats.llm_calls,

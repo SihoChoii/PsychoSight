@@ -4,7 +4,15 @@ import { ACTIVE_JOB_KEY, readSession, removeSession, writeSession } from "../run
 import type { Report } from "../types";
 import { ReportView } from "./ReportView";
 
-export function ReportScreen({ jobId, trendNote }: { jobId: string; trendNote: string | null }) {
+export function ReportScreen({
+  jobId,
+  trendNote,
+  reasoningLevels = [],
+}: {
+  jobId: string;
+  trendNote: string | null;
+  reasoningLevels?: readonly { id: string; label: string }[];
+}) {
   const [report, setReport] = useState<Report | null>(null);
   const [error, setError] = useState<ApiError | null>(null);
   const [attempt, setAttempt] = useState(0);
@@ -72,5 +80,5 @@ export function ReportScreen({ jobId, trendNote }: { jobId: string; trendNote: s
     <p className="decision-copy" role="status">Loading the report.</p>
     <div className="actions"><a className="button button-secondary" href="#/">Conversations</a></div>
   </section>;
-  return <ReportView report={report} deleting={deleting} deleteError={deleteError} trendNote={trendNote} onDelete={remove} />;
+  return <ReportView report={report} deleting={deleting} deleteError={deleteError} trendNote={trendNote} reasoningLevels={reasoningLevels} onDelete={remove} />;
 }

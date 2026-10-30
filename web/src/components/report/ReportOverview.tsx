@@ -1,11 +1,22 @@
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { formatCalendarDay, formatNumber } from "../../format";
+import { levelLabel } from "../../reasoning-adapter";
 import type { Report } from "../../types";
 import { ReportDisclosure } from "./ReportDisclosure";
 import { ReportNavigation } from "./ReportNavigation";
 
-export function ReportOverview({ report, children }: { report: Report; children?: ReactNode }) {
+export function ReportOverview({
+  report,
+  reasoningLevels = [],
+  children,
+}: {
+  report: Report;
+  reasoningLevels?: readonly { id: string; label: string }[];
+  children?: ReactNode;
+}) {
   const { header } = report;
+  const levelId = report.run_meta.reasoning_level;
+  const reasoningText = typeof levelId === "string" && levelId.length > 0 ? levelLabel(reasoningLevels, levelId) : null;
   return <header className="report-intro" aria-labelledby="page-title">
     <div className="report-heading">
       <div className="report-identity">
@@ -36,6 +47,7 @@ export function ReportOverview({ report, children }: { report: Report; children?
         <ReportNavigation limitationsTitle={report.limitations_title} experimental={!!report.experimental_scores} />
       </div>
     </div>
+    {reasoningText ? <p className="report-reasoning" data-testid="reasoning-used">Reasoning {reasoningText}</p> : null}
     {children}
 
   </header>;

@@ -245,6 +245,7 @@
         "experimental_cache_hits": {"type": "integer", "minimum": 0},
         "date_range_clamped": {"description": "Set when POST /analyses clamped a date range that was partly outside the conversation's first..last message dates; null otherwise.", "oneOf": [{"type": "null"}, {"type": "object", "additionalProperties": false, "required": ["requested", "applied", "bounds"], "properties": {"requested": {"$ref": "#/$defs/dateRange"}, "applied": {"$ref": "#/$defs/dateRange"}, "bounds": {"$ref": "#/$defs/dateRange"}}}]},
         "reasoning_effort": {"type": ["string", "null"]},
+        "reasoning_level": {"type": ["string", "null"], "enum": ["none", "low", "high", "max", null]},
         "prompt_version": {"type": "string"},
         "synthesis_prompt_version": {"type": "string"},
         "extractor_version": {"type": "string"},
