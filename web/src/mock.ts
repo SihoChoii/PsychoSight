@@ -307,6 +307,15 @@ const baseMockApi: Client = {
     return jobView(requireJob(jobId));
   },
 
+  async getEpisodeMessages(jobId, episodeId, offset = 0, signal, range) {
+    signal?.throwIfAborted();
+    const report = await this.getReport(jobId);
+    const { mockMessagePage } = await import("./fixtures/timeline-messages");
+    const page = await mockMessagePage(report, episodeId, offset, range);
+    signal?.throwIfAborted();
+    return page;
+  },
+
   async getReport(jobId: string) {
     const virtual = virtualReport(jobId);
     if (jobId === "sample-full" || jobId === "sample-det" || jobId === "sample-clamped" || jobId.startsWith("sample-exp") || jobId.startsWith("ui-")) {

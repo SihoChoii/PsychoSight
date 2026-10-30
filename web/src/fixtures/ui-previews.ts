@@ -8,7 +8,7 @@ export type PreviewReport = Report;
 
 export const UI_REPORT_CASES = [
   "zero", "null", "thin", "single-week", "omitted-weeks", "long-labels",
-  "104-weeks", "260-weeks", "absent-episodes", "pooled-selected", "provider-note", "episode-overlaps", "episode-dense", "evidence-states", "evidence-long", "evidence-failed",
+  "104-weeks", "260-weeks", "100k-messages", "absent-episodes", "pooled-selected", "provider-note", "episode-overlaps", "episode-dense", "evidence-states", "evidence-long", "evidence-failed",
 ] as const;
 export type UiReportCase = (typeof UI_REPORT_CASES)[number];
 
@@ -51,7 +51,7 @@ function featureCell(key: string, weeks: Week[], who: "me" | "other", zero: bool
 function timeline(caseName: UiReportCase): PreviewReport {
   const report = structuredClone(localSample) as unknown as PreviewReport;
   const thin = caseName === "thin" || caseName === "null";
-  const length = caseName === "104-weeks" ? 104 : caseName === "260-weeks" ? 260
+  const length = caseName === "104-weeks" ? 104 : (caseName === "260-weeks" || caseName === "100k-messages") ? 260
     : caseName === "single-week" || caseName === "thin" || caseName.startsWith("episode-") ? 1 : 4;
   const offsets = caseName === "omitted-weeks" ? [0, 1, 4, 6] : Array.from({ length }, (_, i) => i);
   report.weeks = offsets.map((i) => {
@@ -86,6 +86,21 @@ function timeline(caseName: UiReportCase): PreviewReport {
     report.weeks[0] = { ...report.weeks[0], episodes: report.episodes.length,
       messages: { me: sumEpisodes("messages", "me"), other: sumEpisodes("messages", "other") },
       words: { me: sumEpisodes("words", "me"), other: sumEpisodes("words", "other") } };
+  }
+  if (caseName === "100k-messages") {
+    const base = Math.floor(100_000 / report.episodes.length), remainder = 100_000 % report.episodes.length;
+    report.episodes.forEach((episode, i) => {
+      const total = base + (i < remainder ? 1 : 0);
+      episode.messages = { me: Math.ceil(total / 2), other: Math.floor(total / 2) };
+      episode.words = { me: episode.messages.me * 12, other: episode.messages.other * 10 };
+    });
+    report.weeks.forEach(week => {
+      const episodes = report.episodes!.filter(e => e.week === week.week);
+      for (const side of ["me", "other"] as const) {
+        week.messages[side] = episodes.reduce((sum, e) => sum + e.messages[side], 0);
+        week.words[side] = episodes.reduce((sum, e) => sum + e.words[side], 0);
+      }
+    });
   }
   report.series = report.series.map((feature): Feature => ({
     ...feature,

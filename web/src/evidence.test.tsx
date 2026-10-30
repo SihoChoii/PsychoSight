@@ -33,13 +33,12 @@ describe("scored pattern evidence", () => {
     expect(screen.getByText(item.description)).toBeInTheDocument();
     expect(screen.getByRole("img", { name: /mean 4.123456789.*7 agreeing episodes/ })).toHaveAccessibleDescription(item.description);
     expect(container.querySelector<HTMLElement>(".anchor-marker")?.style.left).toBe(`${(4.123456789 - 1) * 25}%`);
-    const anchors = screen.getByText("Anchors").closest("details");
-    expect(anchors).not.toHaveAttribute("open");
+    fireEvent.click(screen.getByRole('button',{name:`Anchors: ${item.label}`}));
+    const anchors=screen.getByRole('dialog',{name:'Rating anchors'});
     for (const anchor of Object.values(item.anchors)) expect(anchors).toHaveTextContent(anchor);
     expect(screen.getByText("3 supplied quotes")).toBeInTheDocument();
-    const more = screen.getByText("View 2 more quotes").closest("details");
-    expect(more).not.toHaveAttribute("open");
-    for (const id of item.quote_ids) expect(container.querySelector(`[data-quote-id="${id}"] .evidence-quote-text`)?.textContent).toBe(quoteMap().get(id)?.text);
+    fireEvent.click(screen.getByRole('button',{name:'View 2 more quotes'}));
+    for (const id of item.quote_ids) expect(document.querySelector(`[data-quote-id="${id}"] .evidence-quote-text`)?.textContent).toBe(quoteMap().get(id)?.text);
   });
 
   it.each([
@@ -134,7 +133,7 @@ describe("observation evidence and reference navigation", () => {
     expect(observations()).toHaveTextContent("Supplied synthesis note");
     for (const text of data.limitations) expect(screen.getByText(text)).toBeVisible();
     expect(screen.getByText(data.disclaimer)).toBeVisible();
-    expect(screen.getByText("Details", { exact: true })).toBeVisible();
+    expect(within(screen.getByRole("region", { name: "Report resources" })).getByRole("button", { name: "Run details" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Delete report" })).toBeVisible();
   });
 

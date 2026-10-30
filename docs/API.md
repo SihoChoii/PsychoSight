@@ -18,6 +18,7 @@ Every error response is
 | `LLM_UNAVAILABLE` | 503 (or job error) | Opt-in given but no key is configured (message starts "No DeepSeek API key found", lists every place searched: env var, repo `.env`, `~/.psychosight/.env`, the app's bundled `psychosight.env`; and how to fix: copy `.env.example` to `.env`, export `DEEPSEEK_API_KEY`, or rebuild the app with `scripts/inject_bundled_key.py`), the key was rejected, the model string was rejected (message lists the provider's models), or the provider failed. |
 | `NOT_FOUND` | 404 | Unknown conversation, job or report. |
 | `REPORT_NOT_READY` | 409 | Report requested before the job is `done`. |
+| `TIMELINE_UNAVAILABLE` | 409 | Source messages no longer match the saved episode; run a new analysis to refresh the timeline. |
 | `INVALID_REQUEST` | 422 | Body or query failed validation (e.g. bad date format, `limit`/`offset`/`q` out of range on `GET /conversations`). |
 | `DATE_RANGE_INVALID` | 422 | `date_from` is after `date_to`. |
 | `DATE_RANGE_OUT_OF_BOUNDS` | 422 | The requested range does not overlap the conversation's first..last message dates at all. The message states the valid bounds, e.g. "The date range does not overlap this conversation. Messages run from 2025-08-04 to 2026-02-01 (inclusive, local dates)." |
@@ -190,6 +191,37 @@ Experimental score fields, demo defaults, and `EXPERIMENTAL_CONSENT_REQUIRED` ar
 ## GET /analyses
 `200 {"analyses": [{"job_id", "conversation_label", "mode", "created_at"}]}` stored reports, newest first.
 
+## GET /analyses/{job_id}/episodes/{episode_id}/messages
+
+Returns original local messages for an episode in a completed, saved report. The timeline calls this only at message-level zoom. No model calls or external transfers are made. Successful responses use `Cache-Control: no-store`; message bodies are not persisted in the report database.
+
+| Query | Default | Rule |
+| --- | --- | --- |
+| `offset` | `0` | Nonnegative index within the requested interval. |
+| `limit` | `500` | 1–500 messages per page. |
+| `start_ms`, `end_ms` | omitted | Both or neither; finite Unix milliseconds with `start_ms < end_ms`. The interval includes start and excludes end. |
+
+```json
+{
+  "episode_id": "ep-0001",
+  "total": 24,
+  "offset": 0,
+  "next_offset": null,
+  "messages": [{
+    "id": "original-source-id",
+    "timestamp": "2025-08-04T20:29:09-07:00",
+    "speaker": "me",
+    "text": "Original message text",
+    "episode_id": "ep-0001",
+    "turn_id": "ep-0001-turn-1"
+  }]
+}
+```
+
+`total` counts messages in the requested interval, before pagination. `next_offset` is null when exhausted. Turn IDs use the saved analysis threshold and retain their episode-relative identity when filtering or paging. The same attachment/reaction normalization as analysis applies.
+
+The backend verifies episode endpoints, speaker counts and the saved normalized episode hash when available. A mismatch returns `409 TIMELINE_UNAVAILABLE`, rather than drawing reconstructed messages. Unknown/deleted reports or episodes return `404 NOT_FOUND`; unfinished reports use `REPORT_NOT_READY`; unreadable Messages data retains the existing disk-access error. Source snapshots are cached in memory for at most five minutes, at most two reports with 100,000 messages / 8M text characters each, and cleared on report deletion.
+
 ## DELETE /analyses/{job_id}
 Deletes the stored report (which contains evidence quotes) and the job. `200 {"deleted": true, "job_id": "..."}`,
 `404 NOT_FOUND` if unknown.
@@ -245,8 +277,7 @@ Experimental, not validated. These scores are not a diagnosis, not a personality
 `python -m psychosight analyze --experimental-scores [--score-other]`. `--demo` implies both unless `--no-experimental-scores` (which also turns off scoring the other person). `--score-other` without `--experimental-scores` exits 2 with `EXPERIMENTAL_CONSENT_REQUIRED`.
 
 ## Message text
-There is no endpoint that returns full message text. Message text leaves the backend only as evidence `quotes` in
-the report (verbatim snippets with `episode_id`, `speaker`, `timestamp`).
+The episode messages endpoint returns full original text to the local timeline on demand. Saved reports still contain only their existing evidence `quotes` (verbatim snippets with `episode_id`, `speaker`, `timestamp`), not a copy of every message. Timeline reads do not send messages to an AI provider.
 
 ## Static UI
 FastAPI mounts a static directory at `/` **after** the API routes: `--static-dir` / `PSYCHOSIGHT_STATIC_DIR`,

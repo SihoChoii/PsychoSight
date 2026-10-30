@@ -20,7 +20,8 @@
 .chart-inspector button { margin-top: var(--space-2); }
 .chart-data { min-width: 0; max-width: 100%; margin-top: var(--space-3); }
 .chart-data[open] { width: 100%; }
-.chart-data summary { cursor: pointer; width: fit-content; padding: var(--space-2) 0; }
+.chart-overall-data { padding-bottom:var(--space-3); }
+.chart-overall-data h3 { font-size:22px; margin:0 0 var(--space-2); }
 .chart-table-scroll { max-width: 100%; max-height: min(60vh, 32rem); overflow: auto; margin-top: var(--space-2); }
 .chart-data table { border-collapse: collapse; width: 100%; font-size: 14px; text-align: left; }
 .chart-data caption { text-align: left; padding-bottom: var(--space-2); }

@@ -1,11 +1,7 @@
-import { useState } from "react";
 import type { ReactNode } from "react";
+import { ReportDisclosure } from "./ReportDisclosure";
 
-/** Closed long-report tables need no DOM; all original rows mount when requested. */
+/** Tables mount only while their bounded data panel is open. */
 export function ChartData({ label, children }: { label: string; children: () => ReactNode }) {
-  const [open, setOpen] = useState(false);
-  return <details className="chart-data" open={open}>
-    <summary onClick={(event) => { event.preventDefault(); setOpen((value) => !value); }}>View data<span className="sr-only">: {label}</span></summary>
-    {open ? children() : null}
-  </details>;
+  return <ReportDisclosure label={`View data: ${label}`} triggerText="View data" title={`${label} · full report data`} wide className="chart-data">{children}</ReportDisclosure>;
 }

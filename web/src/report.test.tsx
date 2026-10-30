@@ -30,8 +30,7 @@ function renderReport(report: Report, onDelete = vi.fn()) {
 describe("report rendering", () => {
   it("shows Insufficient data for null weeks and keeps a real zero", () => {
     renderReport(withThinWeek(full));
-    const summary = screen.getByText(": Episodes opened", { exact: true }).closest("summary");
-    if (!summary) throw new Error("Missing Episodes opened data disclosure");
+    const summary = screen.getByRole('button',{name:'View data: Episodes opened'});
     fireEvent.click(summary);
     const table = screen.getByRole("table", { name: "Episodes opened" });
     const row = within(table).getByRole("row", { name: /2025-W41/ });

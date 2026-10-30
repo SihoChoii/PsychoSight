@@ -1,5 +1,5 @@
 import { useId } from "react";
-import { formatNumber } from "../../format";
+import { formatCalendarDay, formatNumber } from "../../format";
 import type { TimelineWeek } from "../../charts/timeline";
 import type { ChartInspection } from "../../charts/inspection";
 
@@ -19,14 +19,14 @@ export function WeekInspector({ week, inspection, move, empty }: {
   const instructionsId = useId();
   return <div className="week-inspection" role="group" aria-label="Week inspection" aria-describedby={instructionsId} tabIndex={0} onKeyDown={inspection.keyDown}>
     <div className="week-inspection-heading">
-      <p>{week ? `${week.key} · ${week.startDate} – ${week.endDate} · ${week.key === inspection.pinnedKey ? "Pinned" : "Preview"}` : "No week selected"}</p>
+      <p>{week ? <><span>{formatCalendarDay(week.startDate)} – {formatCalendarDay(week.endDate)}</span><span className="week-selection-state">{week.key} · {week.key === inspection.pinnedKey ? "Pinned" : "Preview"}</span></> : <><span>Select a week to explore</span><span className="sr-only">No week selected</span></>}</p>
       <div className="week-actions">
-        <button type="button" onClick={() => move("ArrowLeft")} disabled={empty}>Previous week</button>
-        <button type="button" onClick={() => move("ArrowRight")} disabled={empty}>Next week</button>
-        <button type="button" onClick={() => inspection.pin(null)} disabled={!week && !inspection.pinnedKey}>Clear week</button>
+        <button type="button" aria-label="Previous week" onClick={() => move("ArrowLeft")} disabled={empty}><span aria-hidden="true">←</span> Previous</button>
+        <button type="button" aria-label="Next week" onClick={() => move("ArrowRight")} disabled={empty}>Next <span aria-hidden="true">→</span></button>
+        <button type="button" aria-label="Clear week" onClick={() => inspection.pin(null)} disabled={!week && !inspection.pinnedKey}>Clear</button>
       </div>
     </div>
-    {week ? <WeekActivityValues week={week} /> : null}
-    <p className="chart-instructions" id={instructionsId}>Point to preview; click or tap to pin across charts. Arrows and Home/End navigate; Escape clears. View data covers the full report.</p>
+    <div className="week-value-slot">{week ? <WeekActivityValues week={week} /> : null}</div>
+    <p className="sr-only" id={instructionsId}>Point to preview; click or tap to pin across charts. Arrows and Home/End navigate; Escape clears. View data covers the full report.</p>
   </div>;
 }

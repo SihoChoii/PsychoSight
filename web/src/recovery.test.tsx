@@ -29,6 +29,7 @@ describe("report retrieval and deletion recovery", () => {
     screen.getByRole("link", { name: "Conversations" }).focus();
     await act(async () => pending.resolve(report));
     expect(document.getElementById("page-title")).toHaveFocus();
+    fireEvent.click(screen.getByRole("button", { name: "Weekly totals" }));
     const next = screen.getByRole("button", { name: "Next week" }); next.focus(); fireEvent.click(next);
     expect(next).toHaveFocus();
     view.rerender(<ReportScreen jobId="one" trendNote="Configuration arrived." />);

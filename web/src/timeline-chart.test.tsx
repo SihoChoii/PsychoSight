@@ -1,10 +1,14 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render as renderDOM, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { useMemo, useState } from "react";
 import { TimelineChart as ControlledTimelineChart } from "./components/TimelineChart";
 import type { FeatureChartModel } from "./charts/models";
 import { nextWeekKey } from "./charts/inspection";
 
+function render(ui: Parameters<typeof renderDOM>[0]) {
+ const result=renderDOM(ui);
+ return {...result,container:result.baseElement};
+}
 // Exercise the stateless panel with a test owner, like ReportView's shared selection.
 function TimelineChart({ model }: { model: FeatureChartModel }) {
   const [pinned, setPinned] = useState<string | null>(null);
@@ -31,12 +35,13 @@ function data(values: (number | null)[]): Feature {
   };
 }
 const model = (feature: Feature) => buildReportCharts({ weeks: [], series: [feature] }).features[0];
-const table = () => { fireEvent.click(screen.getByText("View data", { exact: false, selector: "summary" })); return screen.getByRole("table", { name: "Episodes opened" }); };
+const table = () => { fireEvent.click(screen.getByRole("button", { name: /^View data:/ })); return screen.getByRole("table", { name: "Episodes opened" }); };
 
 describe("integrated timeline chart", () => {
   it("draws fixed participation axes, explicit units, separated paths and exact data", () => {
     const { container } = render(<TimelineChart model={model(data([10, null, 85.7]))} />);
-    expect(screen.getByText("Scale: 0%–100% · % of episodes · full-report scale")).toBeInTheDocument();
+    expect(screen.getByText('0%')).toBeInTheDocument();
+    expect(screen.getByText('100%')).toBeInTheDocument();
     expect(container.querySelector("path.series-me")?.getAttribute("d")).toBe("M56.00 174.00 M708.00 37.74");
     const t = table();
     const thin = within(t).getByRole("row", { name: /2025-W33/ });
@@ -92,9 +97,11 @@ describe("integrated timeline chart", () => {
   it("keeps the full-report domain when only a display window is rendered", () => {
     const chart = model(data([10, 30, 70]));
     const { rerender } = render(<TimelineChart model={chart} />);
-    expect(screen.getByText("Scale: 0%–100% · % of episodes · full-report scale")).toBeInTheDocument();
+    expect(screen.getByText('0%')).toBeInTheDocument();
+    expect(screen.getByText('100%')).toBeInTheDocument();
     rerender(<TimelineChart model={{ ...chart, rows: chart.rows.slice(0, 1) }} />);
-    expect(screen.getByText("Scale: 0%–100% · % of episodes · full-report scale")).toBeInTheDocument();
+    expect(screen.getByText('0%')).toBeInTheDocument();
+    expect(screen.getByText('100%')).toBeInTheDocument();
     fireEvent.keyDown(screen.getByRole("img"), { key: "Home" });
     expect(screen.getByText(/2025-W32.*Pinned/)).toBeInTheDocument();
   });

@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import fullReport from "../../docs/sample_report.json";
 import liveReportJson from "../../docs/sample_report_experimental.json";
@@ -36,42 +36,62 @@ const TREND_NOTE = "Weekly trend values are on their own scale and are not direc
 
 function renderReport(report: Report) {
   render(
-    <ReportView report={report} deleting={false} deleteError={null} trendNote={TREND_NOTE} onDelete={vi.fn()} />,
+    <main><ReportView report={report} deleting={false} deleteError={null} onDelete={vi.fn()} /></main>,
   );
 }
 
-function openCard() {
-  fireEvent.click(screen.getByRole("button", { name: /Experimental scores/ }));
+function expectOpenSection() {
+  expect(screen.getByRole("heading", { name: "Big Five" })).toBeVisible();
+}
+
+function mockScrollObservers() {
+  const observers = new Map<Element, { notify: IntersectionObserverCallback; disconnect: ReturnType<typeof vi.fn> }>();
+  vi.stubGlobal("IntersectionObserver", class {
+    disconnect = vi.fn();
+    constructor(private notify: IntersectionObserverCallback) {}
+    observe = (element: Element) => observers.set(element, { notify: this.notify, disconnect: this.disconnect });
+  });
+  return {
+    observers,
+    scrollTo(element: Element, ratio: number) {
+      const observer = observers.get(element);
+      expect(observer).toBeDefined();
+      act(() => observer!.notify([
+        { isIntersecting: ratio > 0, intersectionRatio: ratio } as IntersectionObserverEntry,
+      ], {} as IntersectionObserver));
+    },
+  };
 }
 
 describe("experimental scores section", () => {
-  it("renders the stub sample, with the banner visible while collapsed", () => {
+  it("opens with the web visible and keeps evidence available on demand", () => {
     renderReport(withSection(stubSection));
     const card = screen.getByRole("region", { name: "Experimental scores" });
     expect(within(card).getByTestId("exp-banner").textContent).toBe(config.experimental_banner);
     expect(within(card).getByTestId("exp-banner")).toBeVisible();
     expect(within(card).getByTestId("exp-support").textContent).toBe(config.experimental_footer_support);
-    expect(screen.getByRole("button", { name: /Experimental scores/ })).toHaveAttribute("aria-expanded", "false");
-    const scaleNote = document.querySelector("[data-testid='exp-scale-note']");
-    expect(scaleNote?.closest("[hidden]")).not.toBeNull();
+    expect(within(card).getByRole("img", { name: /Big Five shape/ })).toBeVisible();
+    expect(screen.getByTestId("exp-scale-note")).toBeVisible();
+    expect(within(card).queryByRole("button", { name: /Show experimental|Big Five shape/i })).not.toBeInTheDocument();
     const observations = screen.getByRole("region", { name: "Observations" });
     expect(within(observations).queryByRole("heading", { name: "Experimental scores" })).not.toBeInTheDocument();
     expect(within(card).queryByRole("button", { name: /share|export/i })).not.toBeInTheDocument();
 
-    openCard();
+    expectOpenSection();
     expect(screen.getByTestId("exp-scale-note").textContent).toBe(config.experimental_scale_note);
     expect(screen.getByRole("heading", { name: "Big Five" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Well-being language" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Interpersonal language" })).toBeInTheDocument();
     expect(screen.getByText(INSUFFICIENT_TEXT)).toBeInTheDocument();
     expect(screen.queryByText(/run lower/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(TREND_NOTE)).not.toBeInTheDocument();
     expect(config.experimental_trend_note).toBe(TREND_NOTE);
 
     const openness = screen.getByRole("article", { name: "Openness (experimental language index)" });
-    const whyButtons = within(openness).getAllByRole("button", { name: "Why this number" });
+    fireEvent.click(within(openness).getByRole("button", { name: /Explore Openness/ }));
+    expect(within(openness).queryByText(TREND_NOTE)).not.toBeInTheDocument();
+    const whyButtons = within(openness).getAllByRole("button", { name: /Why this number for/ });
     fireEvent.click(whyButtons[0]);
-    const rows = within(openness).getByTestId("why-openness-me");
+    const rows = screen.getByTestId("why-openness-me");
     const items = within(rows).getAllByRole("listitem");
     expect(items[0]).toHaveTextContent("WWBP weighted word list");
     expect(Number(items[0].getAttribute("data-weight"))).toBeGreaterThanOrEqual(Number(items[1].getAttribute("data-weight")));
@@ -81,11 +101,12 @@ describe("experimental scores section", () => {
     expect(spark.getAttribute("data-ymin")).not.toBe("0");
 
     const neuroticism = screen.getByRole("article", { name: "Neuroticism (experimental language index)" });
-    fireEvent.click(within(neuroticism).getAllByRole("button", { name: "Why this number" })[0]);
-    expect(within(neuroticism).getByText("kind of nervous about the new hire training tomorrow")).toBeInTheDocument();
+    fireEvent.click(within(neuroticism).getByRole("button", { name: /Explore Neuroticism/ }));
+    fireEvent.click(within(neuroticism).getAllByRole("button", { name: /Why this number for/ })[0]);
+    expect(within(screen.getByRole("dialog", { name: "Why this number" })).getByText("kind of nervous about the new hire training tomorrow")).toBeInTheDocument();
     const outside = plain.quotes.find((quote) => !stubSection.quotes.some((item) => item.text === quote.text));
     expect(outside).toBeTruthy();
-    expect(within(neuroticism).queryByText(outside?.text ?? "")).not.toBeInTheDocument();
+    expect(within(screen.getByRole("dialog", { name: "Why this number" })).queryByText(outside?.text ?? "")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "How this works" }));
     expect(screen.getByTestId("exp-how").textContent).toBe(config.experimental_how_it_works);
@@ -93,14 +114,166 @@ describe("experimental scores section", () => {
     expect(within(card).queryByText(/percentile|gauge/i)).not.toBeInTheDocument();
   });
 
+  it("replays on returning after scrolling fully away, without a replay control", () => {
+    const { observers, scrollTo } = mockScrollObservers();
+    try {
+      const view = render(<ReportView report={withSection(realLikeSection)} deleting={false} deleteError={null} onDelete={vi.fn()} />);
+      const chart = screen.getByRole("img", { name: /Big Five shape/ });
+      const reveal = chart.querySelector(".exp-radar-reveal");
+      const geometry = chart.querySelector(".exp-radar-me")?.getAttribute("points");
+      expect(screen.queryByRole("button", { name: "Replay reveal" })).not.toBeInTheDocument();
+      expect(observers.has(chart)).toBe(true);
+      scrollTo(chart, 0.4);
+      expect(reveal).toHaveAttribute("data-revealed", "true");
+      scrollTo(chart, 0.1);
+      expect(reveal).toHaveAttribute("data-revealed", "true");
+      scrollTo(chart, 0);
+      expect(reveal).toHaveAttribute("data-revealed", "false");
+      scrollTo(chart, 0.4);
+      expect(reveal).toHaveAttribute("data-revealed", "true");
+      expect(chart.querySelector(".exp-radar-me")).toHaveAttribute("points", geometry);
+      expect(observers.get(chart)!.disconnect).not.toHaveBeenCalled();
+      view.unmount();
+      expect(observers.get(chart)!.disconnect).toHaveBeenCalledOnce();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("reveals score rows independently on return without changing values or closing evidence", () => {
+    const { observers, scrollTo } = mockScrollObservers();
+    try {
+      const view = render(<ReportView report={withSection(realLikeSection)} deleting={false} deleteError={null} onDelete={vi.fn()} />);
+      const openness = screen.getByRole("article", { name: "Openness (experimental language index)" });
+      const summary = openness.querySelector(".exp-dim-summary")!;
+      const lowerRow = screen.getByRole("article", { name: /Depression-related language/ }).querySelector(".exp-dim-summary")!;
+      const originalScores = Array.from(openness.querySelectorAll(".exp-score-num")).map((node) => node.textContent);
+      const pinPositions = Array.from(openness.querySelectorAll<HTMLElement>(".exp-pin")).map((node) => node.style.getPropertyValue("--exp-score-position"));
+      scrollTo(summary, 0.4);
+      expect(summary).toHaveAttribute("data-revealed", "true");
+      expect(lowerRow).toHaveAttribute("data-revealed", "false");
+      fireEvent.click(within(openness).getByRole("button", { name: /Explore Openness/ }));
+      expect(summary).toHaveAttribute("data-revealed", "true");
+      scrollTo(summary, 0.1);
+      expect(summary).toHaveAttribute("data-revealed", "true");
+      scrollTo(summary, 0);
+      expect(summary).toHaveAttribute("data-revealed", "false");
+      scrollTo(lowerRow, 0.4);
+      expect(lowerRow).toHaveAttribute("data-revealed", "true");
+      scrollTo(summary, 0.4);
+      expect(summary).toHaveAttribute("data-revealed", "true");
+      expect(within(openness).getByRole("button", { name: /Hide Openness/ })).toHaveAttribute("aria-expanded", "true");
+      expect(Array.from(openness.querySelectorAll(".exp-score-num")).map((node) => node.textContent)).toEqual(originalScores);
+      expect(Array.from(openness.querySelectorAll<HTMLElement>(".exp-pin")).map((node) => node.style.getPropertyValue("--exp-score-position"))).toEqual(pinPositions);
+      view.unmount();
+      for (const observer of observers.values()) expect(observer.disconnect).toHaveBeenCalledOnce();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("smooth disclosures keep closed evidence inert and replay trends on reopening", () => {
+    const { scrollTo } = mockScrollObservers();
+    try {
+      renderReport(withSection(realLikeSection));
+      const openness = screen.getByRole("article", { name: "Openness (experimental language index)" });
+      const trigger = within(openness).getByRole("button", { name: /Explore Openness/ });
+      const panel = document.getElementById(trigger.getAttribute("aria-controls")!)!;
+      expect(panel).toHaveAttribute("inert");
+      expect(panel).toHaveAttribute("aria-hidden", "true");
+      fireEvent.click(trigger);
+      expect(panel).not.toHaveAttribute("inert");
+      expect(panel).toHaveAttribute("aria-hidden", "false");
+      const graphs = within(openness).getAllByRole("img", { name: /Weekly trend/ });
+      const paths = graphs.map((graph) => graph.querySelector("path")?.getAttribute("d"));
+      for (const graph of graphs) scrollTo(graph, 0.4);
+      for (const graph of graphs) expect(graph).toHaveAttribute("data-revealed", "true");
+      const why = within(openness).getAllByRole("button", { name: /Why this number for/ })[0];
+      fireEvent.click(why);
+      expect(screen.getByRole("dialog", { name: "Why this number" })).toBeVisible();
+      fireEvent.click(why);
+      expect(screen.queryByRole("dialog", { name: "Why this number" })).not.toBeInTheDocument();
+      fireEvent.click(trigger);
+      expect(panel).toHaveAttribute("aria-hidden", "true");
+      expect(panel).toHaveAttribute("inert");
+      expect(within(openness).queryByRole("img", { name: /Weekly trend/ })).not.toBeInTheDocument();
+      for (const graph of graphs) expect(graph).toHaveAttribute("data-revealed", "false");
+      fireEvent.click(trigger);
+      for (const graph of graphs) expect(graph).toHaveAttribute("data-revealed", "true");
+      expect(graphs.map((graph) => graph.querySelector("path")?.getAttribute("d"))).toEqual(paths);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("highlights the selected axis, discloses details and preserves exact values", () => {
+    renderReport(withSection(realLikeSection));
+    const openness = screen.getByRole("article", { name: "Openness (experimental language index)" });
+    const trigger = within(openness).getByRole("button", { name: /Explore Openness/ });
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(within(openness).queryByRole("img", { name: /Weekly trend/ })).not.toBeInTheDocument();
+    fireEvent.focus(trigger);
+    expect(document.querySelectorAll('.exp-radar-axis-group[data-active="true"]')).toHaveLength(1);
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(within(openness).getByText(realLikeSection.dimensions[0].evidence_note)).toBeVisible();
+    expect(within(openness).getAllByRole("img", { name: /Weekly trend/ })).toHaveLength(1);
+    fireEvent.click(trigger);
+    expect(within(openness).queryByRole("img", { name: /Weekly trend/ })).not.toBeInTheDocument();
+    fireEvent.blur(trigger);
+    expect(document.querySelectorAll('.exp-radar-axis-group[data-active="true"]')).toHaveLength(0);
+  });
+
+  it("does not close a radar polygon through missing scores or confuse zero with missing", () => {
+    const section = structuredClone(realLikeSection);
+    section.dimensions[0].per_speaker.me = {
+      ...section.dimensions[0].per_speaker.me,
+      status: "insufficient_data", score: null, band: null, confidence: null,
+    };
+    section.dimensions[1].per_speaker.me.score = 0;
+    renderReport(withSection(section));
+    expect(document.querySelector('.exp-radar-me')).toBeNull();
+    expect(document.querySelector('.exp-radar-other')).not.toBeNull();
+    expect(document.querySelectorAll('.exp-radar-me-dot')).toHaveLength(4);
+    expect(document.querySelectorAll('.exp-radar-other-dot')).toHaveLength(5);
+    expect(screen.getByText("Only available scores are plotted.")).toBeVisible();
+    const zero = document.querySelector('.exp-radar-me-dot');
+    expect(zero).toHaveAttribute("cx", "360");
+    expect(zero).toHaveAttribute("cy", "292");
+  });
+
+  it("places experiments before weekly patterns and family navigation focuses without changing routes", () => {
+    renderReport(withSection(realLikeSection));
+    const experimental = screen.getByRole("region", { name: "Experimental scores" });
+    const weekly = screen.getByRole("region", { name: "Weekly patterns" });
+    expect(experimental.compareDocumentPosition(weekly) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const scroll = vi.fn();
+    const heading = screen.getByRole("heading", { name: "Interpersonal language" });
+    heading.scrollIntoView = scroll;
+    const hash = window.location.hash;
+    fireEvent.click(screen.getByRole("button", { name: "Interpersonal" }));
+    expect(heading).toHaveFocus();
+    expect(scroll).toHaveBeenCalledOnce();
+    expect(window.location.hash).toBe(hash);
+    const weeklyHeading = screen.getByRole("heading", { name: "Weekly patterns" });
+    weeklyHeading.scrollIntoView = scroll;
+    const reportNav = screen.getByRole("navigation", { name: "Report sections" });
+    fireEvent.click(within(reportNav).getByText('Explore report'));
+    fireEvent.click(within(reportNav).getByRole('button', { name: 'Weekly patterns' }));
+    expect(weeklyHeading).toHaveFocus();
+    expect(scroll).toHaveBeenCalledTimes(2);
+    expect(window.location.hash).toBe(hash);
+  });
+
   it("renders the deterministic-only sample with AI markers not run", () => {
     renderReport(withSection(deterministicSection));
-    openCard();
+    expectOpenSection();
     expect(screen.getAllByText("Confidence low").length).toBeGreaterThan(0);
     expect(screen.queryByText("Confidence medium")).not.toBeInTheDocument();
     const openness = screen.getByRole("article", { name: "Openness (experimental language index)" });
-    fireEvent.click(within(openness).getAllByRole("button", { name: "Why this number" })[0]);
-    expect(within(openness).getByTestId("why-openness-me").querySelector("[data-status='not_run']")).toBeTruthy();
+    fireEvent.click(within(openness).getByRole("button", { name: /Explore Openness/ }));
+    fireEvent.click(within(openness).getAllByRole("button", { name: /Why this number for/ })[0]);
+    expect(screen.getByTestId("why-openness-me").querySelector("[data-status='not_run']")).toBeTruthy();
     expect(screen.queryByText(INSUFFICIENT_TEXT)).not.toBeInTheDocument();
   });
 
@@ -119,23 +292,20 @@ describe("experimental scores section", () => {
 
   it("handles a null other person, and each section status", () => {
     renderReport(withSection(nullOtherSection));
-    openCard();
+    expectOpenSection();
     const card = screen.getByRole("region", { name: "Experimental scores" });
     expect(within(card).queryByText("Other person")).not.toBeInTheDocument();
     expect(within(card).getAllByText("Me").length).toBeGreaterThan(0);
     expect(screen.queryByText(INSUFFICIENT_TEXT)).not.toBeInTheDocument();
 
     renderReport(withSection(failedSection));
-    fireEvent.click(screen.getAllByRole("button", { name: /Experimental scores/ })[1]);
     expect(screen.getByText("Experimental scores could not be computed for this run.")).toBeVisible();
     expect(screen.getAllByRole("region", { name: "Experimental scores" })[1]).not.toHaveTextContent("Uncertainty band");
 
     renderReport(withSection(notRunSection));
-    fireEvent.click(screen.getAllByRole("button", { name: /Experimental scores/ })[2]);
     expect(screen.getByText("not requested")).toBeVisible();
 
     renderReport(withSection(insufficientSection));
-    fireEvent.click(screen.getAllByRole("button", { name: /Experimental scores/ })[3]);
     expect(screen.getByText(INSUFFICIENT_TEXT)).toBeVisible();
     expect(screen.queryByText("fewer than 20 episodes for this person")).not.toBeInTheDocument();
   });
@@ -154,8 +324,9 @@ describe("experimental scores section", () => {
       }
     }
     renderReport(withSection(realLikeSection));
-    openCard();
-    expect(screen.getAllByRole("article")).toHaveLength(12);
+    expectOpenSection();
+    const card = screen.getByRole('region', { name: 'Experimental scores' });
+    expect(within(card).getAllByRole("article")).toHaveLength(12);
     expect(screen.queryByText(INSUFFICIENT_TEXT)).not.toBeInTheDocument();
     const depression = screen.getByRole("article", { name: /Depression-related language/ });
     expect(within(depression).getAllByText("Confidence low").length).toBe(2);
@@ -195,11 +366,11 @@ describe("experimental scores section", () => {
     expect(screen.getByRole("heading", { name: "Observations" })).toBeInTheDocument();
     const card = screen.getByRole("region", { name: "Experimental scores" });
     expect(within(card).getByTestId("exp-banner")).toBeVisible();
-    expect(within(card).queryByRole("heading", { name: "Big Five" })).not.toBeInTheDocument();
+    expect(within(card).getByRole("heading", { name: "Big Five" })).toBeVisible();
 
-    openCard();
+    expectOpenSection();
     expect(screen.getByRole("heading", { name: "Big Five" })).toBeVisible();
-    expect(screen.getAllByRole("article")).toHaveLength(12);
+    expect(within(card).getAllByRole("article")).toHaveLength(12);
     expect(screen.queryByText(INSUFFICIENT_TEXT)).not.toBeInTheDocument();
     expect(within(card).queryByText(/\bhigh\b/i)).not.toBeInTheDocument();
 
@@ -209,16 +380,17 @@ describe("experimental scores section", () => {
     expect(within(openness).getAllByText("Confidence medium")).toHaveLength(2);
 
     const neuroticism = screen.getByRole("article", { name: "Neuroticism (experimental language index)" });
-    fireEvent.click(within(neuroticism).getAllByRole("button", { name: "Why this number" })[0]);
+    fireEvent.click(within(neuroticism).getByRole("button", { name: /Explore Neuroticism/ }));
+    fireEvent.click(within(neuroticism).getAllByRole("button", { name: /Why this number for/ })[0]);
     const me = section?.dimensions.find((dim) => dim.key === "neuroticism")?.per_speaker.me;
     const quoteId = me?.contributions.flatMap((item) => item.quote_ids)[0];
     const quote = section?.quotes.find((item) => item.id === quoteId);
     expect(quote?.text).toBeTruthy();
-    expect(within(neuroticism).getByText(quote?.text ?? "")).toBeInTheDocument();
+    expect(within(screen.getByRole("dialog", { name: "Why this number" })).getByText(quote?.text ?? "")).toBeInTheDocument();
     expect(report.quotes.some((item) => item.text === quote?.text)).toBe(false);
     expect(within(neuroticism).queryByText(/run lower/i)).not.toBeInTheDocument();
-    expect(within(neuroticism).getAllByText(TREND_NOTE).length).toBeGreaterThan(0);
-    const spark = within(neuroticism).getAllByRole("img", { name: /Weekly trend for me/ })[0];
+    expect(within(neuroticism).queryByText(TREND_NOTE)).not.toBeInTheDocument();
+    const spark = within(neuroticism).getAllByRole("img", { name: /Weekly trend/ })[0];
     expect(spark).toHaveAttribute("data-scale", "trend");
     expect(Number(spark.getAttribute("data-ymin"))).toBeGreaterThanOrEqual(20);
     expect(Number(spark.getAttribute("data-ymax"))).toBeLessThanOrEqual(32);

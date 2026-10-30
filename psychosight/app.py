@@ -26,6 +26,7 @@ from .experimental.contract import DIMENSIONS
 from .experimental import strings as exp_strings
 from .llm import get_provider, install_log_guard
 from .storage import Store
+from .message_timeline import MessageTimeline
 
 log = logging.getLogger("psychosight.app")
 
@@ -88,6 +89,7 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
     state = {"store": store}
     jobs: Dict[str, Job] = {}
     lock = threading.Lock()
+    message_timeline = MessageTimeline()
 
     def get_store() -> Store:
         if state["store"] is None:
@@ -276,10 +278,22 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
             raise NotFound(f"No report with id '{_public_id(job_id)}'.")
         return rep
 
+    @app.get("/analyses/{job_id}/episodes/{episode_id}/messages")
+    def episode_messages(job_id: str, episode_id: str, response: Response, offset: int = 0, limit: int = 500,
+                         start_ms: Optional[float] = None, end_ms: Optional[float] = None):
+        rep = get_report(job_id)
+        if isinstance(rep, Response):
+            return rep
+        response.headers["Cache-Control"] = "no-store"
+        return message_timeline.page(rep, episode_id, offset=offset, limit=limit,
+                                     expected_hash=get_store().episode_hash(job_id, episode_id),
+                                     start_ms=start_ms, end_ms=end_ms)
+
     @app.delete("/analyses/{job_id}")
     def delete_analysis(job_id: str):
         job = jobs.get(job_id)
         removed = get_store().delete_report(job_id)
+        message_timeline.discard(job_id)
         if job and not job.deleted:
             job.deleted = True
             removed = True

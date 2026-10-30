@@ -24,7 +24,7 @@ export function Observations({ observations, rubric, features, episodeReference 
         {item.episode_ids.length ? <p className="episode-references">Referenced episodes: {item.episode_ids.map((id) => <span key={id}>{episodeReference(id)} </span>)}</p> : null}
       </div>
       {/* Observation quotes are the supplied embedded report evidence, never experimental lookups. */}
-      <ClaimEvidence quotes={item.quotes} episodeReference={episodeReference} />
+      <ClaimEvidence quoteReveal quotes={item.quotes} episodeReference={episodeReference} />
     </li>)}</ol> : <p>Insufficient data</p> : null}
   </section>;
 }

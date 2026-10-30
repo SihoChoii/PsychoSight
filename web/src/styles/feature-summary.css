@@ -1,0 +1,36 @@
+.feature-summary-intro { margin:var(--space-3) 0 0; max-width:60ch; color:var(--secondary); font-size:18px; }
+.feature-summary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-3); align-items:stretch; }
+.feature-summary-card { display:flex; flex-direction:column; min-width:0; min-height:490px; padding:var(--space-4); border:var(--line-width) solid var(--line); }
+.feature-summary-card h3 { font-size:24px; font-weight:400; line-height:1.2; letter-spacing:-.03em; margin:0 0 var(--space-4); }
+.feature-summary-measures { min-height:128px; margin-bottom:var(--space-3); }
+.summary-pair { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--space-2); margin:0; }
+.summary-pair dt { display:flex; align-items:center; gap:8px; font-size:14px; color:var(--secondary); margin:0 0 10px; }
+.summary-pair dt i { width:7px; height:7px; background:var(--foreground); }
+.summary-pair [data-speaker="other"] dt i { background:transparent; border:1px solid var(--iris); }
+.summary-pair dd { margin:0; font-size:clamp(26px,2.6vw,36px); line-height:1.2; letter-spacing:-.035em; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.summary-pair [data-speaker="other"] dd, .summary-pronouns td[data-speaker="other"] { color:var(--accent-text); }
+.summary-pair dd[data-available="false"], .summary-pronouns td[data-available="false"] { font-size:16px; color:var(--secondary); letter-spacing:0; line-height:1.4; }
+.summary-unit { color:var(--secondary); font-size:14px; line-height:1.5; margin:var(--space-2) 0 0; }
+.summary-pronouns { border-collapse:collapse; width:100%; table-layout:fixed; }
+.summary-pronouns th { font-weight:400; font-size:14px; color:var(--secondary); text-align:left; padding:0 0 8px; }
+.summary-pronouns td { padding:0 0 4px; font-size:26px; line-height:1.1; letter-spacing:-.025em; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.summary-pronouns + .summary-unit { margin-top:8px; }
+.summary-pronouns th:first-child { width:28%; }
+.summary-pronouns th:not(:first-child), .summary-pronouns td { text-align:right; }
+.summary-reading { font-size:18px; line-height:1.5; min-height:54px; margin:0 0 var(--space-2); }
+.summary-context { color:var(--secondary); font-size:16px; line-height:1.6; margin:0 0 var(--space-4); }
+.summary-actions { display:flex; flex-wrap:wrap; gap:0 20px; align-items:baseline; margin-top:auto; }
+.summary-trends { display:flex; flex-wrap:wrap; gap:0 24px; }
+.summary-trends button { background:none; border:0; padding:10px 0; min-height:44px; font-size:14px; text-align:left; text-decoration:underline; text-underline-offset:5px; }
+.feature-summary-note { max-width:65ch; margin:var(--space-4) 0 0; font-size:16px; color:var(--secondary); }
+@media(max-width:1150px) { .feature-summary-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .summary-pair dd { font-size:34px; } }
+@media(max-width:700px) {
+ .feature-summary-grid { grid-template-columns:minmax(0,1fr); gap:var(--space-3); }
+ .feature-summary-card { min-height:0; padding:var(--space-3); }
+ .feature-summary-card h3 { margin-bottom:var(--space-3); }
+ .feature-summary-measures { min-height:0; margin-bottom:var(--space-3); }
+ .summary-reading { min-height:0; }
+ .feature-summary-intro { font-size:16px; }
+ .summary-pair dd { font-size:32px; }
+ .summary-pronouns td { font-size:24px; }
+}

@@ -9,8 +9,14 @@
 @import "./progress.css";
 @import "./charts.css";
 @import "./report.css";
+@import "./timeline.css";
 @import "./evidence.css";
+@import "./selection.css";
+@import "./feature-summary.css";
+@import "./disclosures.css";
+@import "./graph-reveal.css";
 @import "./experimental.css";
+@import "./contributions.css";
 
 .chart-description {
   margin: 0 0 var(--space-6);

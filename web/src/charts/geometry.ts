@@ -26,7 +26,7 @@ export function chartGeometry(rows: ChartRow[], domain: MetricDomain, width: num
   const x = (day: number) => start === end ? (left + right) / 2 : left + (day - start) / (end - start) * (right - left);
   const y = (value: number) => bottom - (value - domain.min) / (domain.max - domain.min) * (bottom - top);
   const positions = rows.map((row) => x(row.week.day));
-  const count = Math.min(rows.length, Math.max(2, Math.floor((right - left) / 90) + 1));
+  const count = Math.min(rows.length, 7, Math.max(2, Math.floor((right - left) / 90) + 1));
   const indices: number[] = rows.length ? [0] : [];
   for (let i = 1; i < count - 1; i++) {
     const index = Math.round(i * (rows.length - 1) / (count - 1));

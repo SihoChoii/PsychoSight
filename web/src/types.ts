@@ -49,6 +49,23 @@ export interface Quote {
   item_key?: string | null;
 }
 
+export interface TimelineMessage {
+  id: string;
+  timestamp: string;
+  speaker: "me" | "other";
+  text: string;
+  episode_id: string;
+  turn_id: string;
+}
+
+export interface MessagePage {
+  episode_id: string;
+  total: number;
+  offset: number;
+  next_offset: number | null;
+  messages: TimelineMessage[];
+}
+
 export interface RubricItem {
   key: string;
   label: string;
@@ -116,6 +133,7 @@ export interface Report {
   disclaimer: string;
   experimental_scores?: ExperimentalScores;
   run_meta: {
+    thresholds?: { max_episodes_scored?: number; [key: string]: number | undefined };
     run_id: string;
     created_at: string;
     mode: string;

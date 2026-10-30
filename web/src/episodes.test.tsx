@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render as renderDOM, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { ReportView } from "./components/ReportView";
 import { uiPreviewReport } from "./fixtures/ui-previews";
@@ -6,6 +6,14 @@ import { episodeIntervals, indexEpisodes } from "./charts/episodes";
 import type { Episode, Report } from "./types";
 import full from "../../docs/sample_report.json";
 import experimental from "../../docs/sample_report_experimental.json";
+
+// These regression cases exercise the retained weekly tools, now disclosed below the timeline.
+function render(ui: Parameters<typeof renderDOM>[0]) {
+  const result = renderDOM(ui);
+  const openTools = () => { const button = screen.queryByRole('button', { name: 'Weekly totals' }); if (button && button.getAttribute('aria-expanded') === 'false') fireEvent.click(button); };
+  openTools();
+  return { ...result, container: result.baseElement, rerender: (next: Parameters<typeof result.rerender>[0]) => { result.rerender(next); openTools(); } };
+}
 
 const props = (report: Report) => ({ report, deleting: false, deleteError: null, onDelete: vi.fn() });
 const preview = (name = "single-week") => uiPreviewReport(`ui-${name}`)!;

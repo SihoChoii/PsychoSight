@@ -1,3 +1,4 @@
+import { useGraphReveal } from "../report/graph-reveal";
 import { basisText, directionText, sortedContributions, sourceLabel } from "../../experimental";
 import { speakerLabel } from "../../format";
 import type { ExpQuote, ExpSpeakerScore } from "../../types";
@@ -11,14 +12,14 @@ export function ContributionPanel({ dimKey, who, speaker, quotes }: {
   return <div className="exp-why">
     <h5>Contributions</h5>
     <p className="exp-weight-note">Effective weights use the same 0–100% length scale for every marker. They are input shares, not amounts added to the final number.</p>
-    {rows.length ? <ol className="exp-contribs" data-testid={`why-${dimKey}-${who}`}>
+    {rows.length ? <ol className="exp-contribs exp-contribution-all" data-testid={`all-${dimKey}-${who}`}>
       {rows.map((item) => <li key={item.marker_key} data-marker={item.marker_key} data-status={item.status} data-weight={item.weight}>
         <div className="exp-contrib-row">
           <div><p className="exp-contrib-title">{item.label}</p><p className="exp-contrib-meta">{sourceLabel(item.source)} · {item.anchor_source}</p></div>
           <p className="exp-direction"><span aria-hidden="true">{item.direction === "down" ? "↓" : "↑"}</span> {directionText(item.direction)}</p>
           <div className="exp-weight">
             <p>{item.status === "ok" ? `${Number((item.weight * 100).toPrecision(12))}% weight` : item.status === "not_run" ? "Not run" : "No data"}</p>
-            {item.status === "ok" ? <div className="exp-weight-track" aria-hidden="true"><span style={{ width: `${Math.max(0, Math.min(100, item.weight * 100))}%` }} /></div> : null}
+            {item.status === "ok" ? <WeightBar weight={item.weight} /> : null}
           </div>
           <p className="exp-contrib-value">Observed value: {item.status === "ok" && item.value !== null ? `${item.value} ${item.unit}` : "unavailable"}</p>
         </div>
@@ -39,4 +40,9 @@ function ExperimentalQuotes({ ids, quotes }: { ids: string[]; quotes: ReadonlyMa
       <p className="quote-meta">{speakerLabel(quote.speaker)} · {quote.episode_id} · <time dateTime={quote.ts}>{quote.ts}</time></p>
     </blockquote> : <p key={id}>Quote evidence unavailable: {id}</p>;
   })}</div> : null;
+}
+
+function WeightBar({ weight }: { weight: number }) {
+ const reveal = useGraphReveal<HTMLDivElement>();
+ return <div ref={reveal} className="exp-weight-track" aria-hidden="true"><span data-graph-ink="" style={{width:`${Math.max(0,Math.min(100,weight*100))}%`}} /></div>;
 }

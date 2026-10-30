@@ -170,10 +170,13 @@ function drawGraphic(ctx, signal, t, progress) {
       ctx.stroke();
     }
     ctx.globalAlpha = 1;
+    // A fixed center and alphabetic baseline prevent optical drift. Monospaced
+    // advances keep equal-length readings aligned; density preserves the glyphs.
     ctx.font = '0.4px "Geist Mono", monospace';
+    ctx.fontKerning = "none";
     ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(String(Math.round(progress)), 0, 0.015);
+    ctx.textBaseline = "alphabetic";
+    ctx.fillText(String(Math.floor(progress + 1e-9)), 0, 0.14);
   } else if (signal === "upload" || signal === "download") {
     const direction = signal === "upload" ? -1 : 1;
     ctx.lineWidth = 0.075;

@@ -1,13 +1,27 @@
 /* Main-report evidence. Source resolution stays with the owning section. */
 .report-evidence { overflow-wrap: anywhere; }
 .evidence-intro { max-width: 72ch; margin: 0 0 24px; color: var(--secondary); }
+.scored-messages-heading { margin-bottom: 24px; }
+.scored-messages-heading > .scored-messages-title { display: flex; align-items: center; gap: 8px; }
+.scored-messages-title h3 { margin: 0; font-size: 26px; font-weight: 450; letter-spacing: -.025em; }
+.rating-agreement > p { margin: 0; }
+.rating-agreement-examples { width: 100%; border-collapse: collapse; margin: 16px 0; text-align: left; }
+.rating-agreement-examples caption { text-align: left; color: var(--secondary); font-size: 14px; margin-bottom: 8px; }
+.rating-agreement-examples th { color: var(--secondary); font-size: 12px; font-weight: 400; padding: 0 12px 8px 0; }
+.rating-agreement-examples td { padding: 8px 12px 8px 0; border-top: 1px solid var(--line); }
+.rating-agreement-examples th:last-child, .rating-agreement-examples td:last-child { padding-right: 0; }
+.rating-value { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid var(--control-line); font: 16px/1 var(--font-mono); }
+.rating-outcome { display: flex; align-items: center; gap: 8px; color: var(--secondary); font-size: 14px; }
+.rating-outcome i { flex: none; width: 12px; height: 12px; border: 1px solid currentColor; }
+[data-included="true"] .rating-outcome { color: var(--foreground); }
+[data-included="true"] .rating-outcome i { background: currentColor; }
+.rating-agreement .rating-agreement-scope { margin-top: 16px; font-size: 14px; color: var(--secondary); }
 .pattern-list, .observation-list { list-style: none; padding: 0; margin: 0; }
 .pattern-row { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .85fr) minmax(0, 1fr); gap: 32px; padding: 28px 0; border-top: 1px solid var(--line); }
 .pattern-row h3 { font-size: 22px; line-height: 1.25; }
 .pattern-row p, .observation-row p { margin: 0 0 12px; }
-.pattern-description > p { color: var(--secondary); }
+.pattern-description p { color: var(--secondary); }
 .pattern-description .evidence-scope { color: var(--foreground); font-size: 14px; font-family: var(--font-mono); }
-.pattern-anchors summary, .evidence-more summary { cursor: pointer; min-height: 44px; padding: 10px 0; text-decoration: underline; text-underline-offset: 5px; }
 .pattern-anchors dl { margin: 8px 0 0; }
 .pattern-anchors dl > div { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 12px; margin-bottom: 12px; }
 .pattern-anchors dt { font-family: var(--font-mono); }

@@ -33,16 +33,56 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); if (originalFonts) Object.defineProperty(document, "fonts", originalFonts); else Reflect.deleteProperty(document, "fonts"); });
 
 describe("LED lifecycle with renderer stub", () => {
-  it("merges defaults, clears media, and redraws static factual progress without a clock or signal restart", async () => {
+  it("keeps unchanged measured progress still, then smoothly reaches the next measured value", async () => {
     const view = render(<LedMatrix signal="progress" progressPercent={30} />); const m = instance();
-    expect(m.configure).toHaveBeenCalledWith({ brightness: 100, glow: 45, spill: 55, speed: 100, columns: 31, rows: 31, shape: "ellipse" });
+    expect(m.configure).toHaveBeenCalledWith({ brightness: 100, glow: 20, spill: 25, speed: 100, columns: 81, rows: 81, shape: "ellipse" });
     expect(m.setSource).toHaveBeenCalledWith(null); expect(m.setProgress).toHaveBeenLastCalledWith(30);
     expect(queue.size).toBe(0); const calls = m.draw.mock.calls.length;
     view.rerender(<LedMatrix signal="progress" progressPercent={30} />); expect(m.draw).toHaveBeenCalledTimes(calls);
     view.rerender(<LedMatrix signal="progress" progressPercent={40} />);
-    expect(m.setSignal).toHaveBeenCalledTimes(1); expect(m.setProgress).toHaveBeenLastCalledWith(40); expect(queue.size).toBe(0);
+    expect(m.setSignal).toHaveBeenCalledTimes(1); expect(m.setProgress).toHaveBeenLastCalledWith(30); expect(queue.size).toBe(1);
+    frame(0); frame(40);
+    expect(m.setProgress.mock.lastCall?.[0]).toBeGreaterThan(30);
+    expect(m.setProgress.mock.lastCall?.[0]).toBeLessThan(40);
+    for (let t = 80; t <= 440; t += 40) frame(t);
+    expect(m.setProgress).toHaveBeenLastCalledWith(40); expect(queue.size).toBe(0);
     const beforeFont = m.draw.mock.calls.length; await act(async () => { resolveFont(); });
     expect(fontLoad).toHaveBeenCalledWith('16px "Geist Mono"', "0123456789"); expect(m.draw.mock.calls.length).toBeGreaterThan(beforeFont);
+  });
+  it("retargets from the displayed value without backwards jumps or overshoot and makes no frame commits", () => {
+    const commits = vi.fn();
+    const content = (value: number) => <Profiler id="progress" onRender={commits}><LedMatrix signal="progress" progressPercent={value} progressKey="scoring" /></Profiler>;
+    const view = render(content(9)); const m = instance();
+    view.rerender(content(40)); frame(0); frame(40); frame(80);
+    const before = m.setProgress.mock.lastCall?.[0];
+    view.rerender(content(65)); const commitCount = commits.mock.calls.length;
+    frame(120); frame(160);
+    expect(m.setProgress.mock.lastCall?.[0]).toBeGreaterThanOrEqual(before);
+    for (let t = 200; t < 600; t += 40) frame(t);
+    const values = m.setProgress.mock.calls.map(([value]) => value);
+    expect(values.every((value, i) => value <= 65 && (!i || value >= values[i - 1]))).toBe(true);
+    expect(m.setProgress).toHaveBeenLastCalledWith(65); expect(queue.size).toBe(0);
+    expect(commits).toHaveBeenCalledTimes(commitCount);
+  });
+  it("resets immediately for a new measured stage and respects server corrections", () => {
+    const view = render(<LedMatrix signal="progress" progressPercent={99} progressKey="scoring" />); const m = instance();
+    view.rerender(<LedMatrix signal="progress" progressPercent={100} progressKey="scoring" />);
+    view.rerender(<LedMatrix signal="progress" progressPercent={10} progressKey="experimental" />);
+    expect(m.setProgress).toHaveBeenLastCalledWith(10); expect(queue.size).toBe(0);
+    view.rerender(<LedMatrix signal="progress" progressPercent={8} progressKey="experimental" />);
+    expect(m.setProgress).toHaveBeenLastCalledWith(8); expect(queue.size).toBe(0);
+  });
+  it.each(["pause", "reduced", "hidden", "offscreen"])("settles measured progress on %s and does not replay it", (mode) => {
+    const view = render(<LedMatrix signal="progress" progressPercent={30} />); const m = instance();
+    view.rerender(<LedMatrix signal="progress" progressPercent={80} />); frame(0); frame(40);
+    if (mode === "pause") view.rerender(<LedMatrix signal="progress" progressPercent={80} paused />);
+    if (mode === "reduced") act(() => { reduced = true; media.dispatchEvent(new Event("change")); });
+    if (mode === "hidden") act(() => { hidden = true; document.dispatchEvent(new Event("visibilitychange")); });
+    if (mode === "offscreen") visibility(false);
+    expect(m.setProgress).toHaveBeenLastCalledWith(80); expect(queue.size).toBe(0);
+    act(() => { hidden = false; reduced = false; document.dispatchEvent(new Event("visibilitychange")); media.dispatchEvent(new Event("change")); });
+    visibility(true); view.rerender(<LedMatrix signal="progress" progressPercent={80} />);
+    expect(queue.size).toBe(0);
   });
   it.each([NaN, Infinity, -Infinity, undefined])("never forwards nonfinite progress %s", (value) => {
     render(<LedMatrix signal="progress" progressPercent={value} />); expect(instance().setProgress).not.toHaveBeenCalled(); expect(instance().setSignal).toHaveBeenCalledWith("orbit", false);
@@ -118,7 +158,7 @@ describe("job presentation with the real stage adapter", () => {
     });
   it("preserves stale progress and GET-only retry without claiming job failure", () => {
     const retry = vi.fn(); render(<ProgressView job={uiPreviewJob("scoring")} error={{ kind: "transport", message: "Offline" }} onRetry={retry} onBack={() => {}} />);
-    expect(instance().setSignal.mock.calls[0][0]).toBe("progress"); expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuetext", "Last known: 12 of 40 episodes.");
+    expect(rig.Matrix.instances).toHaveLength(0); expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuetext", "Last known: 12 of 40 episodes.");
     fireEvent.click(screen.getByRole("button", { name: "Retry" })); expect(retry).toHaveBeenCalledTimes(1);
     expect(screen.queryByText("Analysis stopped")).not.toBeInTheDocument(); expect(queue.size).toBe(0);
   });

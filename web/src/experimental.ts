@@ -63,6 +63,12 @@ export function hasScore(speaker: ExpSpeakerScore | null): speaker is ExpSpeaker
     && speaker.band.lo >= 0 && speaker.band.hi <= 100 && speaker.band.lo <= speaker.band.hi;
 }
 
+/** Evidence is resolved only against this experimental section's verified quote collection. */
+export function quotesFor(section: ExperimentalScores, ids: string[]) {
+  const byId = new Map(section.quotes.map(quote => [quote.id, quote]));
+  return ids.map(id => byId.get(id)).filter((quote): quote is NonNullable<typeof quote> => !!quote);
+}
+
 /** Calendar slots preserve omitted weeks and explicit nulls. Domain belongs only to the trend. */
 export function experimentalTrend(points: ExpTrendPoint[]) {
   const ordered = points.map((point) => ({ point, day: isoWeekDay(point.week) }))
