@@ -53,6 +53,13 @@ class InvalidRequest(PsychoSightError):
     http_status = 422
 
 
+class InvalidReasoningLevel(InvalidRequest, ValueError):
+    """reasoning_level is not one of psychosight.reasoning.REASONING_IDS."""
+
+    code = "INVALID_REASONING_LEVEL"
+    http_status = 422
+
+
 class DateRangeInvalid(InvalidRequest):
     """date_from is after date_to."""
 

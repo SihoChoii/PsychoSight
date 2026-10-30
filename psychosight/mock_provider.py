@@ -38,9 +38,11 @@ def _h(*parts: str) -> int:
 class MockProvider(Provider):
     name = "mock"
 
-    def __init__(self, mode: str = "normal", reasoning_text: Optional[str] = None):
+    def __init__(self, mode: str = "normal", reasoning_text: Optional[str] = None,
+                 reasoning_level: Optional[str] = None):
         self.model = "mock-rubric-1"
         self.reasoning_effort = None
+        self.reasoning_level = reasoning_level  # recorded in run_meta; has no effect on mock output
         self.mode = mode
         self.calls = 0
         self.reasoning_text = reasoning_text  # simulates a trace; never returned to callers

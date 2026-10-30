@@ -49,7 +49,7 @@ def test_config_dotenv_key_available_without_secret(client, tmp_path, monkeypatc
     monkeypatch.setenv("PSYCHOSIGHT_DOTENV", str(env_file))
     cfg = client.get("/config").json()
     assert cfg["llm_available"] is True and cfg["llm_configured"] is True
-    assert cfg["model"] == "deepseek-flash" and cfg["reasoning_effort"] == "max"
+    assert cfg["model"] == "deepseek-flash" and cfg["reasoning_effort"] == "low" and cfg["default_reasoning"] == "low"
     assert cfg["llm_key_source"] == "dotenv"
     assert "FAKE-SECRET" not in json.dumps(cfg) and "5555" not in json.dumps(cfg)
 

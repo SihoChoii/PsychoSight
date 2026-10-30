@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { formatCalendarDay } from "../format";
+import { readReasoningControl } from "../reasoning-adapter";
+import { ReasoningControl, clampReasoningIndex } from "./ReasoningControl";
 import type { ExperimentalChoice } from "../types";
 import type { PickerSelection } from "./Picker";
 
@@ -18,6 +20,7 @@ export function OptIn({
   experimentalText = null,
   scoreOtherText = null,
   demoProviderNote = null,
+  reasoningConfig = null,
 }: {
   text: string | null;
   busy: boolean;
@@ -25,19 +28,32 @@ export function OptIn({
   configError?: string | null;
   configLoading?: boolean;
   onRetryConfig?: () => void;
-  onOptIn: (choice: ExperimentalChoice) => void;
-  onLocalOnly: (choice: ExperimentalChoice) => void;
+  onOptIn: (choice: ExperimentalChoice, reasoningLevel: string | null) => void;
+  onLocalOnly: (choice: ExperimentalChoice, reasoningLevel: string | null) => void;
   selection?: PickerSelection | null;
   isDemo?: boolean;
   experimentalEnabled?: boolean;
   experimentalText?: string | null;
   scoreOtherText?: string | null;
   demoProviderNote?: string | null;
+  reasoningConfig?: unknown;
 }) {
   const showExperimental = experimentalEnabled && !!experimentalText && !!scoreOtherText;
   const demoDefault = showExperimental && isDemo;
   const [experimental, setExperimental] = useState(demoDefault);
   const [scoreOther, setScoreOther] = useState(demoDefault);
+  const control = useMemo(() => readReasoningControl(reasoningConfig), [reasoningConfig]);
+  const [tracked, setTracked] = useState(control);
+  const [index, setIndex] = useState(control.defaultIndex);
+  const [modelStep, setModelStep] = useState(true);
+  if (tracked !== control) {
+    setTracked(control);
+    setIndex(control.defaultIndex);
+  }
+  const safeIndex = clampReasoningIndex(index, control.levels.length);
+  const selectedLevel = control.levels[safeIndex];
+  const reasoningLevel = control.visible && modelStep && selectedLevel ? selectedLevel.id : null;
+  const optInBlocked = text === null || busy || (control.visible && !modelStep);
   const choice: ExperimentalChoice = showExperimental
     ? { experimental, scoreOther: experimental && scoreOther }
     : { experimental: false, scoreOther: false };
@@ -108,6 +124,14 @@ export function OptIn({
           </fieldset>
         ) : null}
       </div>
+      <ReasoningControl
+        control={control}
+        index={safeIndex}
+        modelStep={modelStep}
+        busy={busy}
+        onIndex={setIndex}
+        onModelStep={setModelStep}
+      />
       <div className="consent-submit" aria-busy={busy}>
         {error ? <p id="submission-error" className="field-error" role="alert">{error}</p> : null}
         {busy ? <p role="status">Starting analysis.</p> : null}
@@ -115,9 +139,12 @@ export function OptIn({
           <button
             type="button"
             className="button"
-            disabled={text === null || busy}
+            disabled={optInBlocked}
             aria-describedby={error ? "submission-error" : text !== null ? "analysis-disclosure" : undefined}
-            onClick={() => onOptIn(choice)}
+            onClick={() => {
+              if (optInBlocked) return;
+              onOptIn(choice, reasoningLevel);
+            }}
           >
             {busy ? "Starting" : "Send excerpts and analyze"}
           </button>
@@ -126,7 +153,7 @@ export function OptIn({
             className="button button-secondary"
             disabled={busy}
             aria-describedby={error ? "submission-error" : undefined}
-            onClick={() => onLocalOnly(choice)}
+            onClick={() => onLocalOnly(choice, null)}
           >
             Deterministic only, no LLM
           </button>

@@ -5,8 +5,8 @@ are read from that cache (same Store keys) and are not asked again. ``other`` wa
 by rubric-v1, so those five behaviors are asked only for ``other``.
 
 Cache rows store scores and quote offsets only: no message bodies, no reasoning, no raw replies.
-Keys are the episode hash (or a hash of the holistic transcript), prompt version, model, and run
-index. Track D should pass :func:`call_budget` so the experimental cap stays separate from the
+Keys are the episode hash (or a hash of the holistic transcript), prompt version, model tagged with
+the reasoning level (``reasoning.cache_model_for``), and run index. Track D should pass :func:`call_budget` so the experimental cap stays separate from the
 main rubric cap. :data:`HOLISTIC_SYSTEM_PROMPT` is appended to ``safety.EXP_ALLOW_LIST`` in safety.py.
 The episode prompt must not be allow-listed: it passes the global banned-word lint as written.
 """
@@ -22,7 +22,7 @@ from typing import Callable, Dict, List, NamedTuple, Optional, Sequence, Tuple
 
 import jsonschema
 
-from .. import config, rubric
+from .. import config, reasoning, rubric
 from ..errors import LLMUnavailable
 from ..features import tokenize, week_key
 from ..llm import parse_json_object
@@ -586,7 +586,8 @@ def _holistic_hash(speaker: str, user: str) -> str:
 
 
 def _model_name(provider) -> str:
-    return str(getattr(provider, "model", "") or "")
+    """Model id used in cache keys: the model tagged with the analysis' reasoning level."""
+    return reasoning.cache_model_for(provider)
 
 
 def _read_rubric(store: Store, episode, model: str, run_idx: int) -> Optional[dict]:

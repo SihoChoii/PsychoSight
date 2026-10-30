@@ -38,6 +38,8 @@ describe("consent journey", () => {
         conversation_id: "synthetic", demo: isDemo, llm_opt_in: full, mode: full ? "full" : "deterministic_only",
         date_from: "2024-02-29", date_to: "2025-11-02", experimental_scores: experimental, score_other: experimental,
         ...(experimental ? { experimental_opt_in_text: config.experimental_opt_in_text, score_other_opt_in_text: config.score_other_opt_in_text } : {}),
+        // The reasoning slider starts at default_reasoning and is sent only with the LLM opt-in.
+        ...(full ? { reasoning_level: config.default_reasoning } : {}),
       });
       expect(screen.getByRole("status")).toHaveTextContent("Starting analysis.");
       expect(me).toBeDisabled(); expect(other).toBeDisabled();
@@ -77,6 +79,6 @@ describe("consent journey", () => {
     expect(other).not.toBeChecked();
     for (const button of screen.getAllByRole("button")) expect(button).toHaveAttribute("aria-describedby", "submission-error");
     fireEvent.click(screen.getByRole("button", { name: "Send excerpts and analyze" }));
-    expect(onFull).toHaveBeenCalledWith({ experimental: true, scoreOther: false });
+    expect(onFull).toHaveBeenCalledWith({ experimental: true, scoreOther: false }, null);
   });
 });

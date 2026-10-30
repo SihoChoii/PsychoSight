@@ -74,6 +74,8 @@ describe("opt-in disclosure", () => {
       label: labels[match[1]],
     }));
     expect(mockConfig.experimental_dimensions).toEqual(dims);
+    // reasoning_levels and default_reasoning are locked to psychosight/reasoning.py in
+    // reasoning-refurbished.test.tsx. The mock sets reasoning_effort to default_reasoning ("low").
     render(
       <OptIn text={mockConfig.opt_in_text} busy={false} error={null} onOptIn={() => {}} onLocalOnly={() => {}} />,
     );

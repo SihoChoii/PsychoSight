@@ -1,12 +1,24 @@
 import type { ReactNode } from "react";
 import { formatNumber } from "../../format";
+import { levelLabel } from "../../reasoning-adapter";
 import type { Report } from "../../types";
 
-export function ReportOverview({ report, children }: { report: Report; children?: ReactNode }) {
+export function ReportOverview({
+  report,
+  reasoningLevels = [],
+  children,
+}: {
+  report: Report;
+  reasoningLevels?: readonly { id: string; label: string }[];
+  children?: ReactNode;
+}) {
   const { header } = report;
+  const levelId = report.run_meta.reasoning_level;
+  const reasoningText = typeof levelId === "string" && levelId.length > 0 ? levelLabel(reasoningLevels, levelId) : null;
   return <header className="report-intro" aria-labelledby="page-title">
     <h1 id="page-title" tabIndex={-1}>{header.conversation_label}</h1>
     <p className="report-meta"><span className="report-context">{header.is_demo ? "Demo data · " : ""}{report.mode === "full" ? "Full analysis" : report.mode === "deterministic_only" ? "Deterministic only" : `Analysis mode: ${report.mode}`}</span><span aria-hidden="true"> · </span><span className="report-applied">Applied dates: {header.date_from ?? "Unavailable"} – {header.date_to ?? "Unavailable"} · {header.timezone || "Timezone unavailable"}</span></p>
+    {reasoningText ? <p className="report-reasoning" data-testid="reasoning-used">Reasoning {reasoningText}</p> : null}
     {children}
     {report.run_meta.provider_note ? <p className="report-provider-note">{report.run_meta.provider_note}</p> : null}
     <dl className="report-totals" aria-label="Full report totals">

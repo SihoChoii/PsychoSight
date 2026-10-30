@@ -45,7 +45,7 @@ def test_real_provider_requires_key_and_model():
 def test_defaults_dotenv_and_env_override(tmp_path, monkeypatch):
     s = config.llm_settings()
     assert s.api_key is None and s.key_source is None and not s.configured
-    assert s.model == "deepseek-flash" and s.reasoning_effort == "max" and s.thinking == "enabled"
+    assert s.model == "deepseek-flash" and s.reasoning_effort == "low" and s.thinking == "enabled"
     assert s.base_url == "https://api.deepseek.com"
     env_file = tmp_path / ".env"
     env_file.write_text("# comment\nexport DEEPSEEK_API_KEY='sk-dotenv-FAKE-KEY-7q7q'\n"

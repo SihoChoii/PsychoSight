@@ -1,3 +1,4 @@
+import { attachReasoningLevel } from "./reasoning-adapter";
 import type { AnalysisRequest, Config, ExperimentalChoice } from "./types";
 
 export function buildAnalysisRequest(input: {
@@ -8,6 +9,7 @@ export function buildAnalysisRequest(input: {
   llmOptIn: boolean;
   choice: ExperimentalChoice;
   config: Config | null;
+  reasoningLevel?: string | null;
 }): AnalysisRequest {
   const enabled = input.config?.experimental_enabled === true;
   const experimental = enabled && input.choice.experimental;
@@ -28,5 +30,9 @@ export function buildAnalysisRequest(input: {
   if (scoreOther && input.config?.score_other_opt_in_text) {
     body.score_other_opt_in_text = input.config.score_other_opt_in_text;
   }
-  return body;
+  return attachReasoningLevel(body, {
+    config: input.config,
+    llmOptIn: input.llmOptIn,
+    reasoningLevel: input.reasoningLevel,
+  });
 }

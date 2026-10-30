@@ -13,7 +13,7 @@ from typing import Callable, Dict, List, Optional, Tuple
 
 import jsonschema
 
-from . import config
+from . import config, reasoning
 from .errors import LLMUnavailable
 from .features import count_absolutist, tokenize
 from .llm import Provider, parse_json_object, require_opt_in
@@ -339,7 +339,7 @@ class CallBudget:
 def score_one(provider: Provider, ep: Episode, run_idx: int, store: Store, stats: ScoringStats,
               budget: CallBudget) -> Optional[dict]:
     fp = exact_fingerprint(ep.turns)
-    cached = store.get_score(ep.hash, config.PROMPT_VERSION, provider.model, run_idx)
+    cached = store.get_score(ep.hash, config.PROMPT_VERSION, reasoning.cache_model_for(provider), run_idx)
     # Offsets are only valid for the exact text they were measured on. A normalized-hash hit
     # with a different fingerprint (or a legacy row with no fingerprint) is a miss.
     if cached is not None and cached.get("_exact_fp") == fp and isinstance(cached.get("items"), dict):
@@ -364,7 +364,7 @@ def score_one(provider: Provider, ep: Episode, run_idx: int, store: Store, stats
         return None
     record, dropped = to_cache_record(ep, cleaned)
     stats.bump("dropped_quotes", dropped)
-    store.put_score(ep.hash, config.PROMPT_VERSION, provider.model, run_idx,
+    store.put_score(ep.hash, config.PROMPT_VERSION, reasoning.cache_model_for(provider), run_idx,
                     {"items": record["items"], "_exact_fp": fp})
     return record
 

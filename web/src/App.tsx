@@ -10,6 +10,7 @@ import { ReportScreen } from "./components/ReportScreen";
 import { SavedReports } from "./components/SavedReports";
 import { Shell } from "./components/Shell";
 import { applyTheme, currentTheme, isMockMode, type ThemeName } from "./mode";
+import { readReasoningControl } from "./reasoning-adapter";
 import { parseHash, type Route } from "./routes";
 import type { Config, ExperimentalChoice, SavedAnalysis } from "./types";
 import { ACTIVE_JOB_KEY, isSelection, readSession, writeSession, removeSession, rememberRunContext } from "./run-context";
@@ -121,7 +122,7 @@ export function App() {
     setTheme(next);
   }
 
-  async function start(optIn: boolean, choice: ExperimentalChoice) {
+  async function start(optIn: boolean, choice: ExperimentalChoice, reasoningLevel: string | null = null) {
     if (submitting.current) return;
     if (!selection) {
       window.location.hash = "#/";
@@ -141,6 +142,7 @@ export function App() {
           llmOptIn: optIn,
           choice,
           config,
+          reasoningLevel: optIn ? reasoningLevel : null,
         }),
       );
       rememberRunContext(created.job_id, selection);
@@ -235,14 +237,22 @@ export function App() {
         experimentalText={config?.experimental_opt_in_text ?? null}
         scoreOtherText={config?.score_other_opt_in_text ?? null}
         demoProviderNote={config?.demo_provider_note ?? null}
-        onOptIn={(choice) => start(true, choice)}
-        onLocalOnly={(choice) => start(false, choice)}
+        reasoningConfig={config}
+        onOptIn={(choice, reasoningLevel) => start(true, choice, reasoningLevel)}
+        onLocalOnly={(choice) => start(false, choice, null)}
       />
     );
   } else if (route.name === "run") {
     body = <RunScreen key={route.jobId} jobId={route.jobId} />;
   } else if (route.name === "report") {
-    body = <ReportScreen key={route.jobId} jobId={route.jobId} trendNote={config?.experimental_trend_note ?? null} />;
+    body = (
+      <ReportScreen
+        key={route.jobId}
+        jobId={route.jobId}
+        trendNote={config?.experimental_trend_note ?? null}
+        reasoningLevels={readReasoningControl(config).levels}
+      />
+    );
   } else if (catalog?.chat_db.available === false) {
     body = (
       <>
