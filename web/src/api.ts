@@ -1,12 +1,11 @@
+import {
+  conversationFields,
+  conversationsQueryString,
+  type ConversationQuery,
+  type ConversationsFetch,
+} from "./conversation-adapter";
 import { apiBase, isMockMode } from "./mode";
-import type {
-  AnalysisRequest,
-  Config,
-  ConversationsResponse,
-  Job,
-  Report,
-  SavedAnalysis,
-} from "./types";
+import type { AnalysisRequest, Config, CreatedAnalysis, Job, MessagePage, Report, SavedAnalysis } from "./types";
 
 export class ApiError extends Error {
   readonly code: string;
@@ -20,24 +19,48 @@ export class ApiError extends Error {
   }
 }
 
-export interface Client {
-  getConfig(): Promise<Config>;
-  getConversations(): Promise<ConversationsResponse>;
-  listAnalyses(): Promise<SavedAnalysis[]>;
-  createAnalysis(body: AnalysisRequest): Promise<{ job_id: string; status: string }>;
-  getAnalysis(jobId: string): Promise<Job>;
-  getReport(jobId: string): Promise<Report>;
-  deleteAnalysis(jobId: string): Promise<{ deleted: boolean; job_id: string }>;
+export interface DiskAccessRecheck {
+  granted: boolean;
+  relaunch_required: boolean;
+  reason: string;
+  settings_url: string;
+  message: string;
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+export interface DiskAccessOpen {
+  opened: boolean;
+  url: string;
+  reason?: string | null;
+}
+
+export interface DiskAccessReveal {
+  revealed: boolean;
+  reason?: string | null;
+}
+
+export interface Client {
+  getConfig(): Promise<Config>;
+  getConversations(query?: ConversationQuery): Promise<ConversationsFetch>;
+  listAnalyses(): Promise<SavedAnalysis[]>;
+  createAnalysis(body: AnalysisRequest): Promise<CreatedAnalysis>;
+  getAnalysis(jobId: string, signal?: AbortSignal): Promise<Job>;
+  getReport(jobId: string): Promise<Report>;
+  getEpisodeMessages(jobId: string, episodeId: string, offset?: number, signal?: AbortSignal, range?: {start:number;end:number}): Promise<MessagePage>;
+  deleteAnalysis(jobId: string): Promise<{ deleted: boolean; job_id: string }>;
+  recheckDiskAccess(): Promise<DiskAccessRecheck>;
+  openDiskAccessSettings(): Promise<DiskAccessOpen>;
+  revealDiskAccessApp(): Promise<DiskAccessReveal>;
+}
+
+async function requestRaw(path: string, init?: RequestInit): Promise<{ data: unknown; headers: Headers }> {
   const headers = new Headers(init?.headers);
   headers.set("accept", "application/json");
   if (init?.body) headers.set("content-type", "application/json");
   let response: Response;
   try {
     response = await fetch(`${apiBase()}${path}`, { ...init, headers });
-  } catch {
+  } catch (error: unknown) {
+    if (isAbortError(error)) throw error;
     throw new ApiError("INTERNAL_ERROR", "The local API could not be reached.", 0);
   }
   const text = await response.text();
@@ -57,22 +80,35 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       response.status,
     );
   }
+  return { data, headers: response.headers };
+}
+
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const { data } = await requestRaw(path, init);
   return data as T;
 }
 
 export const httpApi: Client = {
   getConfig: () => request<Config>("/config"),
-  getConversations: () => request<ConversationsResponse>("/conversations"),
+  getConversations: async (query) => {
+    const suffix = query ? `?${conversationsQueryString(query)}` : "";
+    const { data, headers } = await requestRaw(`/conversations${suffix}`);
+    return { body: data, totalHeader: headers.get(conversationFields.totalHeader) };
+  },
   listAnalyses: async () => {
     const body = await request<{ analyses: SavedAnalysis[] }>("/analyses");
     return body.analyses;
   },
   createAnalysis: (body) =>
-    request<{ job_id: string; status: string }>("/analyses", { method: "POST", body: JSON.stringify(body) }),
-  getAnalysis: (jobId) => request<Job>(`/analyses/${encodeURIComponent(jobId)}`),
+    request<CreatedAnalysis>("/analyses", { method: "POST", body: JSON.stringify(body) }),
+  getAnalysis: (jobId, signal) => request<Job>(`/analyses/${encodeURIComponent(jobId)}`, { signal }),
   getReport: (jobId) => request<Report>(`/analyses/${encodeURIComponent(jobId)}/report`),
+  getEpisodeMessages: (jobId, episodeId, offset = 0, signal, range) => request<MessagePage>(`/analyses/${encodeURIComponent(jobId)}/episodes/${encodeURIComponent(episodeId)}/messages?offset=${offset}&limit=500${range ? `&start_ms=${range.start}&end_ms=${range.end}` : ""}`, { signal, cache: "no-store" }),
   deleteAnalysis: (jobId) =>
     request<{ deleted: boolean; job_id: string }>(`/analyses/${encodeURIComponent(jobId)}`, { method: "DELETE" }),
+  recheckDiskAccess: () => request<DiskAccessRecheck>("/disk-access/recheck", { method: "POST" }),
+  openDiskAccessSettings: () => request<DiskAccessOpen>("/disk-access/open-settings", { method: "POST" }),
+  revealDiskAccessApp: () => request<DiskAccessReveal>("/disk-access/reveal", { method: "POST" }),
 };
 
 let clientPromise: Promise<Client> | null = null;
@@ -86,4 +122,8 @@ export function getClient(): Promise<Client> {
 
 export function resetClientForTests(): void {
   clientPromise = null;
+}
+
+export function isAbortError(error: unknown): boolean {
+  return typeof error === "object" && error !== null && "name" in error && error.name === "AbortError";
 }

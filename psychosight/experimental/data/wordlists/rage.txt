@@ -1,0 +1,8 @@
+# Original PsychoSight list (MIT). Data only; a count, not a label or a flag.
+enraged
+fuming
+infuriated
+rage
+raging
+seething
+wrath

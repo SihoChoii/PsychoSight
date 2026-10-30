@@ -15,6 +15,7 @@ import unicodedata
 from typing import Iterable, List
 
 from . import config
+from .experimental import strings as exp_strings
 
 BANNED = [
     r"diagnos", r"disorder", r"clinical", r"\bt[\s-]*scores?\b", r"relapse", r"suicid", r"self[\s-]*harm",
@@ -87,3 +88,47 @@ def schema_strings(node) -> Iterable[str]:
     elif isinstance(node, list):
         for v in node:
             yield from schema_strings(v)
+
+
+# ---------- experimental scores section (schema 1.1.0) ----------
+# Scoped allow-list: exact constants only. Applies only to strings under `experimental_scores` and to the
+# exp-holistic-v1 prompt (Track B adds that prompt here). The global lint above is unchanged.
+EXP_ALLOW_LIST: List[str] = list(exp_strings.ALLOW_LIST_CONSTANTS)
+
+# Still banned inside the section (after allow-listed constants are stripped). Trait names are allowed there.
+EXP_BANNED: List[str] = [
+    r"diagnos", r"disorder", r"clinical", r"suicid", r"self[\s-]*harm", r"relapse", r"\bt[\s-]*scores?\b",
+    r"\bpercentiles?\b", r"\bcut[\s-]*offs?\b", r"elevation", r"symptom", r"patholog",
+    r"\byou (have|are) (a |an )?(narcissis|depress|addict|neurotic|anxious)",
+    r"\b(is|are|am|an|a) addict(s|ed)?\b", r"\baddicts\b",
+    r"\bat risk\b",
+    r"\b(high|low)\b[^.]{0,20}\b(score|index|number)\b", r"\b(score|index|number)\b[^.]{0,20}\b(high|low)\b",
+    r"\b(above|below)[\s-]+average\b",
+]
+
+
+def _strip_exp_allowed(text: str) -> str:
+    # Longer constants first so a short allow-listed string cannot split a longer one.
+    for allowed in sorted((a for a in EXP_ALLOW_LIST if a), key=len, reverse=True):
+        text = text.replace(allowed, " ")
+    return text
+
+
+def lint_experimental(text: str) -> List[str]:
+    """Return the EXP_BANNED patterns found in `text` after stripping EXP_ALLOW_LIST constants.
+
+    The allow-list is exact and is applied before normalization, same as the global lint, so a
+    zero-width character inside an allow-listed constant does not hide the words it contains.
+    Callers replace a hit with the fixed fallback and log only the pattern (the rule id).
+    """
+    t = _normalize_for_lint(_strip_exp_allowed(text or ""))
+    return [p for p in EXP_BANNED if re.search(p, t)]
+
+
+# The exp-holistic-v1 prompt is the only experimental prompt that names a domain the global lint bans
+# (neuroticism). It is allow-listed for the experimental lint only; the episode prompt is not.
+# Imported at the end: psychosight.experimental never imports this module at load time.
+from .experimental.llm_exp import HOLISTIC_SYSTEM_PROMPT  # noqa: E402
+
+if HOLISTIC_SYSTEM_PROMPT not in EXP_ALLOW_LIST:
+    EXP_ALLOW_LIST.append(HOLISTIC_SYSTEM_PROMPT)

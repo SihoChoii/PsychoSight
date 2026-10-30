@@ -7,13 +7,13 @@ import random
 import re
 import statistics
 import threading
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional, Tuple
 
 import jsonschema
 
-from . import config
+from . import config, reasoning
 from .errors import LLMUnavailable
 from .features import count_absolutist, tokenize
 from .llm import Provider, parse_json_object, require_opt_in
@@ -339,7 +339,7 @@ class CallBudget:
 def score_one(provider: Provider, ep: Episode, run_idx: int, store: Store, stats: ScoringStats,
               budget: CallBudget) -> Optional[dict]:
     fp = exact_fingerprint(ep.turns)
-    cached = store.get_score(ep.hash, config.PROMPT_VERSION, provider.model, run_idx)
+    cached = store.get_score(ep.hash, config.PROMPT_VERSION, reasoning.cache_model_for(provider), run_idx)
     # Offsets are only valid for the exact text they were measured on. A normalized-hash hit
     # with a different fingerprint (or a legacy row with no fingerprint) is a miss.
     if cached is not None and cached.get("_exact_fp") == fp and isinstance(cached.get("items"), dict):
@@ -364,14 +364,14 @@ def score_one(provider: Provider, ep: Episode, run_idx: int, store: Store, stats
         return None
     record, dropped = to_cache_record(ep, cleaned)
     stats.bump("dropped_quotes", dropped)
-    store.put_score(ep.hash, config.PROMPT_VERSION, provider.model, run_idx,
+    store.put_score(ep.hash, config.PROMPT_VERSION, reasoning.cache_model_for(provider), run_idx,
                     {"items": record["items"], "_exact_fp": fp})
     return record
 
 
 def score_episodes(provider: Provider, episodes: List[Episode], store: Store, llm_opt_in: bool,
                    progress: Optional[Callable[[int, int], None]] = None,
-                   concurrency: int = config.LLM_CONCURRENCY,
+                   concurrency: Optional[int] = None,
                    budget: Optional[CallBudget] = None) -> ScoringResult:
     require_opt_in(llm_opt_in)
     result = ScoringResult()
@@ -381,16 +381,29 @@ def score_episodes(provider: Provider, episodes: List[Episode], store: Store, ll
     if progress:
         progress(0, total)
 
-    def work(ep: Episode) -> Tuple[str, List[Optional[dict]]]:
-        return ep.id, [score_one(provider, ep, r, store, result.stats, budget) for r in (0, 1)]
-
-    workers = 1 if provider.name == "mock" else max(1, concurrency)
+    workers = 1 if provider.name == "mock" else max(1, concurrency or config.llm_concurrency())
+    # Each (episode, run) is its own task, so the two runs of one episode go out in parallel. Results
+    # are keyed by run index and stored in episode order; progress counts episodes with both runs done.
+    slots: Dict[str, List[Optional[dict]]] = {ep.id: [None, None] for ep in episodes}
+    finished: Dict[str, int] = {}
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        for eid, runs in pool.map(work, episodes):
-            result.runs[eid] = runs
-            done += 1
-            if progress:
-                progress(done, total)
+        futures = {pool.submit(score_one, provider, ep, r, store, result.stats, budget): (ep.id, r)
+                   for ep in episodes for r in (0, 1)}
+        try:
+            for future in as_completed(futures):
+                eid, r = futures[future]
+                slots[eid][r] = future.result()
+                finished[eid] = finished.get(eid, 0) + 1
+                if finished[eid] == 2:
+                    done += 1
+                    if progress:
+                        progress(done, total)
+        except BaseException:
+            for future in futures:
+                future.cancel()
+            raise
+    for ep in episodes:
+        result.runs[ep.id] = slots[ep.id]
     log.info("rubric scored episodes=%d calls=%d cache_hits=%d", total, result.stats.llm_calls,
              result.stats.cache_hits)
     return result

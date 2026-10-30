@@ -8,6 +8,9 @@ class PsychoSightError(Exception):
     http_status = 500
 
     def __init__(self, message: str):
+        from .config import redact  # lazy: config must not import errors at module load
+
+        message = redact(message)  # an API key (any source) never reaches an error body, log or report
         super().__init__(message)
         self.message = message
 
@@ -47,6 +50,34 @@ class ReportNotReady(PsychoSightError):
 
 class InvalidRequest(PsychoSightError):
     code = "INVALID_REQUEST"
+    http_status = 422
+
+
+class InvalidReasoningLevel(InvalidRequest, ValueError):
+    """reasoning_level is not one of psychosight.reasoning.REASONING_IDS."""
+
+    code = "INVALID_REASONING_LEVEL"
+    http_status = 422
+
+
+class DateRangeInvalid(InvalidRequest):
+    """date_from is after date_to."""
+
+    code = "DATE_RANGE_INVALID"
+    http_status = 422
+
+
+class DateRangeOutOfBounds(InvalidRequest):
+    """The requested range does not overlap the conversation's first..last message dates."""
+
+    code = "DATE_RANGE_OUT_OF_BOUNDS"
+    http_status = 422
+
+
+class ExperimentalConsentRequired(PsychoSightError):
+    """score_other without experimental scores, or a consent echo that does not match /config."""
+
+    code = "EXPERIMENTAL_CONSENT_REQUIRED"
     http_status = 422
 
 

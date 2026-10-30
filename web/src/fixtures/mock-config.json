@@ -1,13 +1,119 @@
 {
   "version": "0.1.0",
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "provider": "deepseek",
   "model": null,
   "llm_configured": false,
-  "reasoning_effort": "max",
+  "reasoning_effort": "low",
+  "reasoning_levels": [
+    {
+      "id": "none",
+      "label": "Off (fastest)",
+      "description": "Thinking turned off: quickest and cheapest, but the least careful scoring."
+    },
+    {
+      "id": "low",
+      "label": "Low (default)",
+      "description": "A short thinking pass (DeepSeek effort 'low'): a good balance of speed and care."
+    },
+    {
+      "id": "high",
+      "label": "High",
+      "description": "DeepSeek's standard thinking depth (its own default; 'medium' and 'xhigh' also run as high)."
+    },
+    {
+      "id": "max",
+      "label": "Max (slowest)",
+      "description": "Deepest thinking (DeepSeek effort 'max'): slowest and most tokens; the demo took ~8 minutes."
+    }
+  ],
+  "default_reasoning": "low",
   "demo_provider": "mock",
-  "opt_in_text": "To score communication patterns, PsychoSight will send excerpts of this conversation to DeepSeek (an external AI service). The excerpts include messages from BOTH sides: your messages and the other person's messages, which are sent as context. Up to 40 short episodes are sent; nothing else from your Messages library leaves this computer. DeepSeek processes the excerpts under its own terms. Evidence quotes from the analysis are saved in the local report until you delete it. If you do not opt in, you still get a local-only report without the AI sections.",
+  "demo_provider_note": "not real model: offline mock scores for the synthetic demo, because no DeepSeek key was found (copy .env.example to .env and add the key to run the real model)",
+  "opt_in_text": "To score communication patterns, PsychoSight will send excerpts of this conversation to DeepSeek (an external AI service). The excerpts include messages from BOTH sides: your messages and the other person's messages, which are sent as context. Up to 40 short episodes are sent; nothing else from your Messages library leaves this computer. DeepSeek processes the excerpts under its own terms. Evidence quotes from the analysis are saved in the local report until you delete it. The demo conversation is synthetic: its excerpts are fictional messages written for the demo. If you do not opt in, you still get a local-only report without the AI sections.",
   "disclaimer": "Experimental self-reflection, not a clinical or diagnostic tool",
   "limitations_title": "What this cannot tell you",
-  "max_episodes_scored": 40
+  "max_episodes_scored": 40,
+  "experimental_opt_in_text": "Show experimental personality and well-being language scores. These are 0–100 numbers built from word counts and AI ratings. They are not validated and are not a diagnosis. With AI scoring on, the same excerpts already selected are sent to DeepSeek again with extra questions.",
+  "score_other_opt_in_text": "Also score the other person. They have not agreed to be scored. Their scores are an experimental reading of their messages in this conversation only, stay on this computer, and should not be shared or used to judge them.",
+  "experimental_banner": "Experimental, not validated. These scores are not a diagnosis, not a personality test and not a measure of who anyone is. They come from word counts and AI ratings of this one conversation and can easily be wrong.",
+  "experimental_footer_support": "If anything in this conversation is weighing on you, consider talking with someone you trust or a licensed professional.",
+  "experimental_scale_note": "0–100 experimental index. 50 is the midpoint of fixed reference points, not an average person. The shaded band shows how uncertain the number is.",
+  "experimental_trend_note": "Weekly trend values are on their own scale and are not directly comparable to the overall index.",
+  "experimental_how_it_works": "These numbers come from word counts and AI ratings of text messages. The research behind them looked at essays, Facebook posts, blogs and forums, mostly from large groups of people. Nobody has tested these formulas on iMessage conversations.\n\nThe best published language-based personality models are modest. Agreement with self-report questionnaires is around r = .3 to .4 (Park et al. 2015; Azucar et al. 2018), and AI models asked directly come in around r = .29 (Peters & Matz 2024). Two people with the same true trait can easily get very different scores.\n\nNarcissism, attachment and addiction language have much weaker or exploratory evidence. Some popular ideas have failed outright: saying \"I\" a lot is not linked to narcissism (Carey et al. 2015, r = .01).\n\nOne conversation reflects the relationship and the moment as much as the person. Your score with one person and your score with another can differ.\n\nThe 0–100 scale is our own construction. 50 is the midpoint of fixed reference anchors. It is not an average person, and nothing on the scale is a dividing line.\n\nPeople tend to find vague personality feedback accurate (the Barnum effect, Forer 1949). Treat these scores as conversation starters, not facts.",
+  "experimental_enabled": true,
+  "experimental_dimensions": [
+    {
+      "key": "openness",
+      "label": "Openness (experimental language index)",
+      "family": "big_five",
+      "evidence_strength": "moderate"
+    },
+    {
+      "key": "conscientiousness",
+      "label": "Conscientiousness (experimental language index)",
+      "family": "big_five",
+      "evidence_strength": "moderate"
+    },
+    {
+      "key": "extraversion",
+      "label": "Extraversion (experimental language index)",
+      "family": "big_five",
+      "evidence_strength": "moderate"
+    },
+    {
+      "key": "agreeableness",
+      "label": "Agreeableness (experimental language index)",
+      "family": "big_five",
+      "evidence_strength": "moderate"
+    },
+    {
+      "key": "neuroticism",
+      "label": "Neuroticism (experimental language index)",
+      "family": "big_five",
+      "evidence_strength": "moderate"
+    },
+    {
+      "key": "depression_language",
+      "label": "Depression-related language (experimental language index)",
+      "family": "wellbeing_language",
+      "evidence_strength": "small"
+    },
+    {
+      "key": "anxiety_language",
+      "label": "Anxiety-related language (experimental language index)",
+      "family": "wellbeing_language",
+      "evidence_strength": "small"
+    },
+    {
+      "key": "addictive_language",
+      "label": "Addictive-tendency language (experimental language index)",
+      "family": "wellbeing_language",
+      "evidence_strength": "very_weak"
+    },
+    {
+      "key": "anger_hostility_language",
+      "label": "Anger/hostility language (experimental language index)",
+      "family": "interpersonal",
+      "evidence_strength": "small"
+    },
+    {
+      "key": "narcissism_language",
+      "label": "Narcissism-related language (experimental language index)",
+      "family": "interpersonal",
+      "evidence_strength": "very_weak"
+    },
+    {
+      "key": "attachment_anxious_language",
+      "label": "Anxious-attachment-related language (experimental language index)",
+      "family": "interpersonal",
+      "evidence_strength": "very_weak"
+    },
+    {
+      "key": "attachment_avoidant_language",
+      "label": "Avoidant-attachment-related language (experimental language index)",
+      "family": "interpersonal",
+      "evidence_strength": "very_weak"
+    }
+  ]
 }

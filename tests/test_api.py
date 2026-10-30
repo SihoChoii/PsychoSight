@@ -38,7 +38,20 @@ def test_health_config_no_secrets(client, monkeypatch):
     assert cfg["opt_in_text"] == config.OPT_IN_TEXT and "BOTH sides" in cfg["opt_in_text"]
     assert "DeepSeek" in cfg["opt_in_text"] and "other person's messages" in cfg["opt_in_text"]
     assert cfg["model"] == "my-model" and cfg["llm_configured"] is True
-    assert "sk-SECRET-123" not in json.dumps(cfg)
+    assert "sk-SECRET-123" not in json.dumps(cfg) and cfg["llm_key_source"] == "env"
+
+
+def test_config_dotenv_key_available_without_secret(client, tmp_path, monkeypatch):
+    cfg = client.get("/config").json()
+    assert cfg["llm_available"] is False and cfg["llm_key_source"] is None and cfg["model"] == "deepseek-flash"
+    env_file = tmp_path / ".env"
+    env_file.write_text("DEEPSEEK_API_KEY=sk-dotenv-FAKE-SECRET-5555\n", encoding="utf-8")
+    monkeypatch.setenv("PSYCHOSIGHT_DOTENV", str(env_file))
+    cfg = client.get("/config").json()
+    assert cfg["llm_available"] is True and cfg["llm_configured"] is True
+    assert cfg["model"] == "deepseek-flash" and cfg["reasoning_effort"] == "low" and cfg["default_reasoning"] == "low"
+    assert cfg["llm_key_source"] == "dotenv"
+    assert "FAKE-SECRET" not in json.dumps(cfg) and "5555" not in json.dumps(cfg)
 
 
 def test_conversations_demo_first_and_fda_error(client):
@@ -167,3 +180,41 @@ def test_cli_commands(tmp_path, capsys):
     assert main(["list-conversations"]) == 0
     assert main(["check-llm"]) == 2  # no key in tests -> LLM_UNAVAILABLE
     assert "LLM_UNAVAILABLE" in capsys.readouterr().err
+
+
+def test_static_dir_skips_unbuilt_vite_source(tmp_path, monkeypatch):
+    monkeypatch.delenv("PSYCHOSIGHT_STATIC_DIR", raising=False)
+    monkeypatch.setattr(config, "REPO_ROOT", tmp_path)
+    assert config.static_dir() is None and config.unbuilt_ui_hint() is None
+    web = tmp_path / "web"
+    web.mkdir()
+    (web / "index.html").write_text("<html></html>", encoding="utf-8")
+    assert config.static_dir() == web  # plain static files are served as-is
+    (web / "package.json").write_text("{}", encoding="utf-8")
+    assert config.static_dir() is None and "npm run build" in config.unbuilt_ui_hint()
+    (web / "dist").mkdir()
+    assert config.static_dir() == web / "dist" and config.unbuilt_ui_hint() is None
+
+
+def test_demo_uses_real_model_when_key_configured(client, tmp_path, monkeypatch):
+    from psychosight.llm import DeepSeekProvider, get_provider
+    from psychosight.mock_provider import MockProvider
+    monkeypatch.delenv("PSYCHOSIGHT_DEMO_PROVIDER")
+    cfg = client.get("/config").json()  # no key: mock, clearly labelled
+    assert cfg["demo_provider"] == "mock" and cfg["demo_provider_note"].startswith("not real model")
+    assert isinstance(get_provider(is_demo=True, llm_opt_in=True), MockProvider)
+    job_id = client.post("/analyses", json={"conversation_id": "demo", "llm_opt_in": True}).json()["job_id"]
+    wait_done(client, job_id)
+    rep = client.get(f"/analyses/{job_id}/report").json()
+    check(rep)
+    assert rep["run_meta"]["provider"] == "mock" and rep["run_meta"]["provider_note"].startswith("not real model")
+    env_file = tmp_path / ".env"
+    env_file.write_text("DEEPSEEK_API_KEY=sk-dotenv-FAKE-DEMO-0000\n", encoding="utf-8")
+    monkeypatch.setenv("PSYCHOSIGHT_DOTENV", str(env_file))
+    cfg = client.get("/config").json()
+    assert cfg["demo_provider"] == "deepseek" and cfg["demo_provider_note"] is None
+    assert isinstance(get_provider(is_demo=True, llm_opt_in=True), DeepSeekProvider)  # no call is made here
+    monkeypatch.setenv("PSYCHOSIGHT_DEMO_PROVIDER", "mock")
+    cfg = client.get("/config").json()
+    assert cfg["demo_provider"] == "mock" and "PSYCHOSIGHT_DEMO_PROVIDER=mock" in cfg["demo_provider_note"]
+    assert "synthetic" in cfg["opt_in_text"]

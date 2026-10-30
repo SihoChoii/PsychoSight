@@ -12,67 +12,192 @@ Every error response is
 ```
 | code | HTTP | when |
 |---|---|---|
-| `FULL_DISK_ACCESS_REQUIRED` | 403 | chat.db missing or unreadable (grant Full Disk Access to the terminal/app running the backend). |
+| `FULL_DISK_ACCESS_REQUIRED` | 403 | chat.db missing or unreadable. The packaged app probes it on launch and the UI can open Full Disk Access settings. |
 | `GROUP_CHAT_UNSUPPORTED` | 400 | Conversation has more than one other participant. 1:1 only. |
 | `LLM_OPT_IN_REQUIRED` | 400 | `mode:"full"` requested without `llm_opt_in:true`. LLM stages never run without opt-in. |
-| `LLM_UNAVAILABLE` | 503 (or job error) | Opt-in given but `DEEPSEEK_API_KEY`/`DEEPSEEK_MODEL` missing, the model string was rejected (message lists the provider's models), or the provider failed. |
+| `LLM_UNAVAILABLE` | 503 (or job error) | Opt-in given but no key is configured (message starts "No DeepSeek API key found", lists every place searched: env var, repo `.env`, `~/.psychosight/.env`, the app's bundled `psychosight.env`; and how to fix: copy `.env.example` to `.env`, export `DEEPSEEK_API_KEY`, or rebuild the app with `scripts/inject_bundled_key.py`), the key was rejected, the model string was rejected (message lists the provider's models), or the provider failed. |
 | `NOT_FOUND` | 404 | Unknown conversation, job or report. |
 | `REPORT_NOT_READY` | 409 | Report requested before the job is `done`. |
-| `INVALID_REQUEST` | 422 | Body failed validation (e.g. bad date). |
+| `TIMELINE_UNAVAILABLE` | 409 | Source messages no longer match the saved episode; run a new analysis to refresh the timeline. |
+| `INVALID_REQUEST` | 422 | Body or query failed validation (e.g. bad date format, `limit`/`offset`/`q` out of range on `GET /conversations`). |
+| `INVALID_REASONING_LEVEL` | 422 | `reasoning_level` on `POST /analyses` is not one of `GET /config` `reasoning_levels[].id`. Message: "reasoning_level 'medium' is not supported. Valid values: none, low, high, max (default low)." (A non-string value is `INVALID_REQUEST`.) |
+| `DATE_RANGE_INVALID` | 422 | `date_from` is after `date_to`. |
+| `DATE_RANGE_OUT_OF_BOUNDS` | 422 | The requested range does not overlap the conversation's first..last message dates at all. The message states the valid bounds, e.g. "The date range does not overlap this conversation. Messages run from 2025-08-04 to 2026-02-01 (inclusive, local dates)." |
+| `EXPERIMENTAL_CONSENT_REQUIRED` | 422 | `score_other` is true while `experimental_scores` is false, or an echoed experimental consent string does not match the current text from `GET /config`. |
 | `INTERNAL_ERROR` | 500 | Unexpected failure (no message text in the message). |
 
 ## GET /health
 `200 {"status": "ok", "version": "0.1.0"}`
 
 ## GET /config
-No secrets.
+No secrets: the API key is never returned, not even masked. The key is not in git; set it once with
+`cp .env.example .env` and paste it (or export `DEEPSEEK_API_KEY`). `llm_available` is `true` when a key is
+configured. `llm_key_source` is `"env"` (environment variable), `"dotenv"` (`.env` at the repo root or
+`~/.psychosight/.env`), `"bundled"` (lowest priority: the `psychosight.env` written into the packaged app at build
+time, see `docs/PACKAGING_KEY.md`) or `null` (no key: full mode on a real conversation returns `LLM_UNAVAILABLE`; the
+mock demo and deterministic-only reports still work). `llm_key_note` (additive) is `null` when a key is found, else
+the same "No DeepSeek API key found ..." message listing the places searched (paths only, never a value). `model` defaults to `deepseek-flash` (DeepSeek-V4.1-Flash), overridable
+with `DEEPSEEK_MODEL`. `llm_configured` is kept as an alias of `llm_available`.
+`demo_provider` is the provider the synthetic demo will use: `"deepseek"` whenever a key is configured, else `"mock"`
+(override with `PSYCHOSIGHT_DEMO_PROVIDER=mock|deepseek`). `demo_provider_note` is `null` for the real model and a
+user-visible string starting with `"not real model"` when the demo falls back to the offline mock; show it next to
+the opt-in. The opt-in text itself says the demo excerpts are synthetic.
+
+Reasoning (additive): `reasoning_levels` lists the DeepSeek thinking levels a client may send as
+`POST /analyses` `reasoning_level`, in order from fastest to slowest, each `{id, label, description}` (show `label`,
+optionally `description`). Only levels the provider really distinguishes are listed: `none` (thinking off), `low`,
+`high`, `max` (DeepSeek runs `medium`/`xhigh` as `high`, so they are not offered). `default_reasoning` is the id used
+when a request omits `reasoning_level` (`low`; `DEEPSEEK_REASONING_EFFORT` overrides it). `reasoning_effort` is kept
+for older clients and equals `default_reasoning`.
 ```json
 {
   "version": "0.1.0",
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "provider": "deepseek",
-  "model": "<DEEPSEEK_MODEL or null>",
+  "model": "deepseek-flash",
   "llm_configured": true,
-  "reasoning_effort": "max",
-  "demo_provider": "mock",
-  "opt_in_text": "<exact string, render verbatim>",
+  "llm_available": true,
+  "llm_key_source": "dotenv",
+  "llm_key_note": null,
+  "reasoning_effort": "low",
+  "reasoning_levels": [
+    {"id": "none", "label": "Off (fastest)", "description": "Thinking turned off: quickest and cheapest, but the least careful scoring."},
+    {"id": "low", "label": "Low (default)", "description": "A short thinking pass (DeepSeek effort 'low'): a good balance of speed and care."},
+    {"id": "high", "label": "High", "description": "DeepSeek's standard thinking depth (its own default; 'medium' and 'xhigh' also run as high)."},
+    {"id": "max", "label": "Max (slowest)", "description": "Deepest thinking (DeepSeek effort 'max'): slowest and most tokens; the demo took ~8 minutes."}
+  ],
+  "default_reasoning": "low",
+  "demo_provider": "deepseek",
+  "demo_provider_note": null,
+  "opt_in_text": "<exact string, render verbatim; see below>",
   "disclaimer": "Experimental self-reflection, not a clinical or diagnostic tool",
   "limitations_title": "What this cannot tell you",
-  "max_episodes_scored": 40
+  "max_episodes_scored": 40,
+  "experimental_opt_in_text": "Show experimental personality and well-being language scores. These are 0–100 numbers built from word counts and AI ratings. They are not validated and are not a diagnosis. With AI scoring on, the same excerpts already selected are sent to DeepSeek again with extra questions.",
+  "score_other_opt_in_text": "Also score the other person. They have not agreed to be scored. Their scores are an experimental reading of their messages in this conversation only, stay on this computer, and should not be shared or used to judge them.",
+  "experimental_banner": "Experimental, not validated. These scores are not a diagnosis, not a personality test and not a measure of who anyone is. They come from word counts and AI ratings of this one conversation and can easily be wrong.",
+  "experimental_footer_support": "If anything in this conversation is weighing on you, consider talking with someone you trust or a licensed professional.",
+  "experimental_scale_note": "0–100 experimental index. 50 is the midpoint of fixed reference points, not an average person. The shaded band shows how uncertain the number is.",
+  "experimental_trend_note": "Weekly trend values are on their own scale and are not directly comparable to the overall index.",
+  "experimental_how_it_works": "<multi-paragraph string, render verbatim>",
+  "experimental_enabled": true,
+  "experimental_dimensions": [
+    {"key": "openness", "label": "Openness (experimental language index)", "family": "big_five", "evidence_strength": "moderate"},
+    {"key": "conscientiousness", "label": "Conscientiousness (experimental language index)", "family": "big_five", "evidence_strength": "moderate"},
+    {"key": "extraversion", "label": "Extraversion (experimental language index)", "family": "big_five", "evidence_strength": "moderate"},
+    {"key": "agreeableness", "label": "Agreeableness (experimental language index)", "family": "big_five", "evidence_strength": "moderate"},
+    {"key": "neuroticism", "label": "Neuroticism (experimental language index)", "family": "big_five", "evidence_strength": "moderate"},
+    {"key": "depression_language", "label": "Depression-related language (experimental language index)", "family": "wellbeing_language", "evidence_strength": "small"},
+    {"key": "anxiety_language", "label": "Anxiety-related language (experimental language index)", "family": "wellbeing_language", "evidence_strength": "small"},
+    {"key": "addictive_language", "label": "Addictive-tendency language (experimental language index)", "family": "wellbeing_language", "evidence_strength": "very_weak"},
+    {"key": "anger_hostility_language", "label": "Anger/hostility language (experimental language index)", "family": "interpersonal", "evidence_strength": "small"},
+    {"key": "narcissism_language", "label": "Narcissism-related language (experimental language index)", "family": "interpersonal", "evidence_strength": "very_weak"},
+    {"key": "attachment_anxious_language", "label": "Anxious-attachment-related language (experimental language index)", "family": "interpersonal", "evidence_strength": "very_weak"},
+    {"key": "attachment_avoidant_language", "label": "Avoidant-attachment-related language (experimental language index)", "family": "interpersonal", "evidence_strength": "very_weak"}
+  ]
 }
 ```
 `opt_in_text` (current value, render it verbatim from the API rather than copying it):
 
-> To score communication patterns, PsychoSight will send excerpts of this conversation to DeepSeek (an external AI service). The excerpts include messages from BOTH sides: your messages and the other person's messages, which are sent as context. Up to 40 short episodes are sent; nothing else from your Messages library leaves this computer. DeepSeek processes the excerpts under its own terms. Evidence quotes from the analysis are saved in the local report until you delete it. If you do not opt in, you still get a local-only report without the AI sections.
+> To score communication patterns, PsychoSight will send excerpts of this conversation to DeepSeek (an external AI service). The excerpts include messages from BOTH sides: your messages and the other person's messages, which are sent as context. Up to 40 short episodes are sent; nothing else from your Messages library leaves this computer. DeepSeek processes the excerpts under its own terms. Evidence quotes from the analysis are saved in the local report until you delete it. The demo conversation is synthetic: its excerpts are fictional messages written for the demo. If you do not opt in, you still get a local-only report without the AI sections.
+
+`demo_provider` is `"deepseek"` when a key is configured (the demo runs a real analysis) and `"mock"` otherwise; override with `PSYCHOSIGHT_DEMO_PROVIDER=mock|deepseek`. `demo_provider_note` is `null` with the real model and a short explanation string when the demo falls back to the mock (show it next to the demo entry). Sample captured from the running server with a key in `.env`; `experimental_*` fields are described under [Experimental scores](#experimental-scores).
 
 ## GET /conversations
+Query params (all optional):
+
+| param | type | default | rule |
+|---|---|---|---|
+| `limit` | int | none (whole list) when no paging param is given; `50` when `offset` or `q` is given | 1..200, else `422 INVALID_REQUEST` |
+| `offset` | int | `0` | `>= 0`, else `422 INVALID_REQUEST` |
+| `q` | string | none | case-insensitive substring over the display name/label and handles (chat identifier, participant phone numbers/emails). The demo entry matches its label ("Demo conversation (synthetic)") or `demo`. Max 200 chars. Blank = no filter. |
+
+With no params the body is the same list as before (every conversation), so existing callers are unchanged.
+
 ```json
 {
   "conversations": [
-    {"id": "demo", "label": "Demo conversation (synthetic)", "message_count": 812, "latest_date": "2025-11-16T22:10:00-08:00",
+    {"id": "demo", "label": "Demo conversation (synthetic)", "message_count": 4259,
+     "latest_date": "2026-02-01T13:48:05-08:00",
+     "first_message_at": "2025-08-04T20:29:09-07:00", "last_message_at": "2026-02-01T13:48:05-08:00",
+     "first_message_date": "2025-08-04", "last_message_date": "2026-02-01",
      "is_group": false, "supported": true, "is_demo": true, "participant_count": 1},
-    {"id": "42", "label": "+1 555-0100", "message_count": 3021, "latest_date": "...", "is_group": false, "supported": true, "is_demo": false, "participant_count": 1}
+    {"id": "42", "label": "+1 555-0100", "message_count": 3021, "latest_date": "...",
+     "first_message_at": "...", "last_message_at": "...", "first_message_date": "...", "last_message_date": "...",
+     "is_group": false, "supported": true, "is_demo": false, "participant_count": 1}
   ],
-  "chat_db": {"available": true, "error": null}
+  "chat_db": {"available": true, "error": null},
+  "total": 2, "limit": null, "offset": 0, "q": null
 }
 ```
-The demo entry is always first. If chat.db cannot be read the response is still `200` with only the demo entry and
+Per conversation:
+- `message_count`: messages in chat.db for that chat (all rows, including reactions/attachments; the analysis later drops those).
+- `first_message_at` / `last_message_at`: ISO 8601 timestamps of the earliest/latest message, with the Mac's local UTC offset (same convention as `latest_date`, which equals `last_message_at`). `null` if the chat has no dated message.
+- `first_message_date` / `last_message_date`: the same instants as local dates `YYYY-MM-DD`. These are the inclusive bounds that `POST /analyses` validates `date_from`/`date_to` against; use them to default the date picker.
+
+Paging: `total` is the number of matching conversations (demo included) before `limit`/`offset`; `limit` is the applied page size (`null` = no limit); `offset` the applied offset; `q` the applied filter (trimmed, `null` if none). The header `X-Total-Count` carries `total` too. Order is stable: demo first, then most recent activity first (`latest_date` desc, then id desc).
+
+Paged example, `GET /conversations?limit=2&offset=0&q=bob`:
+```json
+{"conversations": [{"id": "1", "label": "Bob Smith", "...": "..."}],
+ "chat_db": {"available": true, "error": null}, "total": 1, "limit": 2, "offset": 0, "q": "bob"}
+```
+The demo entry is always first (when it matches `q`). If chat.db cannot be read the response is still `200` with only the demo entry and
 `chat_db: {"available": false, "error": {"code": "FULL_DISK_ACCESS_REQUIRED", "message": "..."}}` so the UI can show
 setup help and offer the demo. Group chats are listed with `is_group: true, supported: false`.
+
+`python -m psychosight serve` reads a few bytes of chat.db before it accepts connections, so macOS can list the
+process under Full Disk Access. The bytes are discarded and are not logged. `probe-disk` prints only
+`{"granted": true|false, "reason": "ok|denied|missing|error", "error_type": "..."}`.
+
+## POST /disk-access/recheck
+Probes again in this process. If this process is still blocked, it probes in a new process. A grant that only the
+new process can see sets `relaunch_required` (quit and reopen). No message text is returned.
+```json
+{"granted": false, "relaunch_required": true, "reason": "relaunch_required",
+ "settings_url": "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles",
+ "message": "Full Disk Access is on for a new PsychoSight process, but this one still cannot read Messages. Quit PsychoSight and open it again."}
+```
+
+## POST /disk-access/open-settings
+Opens the Full Disk Access pane with `open` on
+`x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles`. The URL is fixed.
+`{"opened": true, "url": "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles", "reason": null}`
+
+## POST /disk-access/reveal
+Reveals `PsychoSight.app` in Finder (`open -R`) so it can be dragged into the Full Disk Access list.
+`{"revealed": true, "reason": null}` The path is the running app bundle, or `/Applications/PsychoSight.app` when that exists. A path in the request body is ignored.
 
 ## POST /analyses
 Request:
 ```json
-{"conversation_id": "demo", "date_from": "2025-09-01", "date_to": "2025-11-30", "llm_opt_in": true, "demo": false, "mode": null}
+{"conversation_id": "demo", "date_from": "2025-09-01", "date_to": "2025-11-30", "llm_opt_in": true, "demo": false, "mode": null,
+ "reasoning_level": "low"}
 ```
 - `conversation_id` required (`"demo"` or an id from `/conversations`). `demo: true` forces the synthetic conversation.
-- `date_from`/`date_to` optional, inclusive local dates `YYYY-MM-DD`.
+- `date_from`/`date_to` optional, inclusive local dates `YYYY-MM-DD`. Validated against the conversation's
+  `first_message_date`..`last_message_date` (demo included):
+  - `date_from > date_to`: `422 DATE_RANGE_INVALID`.
+  - no overlap with the bounds (open ends count as the bound): `422 DATE_RANGE_OUT_OF_BOUNDS`, message names the bounds.
+  - partly outside: the given end(s) are clamped to the bounds and the run proceeds. The report records it in
+    `run_meta.date_range_clamped = {"requested": {"date_from", "date_to"}, "applied": {...}, "bounds": {...}}`
+    (`null` when nothing was clamped); `header.requested_range` keeps what the client sent. Omitted ends stay open.
 - `llm_opt_in` required boolean. `false` gives a full deterministic-only report (rubric and observations `not_run`).
 - `mode` optional: `"full"` (requires `llm_opt_in:true`, else `400 LLM_OPT_IN_REQUIRED`) or `"deterministic_only"`.
+- `reasoning_level` optional: one of `GET /config` `reasoning_levels[].id` (`none` | `low` | `high` | `max`,
+  case-insensitive); omitted or `null` uses `default_reasoning`. Anything else: `422 INVALID_REASONING_LEVEL` (checked
+  before the job starts, in every mode). It applies to **every** LLM call of the analysis: main rubric, synthesis and
+  the experimental stage (episode and holistic calls), demo included when the demo uses DeepSeek. `none` sends
+  `thinking: {type: "disabled"}` and no `reasoning_effort`; the others send `thinking: {type: "enabled"}` with
+  `reasoning_effort` set to the id. With the offline mock the level is recorded but has no effect. The level used is
+  in `run_meta.reasoning_level` (`null` in deterministic-only runs). Score cache rows are keyed per level, so changing
+  the level re-asks the model instead of reusing results from another level.
 
 Response `202 {"job_id": "a1b2...", "status": "queued"}`. Fast-fail errors: `GROUP_CHAT_UNSUPPORTED`, `NOT_FOUND`,
-`LLM_OPT_IN_REQUIRED`, `LLM_UNAVAILABLE` (opt-in with no key/model for a real conversation).
-The demo conversation uses the offline mock LLM unless `PSYCHOSIGHT_DEMO_PROVIDER=deepseek`.
+`INVALID_REASONING_LEVEL`, `DATE_RANGE_INVALID`, `DATE_RANGE_OUT_OF_BOUNDS`, `LLM_OPT_IN_REQUIRED`, `LLM_UNAVAILABLE` (opt-in with no usable key/model for a real conversation).
+The demo conversation uses the real DeepSeek model when a key is configured and the offline mock otherwise
+(`run_meta.provider` is `"mock"` and `run_meta.provider_note` starts with `"not real model"`).
+Experimental score fields, demo defaults, and `EXPERIMENTAL_CONSENT_REQUIRED` are in [Experimental scores](#experimental-scores).
 
 ## GET /analyses/{job_id}
 ```json
@@ -90,15 +215,103 @@ The demo conversation uses the offline mock LLM unless `PSYCHOSIGHT_DEMO_PROVIDE
 ## GET /analyses
 `200 {"analyses": [{"job_id", "conversation_label", "mode", "created_at"}]}` stored reports, newest first.
 
+## GET /analyses/{job_id}/episodes/{episode_id}/messages
+
+Returns original local messages for an episode in a completed, saved report. The timeline calls this only at message-level zoom. No model calls or external transfers are made. Successful responses use `Cache-Control: no-store`; message bodies are not persisted in the report database.
+
+| Query | Default | Rule |
+| --- | --- | --- |
+| `offset` | `0` | Nonnegative index within the requested interval. |
+| `limit` | `500` | 1–500 messages per page. |
+| `start_ms`, `end_ms` | omitted | Both or neither; finite Unix milliseconds with `start_ms < end_ms`. The interval includes start and excludes end. |
+
+```json
+{
+  "episode_id": "ep-0001",
+  "total": 24,
+  "offset": 0,
+  "next_offset": null,
+  "messages": [{
+    "id": "original-source-id",
+    "timestamp": "2025-08-04T20:29:09-07:00",
+    "speaker": "me",
+    "text": "Original message text",
+    "episode_id": "ep-0001",
+    "turn_id": "ep-0001-turn-1"
+  }]
+}
+```
+
+`total` counts messages in the requested interval, before pagination. `next_offset` is null when exhausted. Turn IDs use the saved analysis threshold and retain their episode-relative identity when filtering or paging. The same attachment/reaction normalization as analysis applies.
+
+The backend verifies episode endpoints, speaker counts and the saved normalized episode hash when available. A mismatch returns `409 TIMELINE_UNAVAILABLE`, rather than drawing reconstructed messages. Unknown/deleted reports or episodes return `404 NOT_FOUND`; unfinished reports use `REPORT_NOT_READY`; unreadable Messages data retains the existing disk-access error. Source snapshots are cached in memory for at most five minutes, at most two reports with 100,000 messages / 8M text characters each, and cleared on report deletion.
+
 ## DELETE /analyses/{job_id}
 Deletes the stored report (which contains evidence quotes) and the job. `200 {"deleted": true, "job_id": "..."}`,
 `404 NOT_FOUND` if unknown.
 
+## Experimental scores
+
+Optional report section. It is off unless the request turns it on, except `conversation_id: "demo"`, where it is on by default. The section is experimental and not validated. Fixed wording is served by `GET /config` and rendered verbatim. Methods, evidence, and limits: [EXPERIMENTAL_SCORES.md](EXPERIMENTAL_SCORES.md).
+
+### POST /analyses
+
+Additional fields:
+
+| Field | Default | Demo default |
+|---|---|---|
+| `experimental_scores` | `false` | `true` |
+| `score_other` | `false` | `true` |
+| `experimental_opt_in_text` | omitted | echo not required |
+| `score_other_opt_in_text` | omitted | echo not required |
+
+- `score_other: true` with `experimental_scores: false` → **422** `EXPERIMENTAL_CONSENT_REQUIRED`, message: "Scoring the other person requires the experimental scores consent."
+- On a non-demo conversation, `experimental_opt_in_text` must equal `experimental_opt_in_text` from `GET /config` when experimental scores are requested, and `score_other_opt_in_text` must equal `score_other_opt_in_text` when the other person is scored. A mismatch → **422** `EXPERIMENTAL_CONSENT_REQUIRED`, message: "The experimental consent text does not match the current text from GET /config."
+- The demo does not require the echo.
+- Without `llm_opt_in`, word-count markers still run. Episode AI items and the overall AI rating are `not_run`, and the uncertainty band is widened by 10 points.
+- Non-demo requests that leave the section off still include it, with `status: "not_run"` and reason `"not requested"`. No experimental model calls run in that case.
+- `PSYCHOSIGHT_EXPERIMENTAL=0` forces `status: "not_run"`, reason `"disabled by configuration"`, and `experimental_enabled: false` on `GET /config`.
+- A failure inside the section does not fail the job. The section is `status: "failed"` with reason `"Experimental scores could not be computed for this run."` The rest of the report is unchanged.
+- Progress events add stage `experimental`. `done` / `total` count finished units, not model calls: one per selected episode (both scoring runs finished) plus one per speaker with a holistic rating, in completion order. The cap is `PSYCHOSIGHT_EXP_MAX_LLM_CALLS` (default 110), separate from `PSYCHOSIGHT_MAX_LLM_CALLS`.
+
+`GET /analyses/{job_id}/report` includes the section only as the optional `experimental_scores` object (schema 1.1.0). Reports stored at 1.0.0, which have no such object, still load.
+
+### GET /config
+
+Additional fields, all safe to show: `experimental_opt_in_text`, `score_other_opt_in_text`, `experimental_banner`, `experimental_footer_support`, `experimental_scale_note`, `experimental_trend_note` (show next to the weekly trend), `experimental_how_it_works`, `experimental_enabled`, `experimental_dimensions`.
+
+`experimental_dimensions` is twelve objects in registry order, each `{key, label, family, evidence_strength}`. `schema_version` in this response is `"1.1.0"`.
+
+Current consent and banner strings (also the values tests should echo):
+
+```text
+Show experimental personality and well-being language scores. These are 0–100 numbers built from word counts and AI ratings. They are not validated and are not a diagnosis. With AI scoring on, the same excerpts already selected are sent to DeepSeek again with extra questions.
+```
+
+```text
+Also score the other person. They have not agreed to be scored. Their scores are an experimental reading of their messages in this conversation only, stay on this computer, and should not be shared or used to judge them.
+```
+
+```text
+Experimental, not validated. These scores are not a diagnosis, not a personality test and not a measure of who anyone is. They come from word counts and AI ratings of this one conversation and can easily be wrong.
+```
+
+### CLI
+
+`python -m psychosight analyze --experimental-scores [--score-other]`. `--demo` implies both unless `--no-experimental-scores` (which also turns off scoring the other person). `--score-other` without `--experimental-scores` exits 2 with `EXPERIMENTAL_CONSENT_REQUIRED`.
+
+`--reasoning-level none|low|high|max` (on `analyze` and on the top-level `--demo` shortcut) sets the level for the
+run; default `DEEPSEEK_REASONING_EFFORT`, else `low`. An unknown value exits 2 with
+`error INVALID_REASONING_LEVEL: reasoning_level 'x' is not supported. Valid values: none, low, high, max (default low).`
+
 ## Message text
-There is no endpoint that returns full message text. Message text leaves the backend only as evidence `quotes` in
-the report (verbatim snippets with `episode_id`, `speaker`, `timestamp`).
+The episode messages endpoint returns full original text to the local timeline on demand. Saved reports still contain only their existing evidence `quotes` (verbatim snippets with `episode_id`, `speaker`, `timestamp`), not a copy of every message. Timeline reads do not send messages to an AI provider.
 
 ## Static UI
 FastAPI mounts a static directory at `/` **after** the API routes: `--static-dir` / `PSYCHOSIGHT_STATIC_DIR`,
-default `web/dist` if it exists, else `web/`. If neither exists, `GET /` returns a short HTML note and the API still
-works. Frontend builds into `web/` on branch `frontend/ui`.
+default `web/dist` if it exists, else `web/` when it holds plain static files (an unbuilt Vite project with
+`web/package.json` is skipped, because its raw `index.html` cannot run; build it with `cd web && npm install && npm run build`).
+If no UI is found, `GET /` returns a short HTML note and the API still
+works. The frontend is a Vite app that builds into `web/dist`. Those paths are resolved from the
+checkout root, or from the frozen app bundle, never from the process working directory. The macOS app
+passes that bundled `web/dist` as `--static-dir`.

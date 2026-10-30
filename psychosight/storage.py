@@ -110,6 +110,12 @@ class Store:
         return [{"job_id": r[0], "conversation_id": r[1], "conversation_label": r[2], "mode": r[3], "created_at": r[4]}
                 for r in rows]
 
+    def episode_hash(self, report_id: str, episode_id: str) -> Optional[str]:
+        with self._lock:
+            row = self._conn.execute("SELECT hash FROM episodes WHERE report_id=? AND episode_id=?",
+                                     (report_id, episode_id)).fetchone()
+        return row[0] if row else None
+
     def delete_report(self, report_id: str) -> bool:
         with self._lock:
             cur = self._conn.execute("DELETE FROM reports WHERE id=?", (report_id,))

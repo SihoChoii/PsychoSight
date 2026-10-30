@@ -1,7 +1,8 @@
 """Thin LLM provider layer: DeepSeek (OpenAI-compatible) and an offline MockProvider.
 
 Privacy rules enforced here:
-- The API key is read from the environment only and never logged or written.
+- The API key (DEEPSEEK_API_KEY from the environment, a gitignored .env file or the app's bundled psychosight.env)
+  is never logged or written; log lines and error messages are scrubbed of it (config.redact).
 - Reasoning traces (`reasoning_content`) can quote messages: they are discarded on receipt and never
   logged, returned or persisted.
 - Request and response bodies are never logged; only status codes, counts and timings.
@@ -11,14 +12,15 @@ from __future__ import annotations
 
 import json
 import logging
-import os
+import random
+import threading
 import time
 from dataclasses import dataclass, field
 from typing import Callable, List, Optional
 
 import httpx
 
-from . import config
+from . import config, reasoning
 from .errors import LLMOptInRequired, LLMUnavailable
 
 log = logging.getLogger("psychosight.llm")
@@ -31,18 +33,16 @@ _LOG_GUARD = False
 
 
 class _RedactSecrets(logging.Filter):
-    """Drop the API key from any psychosight log line that managed to include it."""
+    """Mask the API key (any source) and key-shaped tokens in any psychosight log line that managed to include one."""
 
     def filter(self, record: logging.LogRecord) -> bool:
-        key = os.environ.get("DEEPSEEK_API_KEY") or ""
-        if not key:
-            return True
         try:
             msg = record.getMessage()
         except Exception:  # noqa: BLE001
             return True
-        if key in msg:
-            record.msg = msg.replace(key, "[redacted]")
+        clean = config.redact(msg, replacement="[redacted]")
+        if clean != msg:
+            record.msg = clean
             record.args = ()
         return True
 
@@ -85,7 +85,13 @@ class LLMResult:
 class Provider:
     name = "base"
     model: str = ""
-    reasoning_effort: Optional[str] = None
+    reasoning_effort: Optional[str] = None  # effort actually sent to the provider (None when thinking is off)
+    reasoning_level: Optional[str] = None   # chosen level id (reasoning.REASONING_IDS)
+
+    @property
+    def cache_model(self) -> str:
+        """Model id for LLM cache keys, tagged with the reasoning level so levels never share cache rows."""
+        return reasoning.cache_model_for(self)
 
     def complete(self, system: str, user: str, *, run_idx: int = 0) -> LLMResult:  # pragma: no cover
         raise NotImplementedError
@@ -93,6 +99,11 @@ class Provider:
     def check(self) -> None:
         """Optional preflight."""
 
+
+# Static summary kept for imports; the raised error uses config.missing_key_message(), which lists the paths searched.
+MISSING_KEY_MESSAGE = ("No DeepSeek API key found. Copy .env.example to .env and put the DeepSeek key in it "
+                       "(or export DEEPSEEK_API_KEY), or rebuild the app with scripts/inject_bundled_key.py; "
+                       "then restart the backend.")
 
 RETRY_STATUS = {429, 500, 502, 503, 504}
 
@@ -102,17 +113,30 @@ class DeepSeekProvider(Provider):
 
     def __init__(self, settings: Optional[config.LLMSettings] = None,
                  transport: Optional[httpx.BaseTransport] = None,
-                 sleep: Callable[[float], None] = time.sleep, max_attempts: int = 4):
+                 sleep: Callable[[float], None] = time.sleep, max_attempts: int = 6,
+                 reasoning_level: Optional[str] = None):
         self.settings = settings or config.llm_settings()
+        config.remember_secret(self.settings.api_key)
         if not self.settings.api_key:
-            raise LLMUnavailable("DEEPSEEK_API_KEY is not set. Export it in the shell that runs the backend.")
+            raise LLMUnavailable(config.missing_key_message())
         if not self.settings.model:
             raise LLMUnavailable("DEEPSEEK_MODEL is not set. Export the exact DeepSeek model id "
                                  "(see GET https://api.deepseek.com/models).")
         self.model = self.settings.model
-        self.reasoning_effort = self.settings.reasoning_effort
+        # Per-analysis level wins; else the settings' level (env default). Legacy settings with
+        # thinking=disabled mean "none". None keeps the raw settings fields (tests building settings by hand).
+        level = reasoning_level
+        if level is None and (self.settings.thinking or "").lower() == "disabled":
+            level = "none"
+        if level is None and self.settings.reasoning_effort:
+            level = self.settings.reasoning_effort
+        self.reasoning_level = reasoning.validate(level) if level is not None else None
+        self.reasoning_effort = (None if self.reasoning_level == "none"
+                                 else self.reasoning_level or self.settings.reasoning_effort)
         self._sleep = sleep
         self._max_attempts = max_attempts
+        self._usage_lock = threading.Lock()
+        self.usage_totals: dict = {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "reasoning_tokens": 0}
         self._client = httpx.Client(
             base_url=self.settings.base_url, transport=transport, timeout=self.settings.timeout_s,
             headers={"Authorization": f"Bearer {self.settings.api_key}", "Content-Type": "application/json"},
@@ -154,13 +178,30 @@ class DeepSeekProvider(Provider):
             body["temperature"] = 0
         if s.json_mode:
             body["response_format"] = {"type": "json_object"}
-        if s.thinking:
-            body["thinking"] = {"type": s.thinking}
-        if s.reasoning_effort:
-            body["reasoning_effort"] = s.reasoning_effort
+        if self.reasoning_level is not None:
+            body.update(reasoning.request_params(self.reasoning_level))
+        else:
+            if s.thinking:
+                body["thinking"] = {"type": s.thinking}
+            if s.reasoning_effort:
+                body["reasoning_effort"] = s.reasoning_effort
         if s.max_tokens:
             body["max_tokens"] = s.max_tokens
         return body
+
+    def _add_usage(self, usage) -> None:
+        """Token counts only (numbers, never text), for cost reporting in logs. Malformed values count as 0."""
+        def num(d, k) -> int:
+            v = d.get(k) if isinstance(d, dict) else None
+            return int(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else 0
+
+        usage = usage if isinstance(usage, dict) else {}
+        with self._usage_lock:
+            t = self.usage_totals
+            t["calls"] += 1
+            t["prompt_tokens"] += num(usage, "prompt_tokens")
+            t["completion_tokens"] += num(usage, "completion_tokens")
+            t["reasoning_tokens"] += num(usage.get("completion_tokens_details"), "reasoning_tokens")
 
     def complete(self, system: str, user: str, *, run_idx: int = 0) -> LLMResult:
         body = self._body(system, user)
@@ -188,23 +229,44 @@ class DeepSeekProvider(Provider):
                 content = _message_text(message)
                 usage = {k: v for k, v in (data.get("usage") or {}).items()
                          if isinstance(v, (int, float)) and not isinstance(v, bool)}
+                self._add_usage(data.get("usage"))
                 log.info("deepseek ok attempt=%d chars=%d", attempt + 1, len(content))
                 return LLMResult(content=content, usage=usage)
             if status in (400, 404, 422) and self._is_model_error(resp):
                 raise self._model_rejected(status)
             if status in (401, 403):
-                raise LLMUnavailable(f"DeepSeek rejected the API key (HTTP {status}). Check DEEPSEEK_API_KEY.")
+                raise LLMUnavailable(f"DeepSeek rejected the API key (HTTP {status}). Check "
+                                     f"{config.describe_key_source(self.settings)}.")
             if status == 402:
                 raise LLMUnavailable("DeepSeek reports insufficient balance (HTTP 402).")
             if status in RETRY_STATUS:
                 last = f"HTTP {status}"
-                log.warning("deepseek retryable status=%d attempt=%d", status, attempt + 1)
-                self._sleep(min(2 ** attempt, 20))
+                wait = _retry_wait(resp, attempt)
+                log.warning("deepseek retryable status=%d attempt=%d wait_s=%.1f", status, attempt + 1, wait)
+                if attempt + 1 < self._max_attempts:
+                    self._sleep(wait)
                 continue
             raise LLMUnavailable(f"DeepSeek request failed (HTTP {status}): {_provider_error(resp)}. "
                                  "Request options can be changed with DEEPSEEK_JSON_MODE, "
                                  "DEEPSEEK_SEND_TEMPERATURE, DEEPSEEK_THINKING and DEEPSEEK_REASONING_EFFORT.")
         raise LLMUnavailable(f"DeepSeek unavailable after {self._max_attempts} attempts ({last}).")
+
+
+RETRY_AFTER_CAP_S = 60.0
+
+
+def _retry_wait(resp: httpx.Response, attempt: int) -> float:
+    """Seconds to wait before retrying a 429/5xx: the server's Retry-After (seconds, capped), else
+    exponential backoff (1, 2, 4, 8, 16, capped at 30) with up to 50% jitter so parallel workers
+    do not retry in lockstep."""
+    raw = resp.headers.get("retry-after")
+    if raw:
+        try:
+            return max(0.0, min(float(raw), RETRY_AFTER_CAP_S))
+        except ValueError:
+            pass
+    base = float(min(2 ** attempt, 30))
+    return base * (1.0 + random.random() * 0.5)
 
 
 def _error_message(resp: httpx.Response) -> str:
@@ -253,12 +315,15 @@ def _coerce_content(content) -> str:
     return ""
 
 
-def get_provider(is_demo: bool, llm_opt_in: bool) -> Provider:
+def get_provider(is_demo: bool, llm_opt_in: bool, reasoning_level: Optional[str] = None) -> Provider:
+    """Provider for one analysis. ``reasoning_level`` (validated id) applies to every call it makes;
+    None uses the configured default. The mock records the level but ignores it."""
     require_opt_in(llm_opt_in)
-    if is_demo and config.demo_provider_name() != "deepseek":
+    level = reasoning.validate(reasoning_level) if reasoning_level is not None else config.default_reasoning_level()
+    if is_demo and config.demo_provider_name() == "mock":
         from .mock_provider import MockProvider
-        return MockProvider()
-    return DeepSeekProvider()
+        return MockProvider(reasoning_level=level)
+    return DeepSeekProvider(reasoning_level=level)
 
 
 def parse_json_object(text: str) -> Optional[dict]:

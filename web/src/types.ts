@@ -1,3 +1,5 @@
+import { reasoningFields } from "./reasoning-adapter";
+
 export interface Cell {
   value: number | null;
   count: number;
@@ -25,6 +27,21 @@ export interface Week {
   words: { me: number; other: number };
 }
 
+/** Existing wire index; optional only for legacy/partial report robustness. */
+export interface Episode {
+  episode_id: string;
+  start: string;
+  end: string;
+  week: string;
+  initiator: "me" | "other";
+  messages: { me: number; other: number };
+  words: { me: number; other: number };
+  late_night_start: boolean;
+  pooled: boolean;
+  scored: boolean;
+  selection: "random" | "top_signal" | null;
+}
+
 export interface Quote {
   quote_id: string;
   episode_id: string;
@@ -32,6 +49,23 @@ export interface Quote {
   timestamp: string;
   text: string;
   item_key?: string | null;
+}
+
+export interface TimelineMessage {
+  id: string;
+  timestamp: string;
+  speaker: "me" | "other";
+  text: string;
+  episode_id: string;
+  turn_id: string;
+}
+
+export interface MessagePage {
+  episode_id: string;
+  total: number;
+  offset: number;
+  next_offset: number | null;
+  messages: TimelineMessage[];
 }
 
 export interface RubricItem {
@@ -82,6 +116,7 @@ export interface Report {
   };
   weeks: Week[];
   series: Feature[];
+  episodes?: Episode[];
   rubric: {
     status: string;
     reason: string | null;
@@ -98,7 +133,9 @@ export interface Report {
   limitations_title: string;
   limitations: string[];
   disclaimer: string;
+  experimental_scores?: ExperimentalScores;
   run_meta: {
+    thresholds?: { max_episodes_scored?: number; [key: string]: number | undefined };
     run_id: string;
     created_at: string;
     mode: string;
@@ -107,7 +144,113 @@ export interface Report {
     provider: string | null;
     model: string | null;
     timezone?: string;
+    experimental_opt_in?: boolean;
+    score_other_opt_in?: boolean;
+    experimental_scoring_version?: string | null;
+    experimental_prompt_versions?: { episode: string; holistic: string } | null;
+    experimental_llm_calls?: number;
+    experimental_cache_hits?: number;
+    provider_note?: string | null;
+    date_range_clamped?: DateRangeClamp | null;
+    reasoning_level?: string | null;
+    reasoning_effort?: string | null;
   };
+}
+
+export type ExpStatus = "ok" | "not_run" | "insufficient_data" | "failed";
+export type ExpConfidence = "low" | "medium";
+export type ExpFamily = "big_five" | "wellbeing_language" | "interpersonal";
+export type ExpEvidence = "moderate" | "small" | "weak" | "very_weak";
+
+export interface ExpCitation {
+  short: string;
+  doi: string | null;
+}
+
+export interface ExpQuote {
+  id: string;
+  speaker: "me" | "other";
+  episode_id: string;
+  marker_key: string;
+  text: string;
+  ts: string;
+}
+
+export interface ExpContribution {
+  marker_key: string;
+  label: string;
+  source: "D" | "R" | "H";
+  direction: "up" | "down";
+  weight: number;
+  value: number | null;
+  unit: string;
+  sub_score: number | null;
+  anchor_source: string;
+  status: "ok" | "not_run" | "no_data";
+  quote_ids: string[];
+}
+
+export interface ExpTrendPoint {
+  week: string;
+  score: number | null;
+  n_episodes: number;
+  n_words: number;
+  reason: string | null;
+}
+
+export interface ExpBand {
+  lo: number;
+  hi: number;
+}
+
+export interface ExpSpeakerScore {
+  status: ExpStatus;
+  reason: string | null;
+  score: number | null;
+  band: ExpBand | null;
+  confidence: ExpConfidence | null;
+  n_episodes: number;
+  n_words: number;
+  contributions: ExpContribution[];
+  trend: ExpTrendPoint[];
+  quote_ids: string[];
+}
+
+export interface ExpDimension {
+  key: string;
+  label: string;
+  family: ExpFamily | string;
+  evidence_strength: ExpEvidence | string;
+  evidence_note: string;
+  citations: ExpCitation[];
+  per_speaker: {
+    me: ExpSpeakerScore;
+    other: ExpSpeakerScore | null;
+  };
+}
+
+export interface ExperimentalScores {
+  status: ExpStatus;
+  reason: string | null;
+  banner: string;
+  title: string;
+  scale_note: string;
+  footer_support: string;
+  how_it_works: string;
+  scoring_version: string;
+  prompt_versions: { episode: string; holistic: string };
+  anchors_version: string;
+  speakers_scored: ["me"] | ["me", "other"];
+  thresholds: { min_episodes: number; min_words: number; max_confidence: "medium" };
+  dimensions: ExpDimension[];
+  quotes: ExpQuote[];
+}
+
+export interface ExperimentalDimensionConfig {
+  key: string;
+  label: string;
+  family: string;
+  evidence_strength: string;
 }
 
 export interface Config {
@@ -118,21 +261,46 @@ export interface Config {
   llm_configured: boolean;
   reasoning_effort: string | null;
   demo_provider: string;
+  demo_provider_note?: string | null;
   opt_in_text: string;
   disclaimer: string;
   limitations_title: string;
   max_episodes_scored: number;
+  experimental_opt_in_text?: string;
+  score_other_opt_in_text?: string;
+  experimental_banner?: string;
+  experimental_footer_support?: string;
+  experimental_scale_note?: string;
+  experimental_trend_note?: string;
+  experimental_how_it_works?: string;
+  experimental_enabled?: boolean;
+  experimental_dimensions?: ExperimentalDimensionConfig[];
 }
 
 export interface Conversation {
   id: string;
   label: string;
-  message_count: number;
+  message_count: number | null;
   latest_date: string | null;
+  first_message_at: string | null;
+  last_message_at: string | null;
+  first_message_date: string | null;
+  last_message_date: string | null;
   is_group: boolean;
   supported: boolean;
   is_demo: boolean;
   participant_count: number;
+}
+
+export interface DateRangePair {
+  date_from: string | null;
+  date_to: string | null;
+}
+
+export interface DateRangeClamp {
+  requested: DateRangePair;
+  applied: DateRangePair;
+  bounds: DateRangePair;
 }
 
 export interface ConversationsResponse {
@@ -159,11 +327,25 @@ export interface SavedAnalysis {
   created_at: string;
 }
 
-export interface AnalysisRequest {
+export type AnalysisRequest = {
   conversation_id: string;
   date_from?: string;
   date_to?: string;
   llm_opt_in: boolean;
   demo?: boolean;
   mode?: "full" | "deterministic_only" | null;
+  experimental_scores?: boolean;
+  score_other?: boolean;
+  experimental_opt_in_text?: string;
+  score_other_opt_in_text?: string;
+} & Partial<Record<(typeof reasoningFields)["requestLevel"], string>>;
+
+export type CreatedAnalysis = {
+  job_id: string;
+  status: string;
+} & Partial<Record<(typeof reasoningFields)["requestLevel"], string>>;
+
+export interface ExperimentalChoice {
+  experimental: boolean;
+  scoreOther: boolean;
 }

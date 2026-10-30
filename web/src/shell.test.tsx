@@ -1,6 +1,14 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { Shell } from "./components/Shell";
+import { applyTheme, currentTheme, HOST_THEME_HANDLER, notifyHostTheme, THEME_KEY } from "./mode";
+import { parseHash } from "./routes";
+
+afterEach(() => {
+  window.history.replaceState(null, "", "/");
+  localStorage.removeItem(THEME_KEY);
+  document.documentElement.dataset.theme = "black";
+});
 
 describe("theme assets", () => {
   it("uses the black wordmark, symbol, and favicon together", () => {
@@ -32,4 +40,63 @@ describe("theme assets", () => {
     expect(screen.getByText("Demo data")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Switch to black theme" })).toHaveAttribute("aria-pressed", "true");
   });
+
+  it("persists the selected theme and switches the favicon with the canvas", () => {
+    document.head.innerHTML = '<link id="favicon" rel="icon" href="/logos/black/favicon.svg">';
+    applyTheme("white");
+    expect(currentTheme()).toBe("white");
+    expect(localStorage.getItem(THEME_KEY)).toBe("white");
+    expect(document.getElementById("favicon")).toHaveAttribute("href", "/logos/white/favicon.svg");
+    applyTheme("black");
+    expect(currentTheme()).toBe("black");
+    expect(localStorage.getItem(THEME_KEY)).toBe("black");
+    expect(document.getElementById("favicon")).toHaveAttribute("href", "/logos/black/favicon.svg");
+  });
+});
+
+describe("macOS window drag strip", () => {
+  afterEach(() => {
+    delete (window as unknown as { webkit?: unknown }).webkit;
+  });
+
+  it("tells the app wrapper the theme so the hidden title bar strip matches the page", () => {
+    const postMessage = vi.fn();
+    (window as unknown as { webkit: unknown }).webkit = { messageHandlers: { [HOST_THEME_HANDLER]: { postMessage } } };
+    applyTheme("white");
+    applyTheme("black");
+    expect(postMessage.mock.calls).toEqual([["white"], ["black"]]);
+  });
+
+  it("is a no-op in a normal browser", () => {
+    expect(() => notifyHostTheme("white")).not.toThrow();
+    expect(() => applyTheme("white")).not.toThrow();
+  });
+});
+
+describe("in-page navigation", () => {
+  it.each(["#/", "#/optin", "#/run/preview", "#/report/sample-full"])(
+    "scrolls and focuses content without replacing route %s",
+    (hash) => {
+      window.history.replaceState(null, "", `/?mock=1${hash}`);
+      const onToggleTheme = vi.fn();
+      render(
+        <Shell theme="black" onToggleTheme={onToggleTheme} mock disclaimer={null} route={parseHash(hash)}>
+          <h1 id="page-title">Current task</h1>
+        </Shell>,
+      );
+      const main = screen.getByRole("main");
+      main.scrollIntoView = vi.fn();
+      for (const label of ["Skip to content", "Back to top"]) {
+        screen.getByRole("link", { name: label }).focus();
+        expect(fireEvent.click(screen.getByRole("link", { name: label }))).toBe(false);
+        expect(main).toHaveFocus();
+        expect(window.location.hash).toBe(hash);
+      }
+      expect(main.scrollIntoView).toHaveBeenCalledTimes(2);
+      expect(main.scrollIntoView).toHaveBeenLastCalledWith({ block: "start" });
+      fireEvent.click(screen.getByRole("button", { name: "Switch to white theme" }));
+      expect(onToggleTheme).toHaveBeenCalledOnce();
+      expect(screen.getByRole("link", { name: "Conversations" })).toHaveAttribute("href", "#/");
+    },
+  );
 });

@@ -11,25 +11,41 @@ from psychosight.models import utc
 from psychosight.errors import FullDiskAccessRequired, GroupChatUnsupported, NotFound
 from tests.helpers import make_chat_db
 
-FIXTURE = Path(__file__).parent / "fixtures" / "demo_messages.json"
+ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_generator_is_deterministic_and_matches_fixture():
-    a = synthetic.to_fixture(synthetic.generate_rows())
-    assert a == synthetic.to_fixture(synthetic.generate_rows())
-    assert a == json.loads(FIXTURE.read_text())
+def _generator():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("make_demo", ROOT / "scripts" / "make_demo_conversation.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
 
 
-def test_demo_has_thin_weeks_injection_and_late_night():
+def test_generator_is_deterministic_and_matches_committed_file():
+    gen = _generator()
+    text = gen.dumps(gen.generate())
+    assert text == gen.dumps(gen.generate())
+    assert text == synthetic.DATA_FILE.read_text(encoding="utf-8")
+    assert gen.INJECTION_TEXT == synthetic.INJECTION_TEXT
+    assert synthetic.DATA_FILE.stat().st_size < 1_500_000
+
+
+def test_demo_size_span_quiet_week_dst_injection_late_night():
+    from psychosight import sessionize
     msgs = loader.load_demo().msgs
+    eps = sessionize.sessionize(msgs)
+    assert 3000 <= len(msgs) <= 5000 and 120 <= len(eps) <= 200
     assert any(m.text == synthetic.INJECTION_TEXT for m in msgs)
-    assert any(1 <= m.ts.hour < 4 for m in msgs)
-    weeks = {}
-    for m in msgs:
-        weeks.setdefault(m.ts.isocalendar()[:2], 0)
-        weeks[m.ts.isocalendar()[:2]] += 1
-    assert len(weeks) == synthetic.WEEKS
-    assert sorted(weeks.values())[0] < 10  # thin weeks exist
+    assert sum(1 for e in eps if 1 <= e.start.hour < 4) >= 8
+    weeks = {m.ts.isocalendar()[:2] for m in msgs}
+    assert len(weeks) == synthetic.WEEKS_WITH_MESSAGES and (2025, 46) not in weeks
+    assert (msgs[-1].ts.date() - msgs[0].ts.date()).days >= 175
+    nov2 = {m.ts.utcoffset() for m in msgs if m.ts.date() == date(2025, 11, 2) and m.ts.hour == 1}
+    assert nov2 == {timedelta(hours=-7), timedelta(hours=-8)}  # runs through the repeated 01:00 hour
+    texts = " ".join(m.text.lower() for m in msgs)
+    for planted in ("always", "never", "sorry", "speaking of", "https://example.com/", "makes sense you're upset"):
+        assert planted in texts
 
 
 def test_normalize_drops_tapbacks_attachments_dupes():

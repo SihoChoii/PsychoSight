@@ -1,0 +1,359 @@
+{
+  "schema_version": 1,
+  "workflow_id": "c328b9d1-da33-4419-8d46-76373bd2ee36",
+  "coordinator_thread_id": "01a188b3-c9a1-7823-bd67-3d6a0d0a6822",
+  "project_id": "32dda25c-7462-44b8-ba38-58e7e9b642ea",
+  "checkout": "/Users/sihochoi/Documents/PsychoSight-ui-refurbishment",
+  "branch": "codex/frontend-refurbishment",
+  "ordered_units": [
+    "0",
+    "1",
+    "2A",
+    "2B",
+    "3A",
+    "3B",
+    "3C",
+    "4A",
+    "4B",
+    "5A",
+    "5B",
+    "6"
+  ],
+  "cursor": 12,
+  "current": null,
+  "verified_completions": [
+    {
+      "prompt_number": 1,
+      "unit": "0",
+      "dispatch_id": "c95590b8-e82c-44c7-8b39-f43d26a6b50c",
+      "title": "PsychoSight UI 01/12 \u2014 Baseline and references",
+      "thread_id": "01a188b4-b658-7332-91e3-5161f1584bb3",
+      "host_id": "local",
+      "state": "verified_complete",
+      "wait_cursor": "8a08d71a-1e3c-4b61-b929-8d44e6ef214a:37",
+      "ended_turn_id": "01a188b4-b7f2-79a1-858f-2317e766cb9d",
+      "goal_status": "complete",
+      "goal_tool_call_id": "call_b601bc35a20641439854a4eb529343a0",
+      "goal_result_evidence": "/Users/sihochoi/.codex/sessions/2026/10/29/rollout-2026-10-29T10-28-26-01a188b4-b658-7332-91e3-5161f1584bb3.jsonl:297",
+      "coordinator_check": {
+        "implementation": "Reviewed mock integration, preview fixtures/tests, README and ledger; UI-only fixture scope",
+        "verification": "Inspected baseline 36-test result, focused 53-test log, final build log, schema validation, browser records, screenshot",
+        "visual_evidence": "/private/tmp/psychosight-ui-unit0",
+        "remaining_required_work": "none"
+      },
+      "verified_at": "2026-10-29T17:40:41.009631+00:00"
+    },
+    {
+      "prompt_number": 2,
+      "unit": "1",
+      "dispatch_id": "89de72e0-e241-48ff-a4c2-74babe230163",
+      "title": "PsychoSight UI 02/12 \u2014 Visual foundation",
+      "thread_id": "01a188bf-f2a1-71e3-b86a-f572276a099c",
+      "host_id": "local",
+      "state": "verified_complete",
+      "wait_cursor": "a29348b3-402d-4178-b074-48aeee061931:33",
+      "ended_turn_id": "01a188bf-f4d5-7bc0-b7b9-76e5f4f947c1",
+      "goal_status": "complete",
+      "goal_tool_call_id": "call_7598d30009e74617b990ede032917d9c",
+      "goal_result_evidence": "/Users/sihochoi/.codex/sessions/2026/10/29/rollout-2026-10-29T10-40-43-01a188bf-f2a1-71e3-b86a-f572276a099c.jsonl:319",
+      "coordinator_check": {
+        "implementation": "Reviewed shell/picker/legend changes, scoped CSS and route/focus tests; preserved contract and token scope",
+        "verification": "Inspected 81-test log, build log and 51 browser check records including actual 200% zoom",
+        "visual_evidence": "/private/tmp/psychosight-ui-unit1; inspected desktop black and complete narrow white captures",
+        "remaining_required_work": "none"
+      },
+      "verified_at": "2026-10-29T17:50:55.888512+00:00"
+    },
+    {
+      "prompt_number": 3,
+      "unit": "2A",
+      "dispatch_id": "97aab460-560e-48fa-8019-0d8ecc78825f",
+      "title": "PsychoSight UI 03/12 \u2014 Job lifecycle",
+      "thread_id": "01a188c9-54be-7ef1-8268-186f2f6b61c6",
+      "host_id": "local",
+      "state": "verified_complete",
+      "wait_cursor": "2f02f6d3-ede4-494a-8df9-27d7cd10dc58:42",
+      "ended_turn_id": "01a188c9-56c1-7ee1-9027-c074fd47f13d",
+      "goal_status": "complete",
+      "goal_tool_call_id": "call_e5f8dd13b014416182920031622128f6",
+      "goal_result_evidence": "/Users/sihochoi/.codex/sessions/2026/10/29/rollout-2026-10-29T10-50-58-01a188c9-54be-7ef1-8268-186f2f6b61c6.jsonl:339",
+      "coordinator_check": {
+        "implementation": "Reviewed polling hook, RunScreen, context validation/storage, API and stage adapter; independent timer/race tests",
+        "verification": "147 tests and build logs pass; browser matrix and targeted recovery/storage records inspected",
+        "visual_evidence": "/private/tmp/psychosight-ui-unit2a; narrow completion inspected",
+        "remaining_required_work": "none"
+      },
+      "verified_at": "2026-10-29T18:01:51.970402+00:00"
+    },
+    {
+      "prompt_number": 4,
+      "unit": "2B",
+      "dispatch_id": "5669e95a-7190-4a76-b4b3-915f41199941",
+      "title": "PsychoSight UI 04/12 \u2014 LED progress",
+      "thread_id": "01a188d3-5878-7ef2-b94c-7a3c770e5190",
+      "host_id": "local",
+      "state": "verified_complete",
+      "wait_cursor": "4984546a-14f5-4a80-8e40-c70741d91941:68",
+      "goal_status": "complete",
+      "ended_turn_id": "01a188dc-8cd5-7331-af69-9e22e0731cfc",
+      "goal_result_evidence": "/Users/sihochoi/.codex/sessions/2026/10/29/rollout-2026-10-29T11-01-54-01a188d3-5878-7ef2-b94c-7a3c770e5190.jsonl:600",
+      "native_resume_confirmed_by_user": true,
+      "goal_tool_call_id": "call_1a0481b7052545e381c1e3ff72dbe4f4",
+      "coordinator_check": {
+        "implementation": "Reviewed bounded Canvas lifecycle, seven-stage rail, vendor provenance and adaptations, focused tests",
+        "verification": "177 tests/build logs pass; 62 browser records and 7 targeted checks, lifecycle/motion/zoom evidence reviewed",
+        "visual_evidence": "/private/tmp/psychosight-ui-unit2b; desktop context and narrow white screenshots inspected",
+        "remaining_required_work": "none"
+      },
+      "verified_at": "2026-10-29T19:07:42.351288+00:00"
+    },
+    {
+      "prompt_number": 5,
+      "unit": "3A",
+      "dispatch_id": "c8e751e8-bd23-4fdc-9d74-ba695a3c5cd2",
+      "title": "PsychoSight UI 05/12 \u2014 Chart geometry",
+      "thread_id": "01a1890f-a46a-7e73-b397-01a3e131d0c4",
+      "host_id": "local",
+      "state": "verified_complete",
+      "wait_cursor": "4105bcea-0bb1-4242-8e30-e6ee90c32936:28",
+      "ended_turn_id": "01a1890f-a652-7fe2-9b2e-3b1e609b394c",
+      "goal_status": "complete",
+      "goal_tool_call_id": "call_6e86a71a041f4002b2d58d96eb33d9a0",
+      "goal_result_evidence": "/Users/sihochoi/.codex/sessions/2026/10/29/rollout-2026-10-29T12-07-46-01a1890f-a46a-7e73-b397-01a3e131d0c4.jsonl:272",
+      "coordinator_check": {
+        "implementation": "Reviewed UTC keyed timeline, fixed full-report scales, geometry/hit testing, exact count/null formatting and chart integration",
+        "verification": "203 tests/build logs pass; timezone tests and 65 browser records recorded; initial picker test readiness race documented with passing rechecks",
+        "visual_evidence": "/private/tmp/psychosight-ui-unit3a; inspected omitted weeks narrow black and measured zeros narrow white",
+        "remaining_required_work": "none"
+      },
+      "verified_at": "2026-10-29T19:18:26.346770+00:00"
+    },
+    {
+      "prompt_number": 6,
+      "unit": "3B",
+      "dispatch_id": "ccd85e9b-b5d1-4398-a10f-e1dbb7b3ff67",
+      "title": "PsychoSight UI 06/12 \u2014 Report and charts",
+      "thread_id": "01a18919-77a3-7e11-995a-a3f8b5d3f2b8",
+      "host_id": "local",
+      "state": "verified_complete",
+      "wait_cursor": "cb1d7246-aba9-42eb-a176-b095277d71af:58",
+      "goal_status": "complete",
+      "ended_turn_id": "01a18928-39b2-7460-8c22-0c42dbd783e9",
+      "goal_tool_call_id": "call_5b9c670640ea48d98df5768b26cc7725",
+      "goal_result_evidence": "/Users/sihochoi/.codex/sessions/2026/10/29/rollout-2026-10-29T12-18-30-01a18919-77a3-7e11-995a-a3f8b5d3f2b8.jsonl:452",
+      "repair_goal": {
+        "status": "complete",
+        "call_id": "call_c3a889465ea3477c802904a459e40d64",
+        "evidence": "/Users/sihochoi/.codex/sessions/2026/10/29/rollout-2026-10-29T12-18-30-01a18919-77a3-7e11-995a-a3f8b5d3f2b8.jsonl:502"
+      },
+      "coordinator_check": {
+        "implementation": "Reviewed report-owned selection/window, overview/weekly activity/data tables/navigation and geometry reuse; unsafe pinned lookup repaired in same chat",
+        "verification": "216-test full suite and build; 116 browser records, 19 milestone records, zoom/performance/first-viewport evidence; repair 14 tests and build passed",
+        "visual_evidence": "/private/tmp/psychosight-ui-unit3b; desktop overview white and paired grid black inspected",
+        "remaining_required_work": "none"
+      },
+      "verified_at": "2026-10-29T19:36:13.925565+00:00"
+    },
+    {
+      "prompt_number": 7,
+      "unit": "3C",
+      "dispatch_id": "1ad5b5c7-cb19-48d6-ac81-bf87b49ce2c6",
+      "title": "PsychoSight UI 07/12 \u2014 Episode diagrams",
+      "thread_id": "01a18929-c341-7183-9eae-1c7c17848a44",
+      "host_id": "local",
+      "state": "verified_complete",
+      "wait_cursor": "d892a4bc-2afe-48ab-ad6d-d6791d9146a1:36",
+      "ended_turn_id": "01a18929-c50a-7463-9926-bc8ff5a3c5cf",
+      "goal_status": "complete",
+      "goal_tool_call_id": "call_9e8786e403a545a186f4f0ea80f34fb5",
+      "goal_result_evidence": "/Users/sihochoi/.codex/sessions/2026/10/29/rollout-2026-10-29T12-36-18-01a18929-c341-7183-9eae-1c7c17848a44.jsonl:329",
+      "coordinator_check": {
+        "implementation": "Reviewed existing wire type, actual-instant interval geometry, immutable index, disclosure/inspector/table and episode/week/window links; truthful selected/pooled metadata",
+        "verification": "103 focused tests/build logs pass; 75 browser records, zoom and final visual/keyboard loop; first-viewport preserved",
+        "visual_evidence": "/private/tmp/psychosight-ui-unit3c; desktop white and narrow black overlap detail inspected",
+        "remaining_required_work": "none"
+      },
+      "verified_at": "2026-10-29T19:46:27.685676+00:00"
+    },
+    {
+      "prompt_number": 8,
+      "unit": "4A",
+      "dispatch_id": "d08621eb-08c7-4877-b574-32b7c9fd3172",
+      "title": "PsychoSight UI 08/12 \u2014 Evidence",
+      "thread_id": "01a18933-2145-7e91-8582-507dcc564d96",
+      "host_id": "local",
+      "state": "verified_complete",
+      "wait_cursor": "5561e6c6-c309-457d-8bfc-fa915fd795a2:41",
+      "ended_turn_id": "01a18933-22d5-74e3-95b0-7cebd09015f3",
+      "goal_status": "complete",
+      "goal_tool_call_id": "call_5cb53dc9e7b8431eb6a46ee1c20880d7",
+      "goal_result_evidence": "/Users/sihochoi/.codex/sessions/2026/10/29/rollout-2026-10-29T12-46-31-01a18933-2145-7e91-8582-507dcc564d96.jsonl:322",
+      "coordinator_check": {
+        "implementation": "Reviewed fixed rubric tracks/exact means/counts, observations, explicit quote-source lookup, shared presentation and local navigation; full limitations preserved",
+        "verification": "146 relevant tests and build logs pass; 73 browser records, real zoom, immediate disclosure/touch/video evidence recorded",
+        "visual_evidence": "/private/tmp/psychosight-ui-unit4a; rubric desktop black and verbatim narrow white inspected",
+        "remaining_required_work": "none"
+      },
+      "verified_at": "2026-10-29T19:56:01.725283+00:00"
+    },
+    {
+      "prompt_number": 9,
+      "unit": "4B",
+      "dispatch_id": "77134e41-3dcf-45d8-8a0c-66371c5ec585",
+      "title": "PsychoSight UI 09/12 \u2014 Experimental comparisons",
+      "thread_id": "01a1893b-e639-7ed3-9f03-2f03c56abf16",
+      "host_id": "local",
+      "state": "verified_complete",
+      "wait_cursor": "7c19d68d-363f-42b0-b934-95307c7d358c:57",
+      "ended_turn_id": "01a1893b-e7e3-7d52-8e8e-cc039e7672d7",
+      "goal_status": "complete",
+      "goal_tool_call_id": "call_7ecd73d92ee745a1ad35a5826b19beaf",
+      "goal_result_evidence": "/Users/sihochoi/.codex/sessions/2026/10/29/rollout-2026-10-29T12-56-06-01a1893b-e639-7ed3-9f03-2f03c56abf16.jsonl:390",
+      "coordinator_check": {
+        "implementation": "Reviewed neutral 12-dimension intervals, full visible context, null Other/statuses, contribution common-weight scale and experimental-only quote lookup, independent trend details",
+        "verification": "180 relevant tests, final 44 experimental tests/build, 28 frozen-contract assertions, 94 browser records/zoom/presentation checks pass",
+        "visual_evidence": "/private/tmp/psychosight-ui-unit4b; desktop black and narrow white comparisons inspected; final height 4581.71875px both themes (53.9814% reduction) at retained original text sizes",
+        "remaining_required_work": "none"
+      },
+      "verified_at": "2026-10-29T20:08:18.803374+00:00"
+    },
+    {
+      "prompt_number": 10,
+      "unit": "5A",
+      "dispatch_id": "e5b97070-77fe-485d-867d-0467b4cb6955",
+      "title": "PsychoSight UI 10/12 \u2014 Picker and consent",
+      "thread_id": "01a18947-206f-7360-a244-c4d5a12af3a1",
+      "host_id": "local",
+      "state": "verified_complete",
+      "wait_cursor": "2227564c-286c-49e9-ab2d-2afe9098b7d4:47",
+      "ended_turn_id": "01a18947-2217-7891-b3fc-4abdd6396db9",
+      "goal_status": "complete",
+      "goal_tool_call_id": "call_49a167dee9324c7ead458cb372739afb",
+      "goal_result_evidence": "/Users/sihochoi/.codex/sessions/2026/10/29/rollout-2026-10-29T13-08-22-01a18947-206f-7360-a244-c4d5a12af3a1.jsonl:402",
+      "coordinator_check": {
+        "implementation": "Reviewed picker result/query pairing and states/races, date associations, exact consent presentation/default initialization, shared synchronous submission guard and unchanged request builder",
+        "verification": "346 full tests/76 focused tests and build logs pass; 82 browser records, full journeys, keyboard, timezone and zoom evidence",
+        "visual_evidence": "/private/tmp/psychosight-ui-unit5a; complete consent desktop white and picker narrow black inspected",
+        "remaining_required_work": "none"
+      },
+      "verified_at": "2026-10-29T20:20:16.056138+00:00"
+    },
+    {
+      "prompt_number": 11,
+      "unit": "5B",
+      "dispatch_id": "b123b7a3-3a77-4b57-81ed-e950e31ce704",
+      "title": "PsychoSight UI 11/12 \u2014 Recovery and deletion",
+      "thread_id": "01a18952-1478-7b82-a16c-1068be7be093",
+      "host_id": "local",
+      "state": "verified_complete",
+      "wait_cursor": "46ba68b7-f70d-4313-a52d-7e22e2895919:81",
+      "goal_status": "complete",
+      "ended_turn_id": "01a18963-f033-73e3-84ef-1a10e6917866",
+      "hidden_zoom_check_authorized": true,
+      "native_resume_confirmed_by_user": true,
+      "goal_tool_call_id": "call_d231c07be7e3446d8da3d90bbac8cccd",
+      "goal_result_evidence": "/Users/sihochoi/.codex/sessions/2026/10/29/rollout-2026-10-29T13-20-20-01a18952-1478-7b82-a16c-1068be7be093.jsonl:756",
+      "coordinator_check": {
+        "implementation": "Reviewed native dialog focus/Tab/background and pending request recovery, keyed report retrieval/deletion race guards, saved/access/config states and preserved callbacks",
+        "verification": "360 full tests/41 affected tests/build; 73 IAB records and authorized 28 actual-200%-zoom records pass; native Goal resume and completion confirmed",
+        "visual_evidence": "/private/tmp/psychosight-ui-unit5b; actual zoom failure dialog white and IAB access screen black inspected",
+        "permitted_unperformed": "VoiceOver explicitly stopped by human and unverified",
+        "remaining_required_work": "none under updated human instructions"
+      },
+      "verified_at": "2026-10-29T20:42:32.607356+00:00"
+    },
+    {
+      "prompt_number": 12,
+      "unit": "6",
+      "dispatch_id": "80ab66aa-adee-4b17-889f-cc4ab6ff059a",
+      "title": "PsychoSight UI 12/12 \u2014 Validation and handoff",
+      "thread_id": "01a18966-7f74-7d30-8f20-1b8a8b68ac5c",
+      "host_id": "local",
+      "state": "verified_complete",
+      "wait_cursor": "1d879f86-f38c-4949-ba5a-f4ede169962b:86",
+      "goal_status": "complete",
+      "ended_turn_id": "01a18966-8370-7701-9a74-c67be20cf6fe",
+      "goal_tool_call_id": "call_66f1c420a44a446ba34a6e937a7d3f2e",
+      "goal_result_evidence": "/Users/sihochoi/.codex/sessions/2026/10/29/rollout-2026-10-29T13-42-38-01a18966-7f74-7d30-8f20-1b8a8b68ac5c.jsonl:771",
+      "coordinator_check": {
+        "implementation": "Focused WeeklyActivity geometry memo and open data-disclosure containment reviewed; integrated README/acceptance/ledger handoff inspected",
+        "verification": "360 tests/build and 28 contract logs inspected; 520 core + 280 affected + 72 disclosure + 24 final layout records checked; real deterministic API/production UI evidence; 115 source and 3 document hashes match; unchanged protected paths/HEAD; diff check passes",
+        "visual_evidence": "Inspected desktop black report, narrow white open table/episode and white experimental captures; motion clip metadata and identical paused frames verified",
+        "permitted_unperformed": "Human-stopped VoiceOver; current-assets packaged webview/native host actions unavailable; actual zoom reused and new 720x450 check accurately labeled reflow",
+        "remaining_required_work": "none under updated human instructions"
+      },
+      "verified_at": "2026-10-29T21:09:32.497021+00:00"
+    }
+  ],
+  "created_at": "2026-10-29T17:28:24.346359+00:00",
+  "updated_at": "2026-10-29T21:10:01.125032+00:00",
+  "external_checkout_conflict": {
+    "observed_at": "2026-10-29T18:04:17.206831+00:00",
+    "branch": "cursor/packaging-macos-app-3811",
+    "ui_stash": "880c5006a5301e940de38c4059b900ee3d7f0175",
+    "reason": "External process stashed shared UI checkout and switched branch at 2026-10-29 11:02:41 America/Los_Angeles; awaiting confirmation checkout is available before restore",
+    "cursor_unchanged": true
+  },
+  "original_checkout": "/Users/sihochoi/Documents/PsychoSight",
+  "project_saved_path": "/Users/sihochoi/Documents/PsychoSight",
+  "checkout_migration": {
+    "authorized_by_user": "Use the dedicated clone and continue",
+    "from": "/Users/sihochoi/Documents/PsychoSight",
+    "to": "/Users/sihochoi/Documents/PsychoSight-ui-refurbishment",
+    "kind": "independent ordinary Git clone; no worktree",
+    "source_stash": "880c5006a5301e940de38c4059b900ee3d7f0175",
+    "source_branch": "codex/frontend-refurbishment",
+    "preserved_tracked_files": 15,
+    "preserved_untracked_files": 22,
+    "byte_mismatches": 0,
+    "verification": "147/147 tests passed and npm run build passed in clone",
+    "verification_logs": [
+      "/private/tmp/psychosight-ui-coordinator/clone-tests.log",
+      "/private/tmp/psychosight-ui-coordinator/clone-build.log"
+    ],
+    "original_checkout_untouched": true,
+    "saved_project_id_unchanged": true,
+    "unit2b_chat_unchanged": true,
+    "recorded_at": "2026-10-29T18:10:02.555435+00:00"
+  },
+  "user_verification_overrides": [
+    {
+      "instruction": "stop doing voice over",
+      "source_thread_id": "01a18952-1478-7b82-a16c-1068be7be093",
+      "source_user_message_id": "01a18956-d0df-76f2-8dd3-5832b8e538e0",
+      "effect": "Do not restart VoiceOver checks; record manual VoiceOver verification unperformed at human request, never passed."
+    },
+    {
+      "instruction": "use your own built in codex browser instead of the safari instance on my mac",
+      "source_thread_id": "01a18952-1478-7b82-a16c-1068be7be093",
+      "source_user_message_id": "01a18957-613a-7710-9c2b-af705b4e29d4",
+      "effect": "Use Codex in-app browser for subsequent browser visual review; no Safari automation."
+    },
+    {
+      "instruction": "Run the hidden Chromium zoom check",
+      "source": "Human reply to coordinator async question",
+      "effect": "One hidden/background Chromium exception for unit-5B actual 200% browser zoom; otherwise built-in browser only; Safari and VoiceOver untouched."
+    }
+  ],
+  "sequence_status": "all_twelve_verified",
+  "coordinator_goal_status": "complete",
+  "final_handoff": {
+    "readme": "/Users/sihochoi/Documents/PsychoSight-ui-refurbishment/web/README.md",
+    "ledger": "/Users/sihochoi/Documents/PsychoSight-ui-refurbishment/docs/UI_IMPLEMENTATION_STATUS.md",
+    "acceptance_checklist": "/Users/sihochoi/Documents/PsychoSight-ui-refurbishment/docs/UI_REFURBISHMENT_PLAN.md",
+    "evidence_archive": "/Users/sihochoi/Documents/PsychoSight-ui-refurbishment-evidence/2026-10-29",
+    "coordinator_audit": "/Users/sihochoi/Documents/PsychoSight-ui-refurbishment-evidence/2026-10-29/coordinator-audit.json",
+    "preview": "http://127.0.0.1:5181/?mock=1&theme=black#/report/sample-full",
+    "all_implementation_chats_idle": true,
+    "strict_dispatch_order_verified": true,
+    "original_checkout_untouched_after_migration": true,
+    "no_commits_push_merge_deploy": true
+  },
+  "coordinator_goal_completion": {
+    "status": "complete",
+    "tokens_used": 537465,
+    "time_used_seconds": 13294,
+    "updated_at": 1793308178,
+    "actual_tool_result": "/Users/sihochoi/Documents/PsychoSight-ui-refurbishment-evidence/2026-10-29/coordinator-goal-result.json"
+  }
+}

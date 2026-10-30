@@ -73,6 +73,7 @@ class Conversation:
     participants: tuple[str, ...]
     chat_name: str = ""
     display_label: str = ""
+    earliest_date: Optional[datetime] = None
 
 
 @dataclass(frozen=True)
@@ -349,7 +350,8 @@ def list_conversations(conn: sqlite3.Connection) -> list[Conversation]:
             c.display_name,
             c.service_name,
             COUNT(m.ROWID) AS message_count,
-            MAX(m.date) AS latest_date
+            MAX(m.date) AS latest_date,
+            MIN(NULLIF(m.date, 0)) AS earliest_date
         FROM chat c
         LEFT JOIN chat_message_join cmj ON cmj.chat_id = c.ROWID
         LEFT JOIN message m ON m.ROWID = cmj.message_id
@@ -382,6 +384,7 @@ def list_conversations(conn: sqlite3.Connection) -> list[Conversation]:
                 latest_date=imessage_date_to_datetime(row["latest_date"]),
                 participants=participants,
                 chat_name=(row["display_name"] or "").strip(),
+                earliest_date=imessage_date_to_datetime(row["earliest_date"]),
             )
         )
     return conversations

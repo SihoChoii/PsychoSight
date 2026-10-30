@@ -38,9 +38,11 @@ def _h(*parts: str) -> int:
 class MockProvider(Provider):
     name = "mock"
 
-    def __init__(self, mode: str = "normal", reasoning_text: Optional[str] = None):
+    def __init__(self, mode: str = "normal", reasoning_text: Optional[str] = None,
+                 reasoning_level: Optional[str] = None):
         self.model = "mock-rubric-1"
         self.reasoning_effort = None
+        self.reasoning_level = reasoning_level  # recorded in run_meta; has no effect on mock output
         self.mode = mode
         self.calls = 0
         self.reasoning_text = reasoning_text  # simulates a trace; never returned to callers
@@ -49,6 +51,9 @@ class MockProvider(Provider):
         self.calls += 1
         if self.mode == "always_malformed" or (self.mode == "malformed_once" and self.calls == 1):
             return LLMResult(content='{"items": {"validates_feelings": {"score": 9}')
+        if system.startswith(("TASK: EXPERIMENTAL", "TASK: HOLISTIC")):
+            from .experimental import mock_exp  # experimental prompts (traits-exp-v1, exp-holistic-v1)
+            return mock_exp.complete(system, user, run_idx)
         if system.startswith("TASK: SYNTHESIS"):
             return LLMResult(content=json.dumps(self._synthesis(user)))
         return LLMResult(content=json.dumps(self._rubric(user, run_idx)))

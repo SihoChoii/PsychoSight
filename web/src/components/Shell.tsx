@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useRef, type MouseEvent, type ReactNode } from "react";
 import type { ThemeName } from "../mode";
 import type { Route } from "../routes";
 
@@ -18,13 +18,21 @@ export function Shell({
   children: ReactNode;
 }) {
   const next = theme === "black" ? "white" : "black";
+  const mainRef = useRef<HTMLElement>(null);
+
+  function goToContent(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    mainRef.current?.focus({ preventScroll: true });
+    mainRef.current?.scrollIntoView({ block: "start" });
+  }
+
   return (
     <>
-      <a className="skip" href="#main">
+      <a className="skip" href="#main" onClick={goToContent}>
         Skip to content
       </a>
       <div className="page">
-        <header>
+        <header className="shell-header">
           <a className="brand" href="#/">
             <img
               className="theme-wordmark"
@@ -34,7 +42,7 @@ export function Shell({
               height={44}
             />
           </a>
-          <nav aria-label="Primary">
+          <nav className="shell-nav" aria-label="Primary">
             <a href="#/" aria-current={route.name === "picker" ? "page" : undefined}>
               Conversations
             </a>
@@ -52,10 +60,10 @@ export function Shell({
             <span className="theme-label">{theme === "black" ? "White" : "Black"} theme</span>
           </button>
         </header>
-        <main id="main" tabIndex={-1}>
+        <main id="main" tabIndex={-1} ref={mainRef}>
           {children}
         </main>
-        <footer>
+        <footer className="shell-footer">
           <img
             className="footer-symbol"
             src={`/logos/${theme}/psychosigh-symbol.svg`}
@@ -64,7 +72,7 @@ export function Shell({
             height={48}
           />
           {disclaimer ? <span className="footer-disclaimer">{disclaimer}</span> : <span />}
-          <a href="#main">Back to top</a>
+          <a href="#main" onClick={goToContent}>Back to top</a>
         </footer>
       </div>
     </>

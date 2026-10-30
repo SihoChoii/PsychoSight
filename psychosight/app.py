@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Optional
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -18,14 +18,22 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, StrictBool
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from . import config, loader, pipeline
-from .errors import FullDiskAccessRequired, InvalidRequest, NotFound, PsychoSightError, ReportNotReady
+from . import config, disk_access, loader, pipeline, reasoning
+from .errors import (
+    DateRangeInvalid, ExperimentalConsentRequired, FullDiskAccessRequired, InvalidRequest, NotFound, PsychoSightError, ReportNotReady,
+)
+from .experimental.contract import DIMENSIONS
+from .experimental import strings as exp_strings
 from .llm import get_provider, install_log_guard
 from .storage import Store
+from .message_timeline import MessageTimeline
 
 log = logging.getLogger("psychosight.app")
 
 LOCAL_ORIGINS = r"^http://(localhost|127\.0\.0\.1)(:\d+)?$"
+CONVERSATIONS_DEFAULT_LIMIT = 50  # used when offset or q is given without limit
+CONVERSATIONS_MAX_LIMIT = 200
+CONVERSATIONS_MAX_Q = 200
 
 
 class AnalysisRequest(BaseModel):
@@ -35,6 +43,13 @@ class AnalysisRequest(BaseModel):
     llm_opt_in: StrictBool
     demo: StrictBool = False
     mode: Optional[str] = None
+    # None means "apply the default" (off, except both on for the demo).
+    experimental_scores: Optional[StrictBool] = None
+    score_other: Optional[StrictBool] = None
+    experimental_opt_in_text: Optional[str] = None
+    score_other_opt_in_text: Optional[str] = None
+    # One of GET /config reasoning_levels[].id; None uses default_reasoning. Applies to every LLM call.
+    reasoning_level: Optional[str] = None
 
 
 @dataclass
@@ -56,7 +71,8 @@ class Job:
 
 
 def _err(code: str, message: str, status: int) -> JSONResponse:
-    return JSONResponse({"error": {"code": code, "message": message}}, status_code=status)
+    # Belt and braces: PsychoSightError already scrubs keys, but str(exc.detail) and others do not.
+    return JSONResponse({"error": {"code": code, "message": config.redact(message)}}, status_code=status)
 
 
 def _public_id(value: str, limit: int = 64) -> str:
@@ -75,6 +91,7 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
     state = {"store": store}
     jobs: Dict[str, Job] = {}
     lock = threading.Lock()
+    message_timeline = MessageTimeline()
 
     def get_store() -> Store:
         if state["store"] is None:
@@ -109,22 +126,68 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
     def get_config():
         s = config.llm_settings()
         return {"version": config.BACKEND_VERSION, "schema_version": config.SCHEMA_VERSION, "provider": "deepseek",
-                "model": s.model, "llm_configured": s.configured, "reasoning_effort": s.reasoning_effort,
-                "demo_provider": config.demo_provider_name(), "opt_in_text": config.OPT_IN_TEXT,
+                "model": s.model, "llm_configured": s.configured, "llm_available": s.configured,
+                "llm_key_source": s.key_source,
+                "llm_key_note": None if s.api_key else config.missing_key_message(),
+                "reasoning_effort": s.reasoning_effort,  # legacy: same value as default_reasoning
+                "reasoning_levels": reasoning.levels_for_config(),
+                "default_reasoning": config.default_reasoning_level(),
+                "demo_provider": config.demo_provider_name(),
+                "demo_provider_note": config.demo_provider_note(), "opt_in_text": config.OPT_IN_TEXT,
                 "disclaimer": config.DISCLAIMER, "limitations_title": config.LIMITATIONS_TITLE,
-                "max_episodes_scored": config.MAX_EPISODES_SCORED}
+                "max_episodes_scored": config.MAX_EPISODES_SCORED,
+                "experimental_opt_in_text": exp_strings.EXPERIMENTAL_CONSENT,
+                "score_other_opt_in_text": exp_strings.SCORE_OTHER_CONSENT,
+                "experimental_banner": exp_strings.BANNER,
+                "experimental_footer_support": exp_strings.FOOTER_SUPPORT,
+                "experimental_scale_note": exp_strings.SCALE_NOTE,
+                "experimental_trend_note": exp_strings.TREND_NOTE,
+                "experimental_how_it_works": exp_strings.HOW_IT_WORKS,
+                "experimental_enabled": pipeline.experimental_enabled(),
+                "experimental_dimensions": [
+                    {"key": d.key, "label": d.label, "family": d.family, "evidence_strength": d.evidence_strength}
+                    for d in DIMENSIONS
+                ]}
 
     @app.get("/conversations")
-    def conversations():
-        items = [loader.demo_summary()]
+    def conversations(response: Response, limit: Optional[int] = None, offset: Optional[int] = None,
+                      q: Optional[str] = None):
+        paged = limit is not None or offset is not None or q is not None
+        if limit is not None and not 1 <= limit <= CONVERSATIONS_MAX_LIMIT:
+            raise InvalidRequest(f"limit must be between 1 and {CONVERSATIONS_MAX_LIMIT}.")
+        if offset is not None and offset < 0:
+            raise InvalidRequest("offset must be 0 or greater.")
+        if q is not None and len(q) > CONVERSATIONS_MAX_Q:
+            raise InvalidRequest(f"q must be at most {CONVERSATIONS_MAX_Q} characters.")
+        if paged and limit is None:
+            limit = CONVERSATIONS_DEFAULT_LIMIT
+        offset = offset or 0
+        items = [loader.demo_summary()] if loader.demo_matches(q) else []
         chat_db = {"available": True, "error": None}
         try:
-            items += loader.list_conversations()
+            items += loader.list_conversations(q=q)
         except FullDiskAccessRequired as exc:
             chat_db = {"available": False, "error": {"code": exc.code, "message": exc.message}}
-        return {"conversations": items, "chat_db": chat_db}
+        total = len(items)
+        page = items[offset:offset + limit] if limit is not None else items[offset:]
+        response.headers["X-Total-Count"] = str(total)
+        return {"conversations": page, "chat_db": chat_db, "total": total, "limit": limit, "offset": offset,
+                "q": (q.strip() or None) if q is not None else None}
 
-    def _run(job: Job, req: AnalysisRequest, provider, date_from, date_to) -> None:
+    @app.post("/disk-access/recheck")
+    def recheck_disk_access():
+        return disk_access.recheck()
+
+    @app.post("/disk-access/open-settings")
+    def open_disk_access_settings():
+        return disk_access.open_settings()
+
+    @app.post("/disk-access/reveal")
+    def reveal_disk_access_app():
+        return disk_access.reveal_app()
+
+    def _run(job: Job, req: AnalysisRequest, provider, date_from, date_to, experimental: bool,
+             score_other: bool, date_range_clamped: Optional[dict] = None) -> None:
         def progress(stage: str, cur: int, tot: int) -> None:
             job.stage, job.progress = stage, {"current": cur, "total": tot}
 
@@ -132,7 +195,9 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
         try:
             pipeline.run_analysis(req.conversation_id, date_from=date_from, date_to=date_to,
                                   llm_opt_in=req.llm_opt_in, demo=req.demo, mode=job.mode, report_id=job.job_id,
-                                  progress=progress, store=get_store(), provider=provider)
+                                  progress=progress, store=get_store(), provider=provider,
+                                  experimental_scores=experimental, score_other=score_other,
+                                  date_range_clamped=date_range_clamped)
             job.status, job.stage = "done", "done"
             if job.deleted:
                 get_store().delete_report(job.job_id)
@@ -153,24 +218,39 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
             raise InvalidRequest("mode must be 'full', 'deterministic_only' or null.")
         if not req.conversation_id or len(req.conversation_id) > 128:
             raise InvalidRequest("conversation_id is missing or too long.")
+        reasoning_level = (reasoning.validate(req.reasoning_level) if req.reasoning_level is not None
+                           else config.default_reasoning_level())  # INVALID_REASONING_LEVEL (422)
         try:
             date_from, date_to = loader.parse_date(req.date_from), loader.parse_date(req.date_to)
         except ValueError:
             raise InvalidRequest("date_from/date_to must be YYYY-MM-DD.")
         if date_from and date_to and date_from > date_to:
-            raise InvalidRequest("date_from must be on or before date_to.")
+            raise DateRangeInvalid("date_from must be on or before date_to.")
         if req.demo:
             req.conversation_id = config.DEMO_CONVERSATION_ID
+        is_demo = req.conversation_id == config.DEMO_CONVERSATION_ID
+        experimental, score_other = pipeline.resolve_experimental(
+            is_demo, req.experimental_scores, req.score_other)
+        # The demo does not require the consent echo. A real chat must send the exact strings from /config.
+        if experimental and not is_demo:
+            if req.experimental_opt_in_text != exp_strings.EXPERIMENTAL_CONSENT:
+                raise ExperimentalConsentRequired(exp_strings.CONSENT_MISMATCH_MESSAGE)
+            if score_other and req.score_other_opt_in_text != exp_strings.SCORE_OTHER_CONSENT:
+                raise ExperimentalConsentRequired(exp_strings.CONSENT_MISMATCH_MESSAGE)
         run_mode = pipeline.resolve_mode(req.llm_opt_in, req.mode)
-        loader.check_supported(req.conversation_id)
+        first, last = loader.check_supported(req.conversation_id)
+        date_from, date_to, date_range_clamped = loader.resolve_date_range(date_from, date_to, first, last)
         provider = None
         if run_mode == "full":
-            provider = get_provider(req.conversation_id == config.DEMO_CONVERSATION_ID, req.llm_opt_in)
+            provider = get_provider(req.conversation_id == config.DEMO_CONVERSATION_ID, req.llm_opt_in,
+                                    reasoning_level=reasoning_level)
         job = Job(job_id=uuid.uuid4().hex[:12], conversation_id=req.conversation_id, mode=run_mode,
                   created_at=datetime.now(timezone.utc).astimezone().isoformat())
         with lock:
             jobs[job.job_id] = job
-        threading.Thread(target=_run, args=(job, req, provider, date_from, date_to), daemon=True).start()
+        threading.Thread(target=_run, args=(job, req, provider, date_from, date_to, experimental, score_other,
+                                                   date_range_clamped),
+                         daemon=True).start()
         log.info("job=%s queued mode=%s", job.job_id, run_mode)
         return {"job_id": job.job_id, "status": job.status}
 
@@ -205,10 +285,22 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
             raise NotFound(f"No report with id '{_public_id(job_id)}'.")
         return rep
 
+    @app.get("/analyses/{job_id}/episodes/{episode_id}/messages")
+    def episode_messages(job_id: str, episode_id: str, response: Response, offset: int = 0, limit: int = 500,
+                         start_ms: Optional[float] = None, end_ms: Optional[float] = None):
+        rep = get_report(job_id)
+        if isinstance(rep, Response):
+            return rep
+        response.headers["Cache-Control"] = "no-store"
+        return message_timeline.page(rep, episode_id, offset=offset, limit=limit,
+                                     expected_hash=get_store().episode_hash(job_id, episode_id),
+                                     start_ms=start_ms, end_ms=end_ms)
+
     @app.delete("/analyses/{job_id}")
     def delete_analysis(job_id: str):
         job = jobs.get(job_id)
         removed = get_store().delete_report(job_id)
+        message_timeline.discard(job_id)
         if job and not job.deleted:
             job.deleted = True
             removed = True
@@ -230,6 +322,7 @@ def create_app(static_dir: Optional[Path] = None, store: Optional[Store] = None,
         def root_note():
             return ("<!doctype html><title>PsychoSight Lite</title><h1>PsychoSight Lite backend</h1>"
                     "<p>The API is running. No UI build found (expected <code>web/dist</code> or <code>web/</code>, "
-                    "or set PSYCHOSIGHT_STATIC_DIR). See <a href='/docs'>/docs</a> and <code>docs/API.md</code>.</p>"
+                    "or set PSYCHOSIGHT_STATIC_DIR). To build the UI: <code>cd web &amp;&amp; npm install &amp;&amp; npm run build</code>, "
+                    "then restart. See <a href='/docs'>/docs</a> and <code>docs/API.md</code>.</p>"
                     f"<p>{config.DISCLAIMER}.</p>")
     return app

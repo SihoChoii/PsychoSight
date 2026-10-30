@@ -21,22 +21,44 @@ python3 -m venv .venv
 .venv/bin/python -m pytest            # all offline, no network, no chat.db needed
 ```
 
+### DeepSeek key (one-time setup)
+```bash
+cp .env.example .env      # then paste the DeepSeek key after DEEPSEEK_API_KEY=
+.venv/bin/python -m psychosight check-llm
+```
+The key is **not in git** (judges receive it privately). It is read from the `DEEPSEEK_API_KEY` environment variable,
+else from `.env` at the repo root, else `~/.psychosight/.env` (both gitignored; no extra dependency), else (packaged
+app only) a `psychosight.env` bundled into the app at build time (see `docs/PACKAGING_KEY.md`). The default model
+is `deepseek-flash` (DeepSeek-V4.1-Flash) at reasoning level `low`; each analysis can pick `none` (thinking off),
+`low`, `high` or `max` (`reasoning_level` on `POST /analyses`, `--reasoning-level` on the CLI). The key is only
+used after the explicit opt-in and is shown masked (`sk-…abcd`) by `check-llm`. Without a key everything else still
+works: deterministic-only reports, and the demo with offline mock scores (labelled "not real model").
+
+**The demo runs the real model.** With a key configured, opting in on the synthetic demo conversation runs a real
+DeepSeek analysis (same pipeline as a real chat; the excerpts are fictional). `PSYCHOSIGHT_DEMO_PROVIDER=mock` forces
+the offline mock (tests and CI do this). Timing and token use for a full demo run are in "Demo conversation" below.
+
 ### Environment variables
+Any of these can also go in `.env`; a real environment variable wins over the file.
+
 | Variable | Required | Meaning |
 |---|---|---|
-| `DEEPSEEK_API_KEY` | for real LLM runs | DeepSeek API key. Read from the environment only; never logged or written to disk. |
-| `DEEPSEEK_MODEL` | for real LLM runs | Exact DeepSeek model id (Siho's "4.1 flash 1017"). No default is hardcoded; placeholder: `export DEEPSEEK_MODEL="<exact model id from GET /models>"`. |
+| `DEEPSEEK_API_KEY` | for real LLM runs | DeepSeek key (env var or `.env`). Never logged, printed in full, returned by the API, or written to disk. |
+| `DEEPSEEK_MODEL` | no | Overrides the default model `deepseek-flash` (DeepSeek-V4.1-Flash, "4.1 flash 1017"). Other id on the key today: `deepseek-v4-pro`. |
 | `DEEPSEEK_BASE_URL` | no | Default `https://api.deepseek.com`. |
-| `DEEPSEEK_REASONING_EFFORT` | no | Default `max` (highest). `none` disables thinking. |
-| `DEEPSEEK_THINKING` | no | Default `enabled`. |
+| `DEEPSEEK_REASONING_EFFORT` | no | Default reasoning level when a request does not choose one: `none` (thinking off), `low` (default), `high` or `max`. Other values are ignored with a warning. |
+| `DEEPSEEK_THINKING` | no | Legacy: `disabled` is the same as `DEEPSEEK_REASONING_EFFORT=none`. |
 | `DEEPSEEK_JSON_MODE`, `DEEPSEEK_SEND_TEMPERATURE` | no | Default `1`; set `0` if the model rejects `response_format` or `temperature`. |
-| `DEEPSEEK_TIMEOUT_S`, `DEEPSEEK_MAX_TOKENS` | no | Request timeout (default 180 s) and optional max tokens. |
+| `DEEPSEEK_TIMEOUT_S`, `DEEPSEEK_MAX_TOKENS` | no | Request timeout (default 300 s) and optional max tokens. |
 | `PSYCHOSIGHT_PORT` | no | Default `8765`. |
-| `PSYCHOSIGHT_STATIC_DIR` | no | UI directory; default `web/dist`, then `web/`. |
+| `PSYCHOSIGHT_STATIC_DIR` | no | UI directory; default `web/dist`, then `web/` only if it is plain static files (an unbuilt Vite `web/` with `package.json` is skipped: run `cd web && npm install && npm run build`). |
 | `PSYCHOSIGHT_DATA_DIR` | no | Local SQLite location; default `~/.psychosight/`. |
 | `PSYCHOSIGHT_CHAT_DB` | no | Default `~/Library/Messages/chat.db`. |
-| `PSYCHOSIGHT_DEMO_PROVIDER` | no | `mock` (default) or `deepseek` for the synthetic demo conversation. |
+| `PSYCHOSIGHT_DEMO_PROVIDER` | no | Unset (default): the demo uses DeepSeek when a key is configured, else the offline mock. `mock` or `deepseek` forces one. |
 | `PSYCHOSIGHT_MAX_LLM_CALLS` | no | Per-run call ceiling (default 200). |
+| `PSYCHOSIGHT_LLM_CONCURRENCY` | no | Main rubric model calls in flight (default 12; both runs of an episode go out in parallel). |
+| `PSYCHOSIGHT_EXP_LLM_CONCURRENCY` | no | Experimental-stage model calls in flight (default 24). |
+| `PSYCHOSIGHT_EXP_OVERLAP` | no | Default `1`: with the real model, experimental calls start alongside the main rubric and synthesis. `0` runs the stage after synthesis. |
 
 ### Run
 ```bash
@@ -46,7 +68,7 @@ python3 -m venv .venv
 # CLI
 .venv/bin/python -m psychosight list-conversations
 .venv/bin/python -m psychosight analyze --demo                         # deterministic-only (no LLM)
-.venv/bin/python -m psychosight analyze --demo --opt-in-llm --out demo.json   # full mode, offline mock LLM
+.venv/bin/python -m psychosight analyze --demo --opt-in-llm --out demo.json   # full mode, real model if a key is set
 .venv/bin/python -m psychosight analyze -c 42 --from 2026-08-01 --to 2026-10-28 --opt-in-llm --out report.json
 .venv/bin/python -m psychosight list-reports
 .venv/bin/python -m psychosight delete-report <report_id>
@@ -64,6 +86,30 @@ curl -s $B/analyses/$JOB/report   # report JSON
 curl -s -X DELETE $B/analyses/$JOB
 ```
 
+### Demo conversation
+`demo` is a synthetic 1:1 chat between two fictional people, me (Sam) and Robin, generated deterministically by
+`scripts/make_demo_conversation.py` (seed 1017) into `psychosight/data/demo_conversation.jsonl` (about 650 KB; run the
+script to regenerate, `--check` to verify). It has 4,259 messages in 191 episodes over 26 weeks (Aug 4, 2025 to
+Feb 1, 2026), shaped into phases so the report has something to describe:
+
+| Weeks | Phase | Planted patterns |
+|---|---|---|
+| Aug 4 - Sep 14 | warm | I open most episodes and reply fast; acknowledging Robin's feelings |
+| Sep 15 - Oct 19 | busy | Robin opens most; my replies take several minutes; I shift topics to myself; Robin double-texts |
+| Oct 20 - Nov 9 | conflict | arguments with escalating language and absolutist words, blame, late-night (01:00-04:00) bursts; one runs through the repeated 01:00 hour of the Nov 2 DST change |
+| Nov 10 - 16 | quiet | no messages at all |
+| Nov 17 - Dec 21 | repair | apologies, repair attempts, taking responsibility, long reflective messages |
+| Dec 22 - Feb 1 | steady | balanced, holidays, one small disagreement repaired quickly |
+
+It also has logistics, plans, jokes, emoji, `example.com` links, tapback and attachment-only rows (dropped by the
+loader), a duplicated row, and one prompt-injection style message (ignored by the scorer). Everything is fictional.
+
+A full real-model run of the demo scores 40 of the 191 episodes (`MAX_EPISODES_SCORED`, about 60% highest-signal and
+40% seeded random) twice each, plus one synthesis call: 81 calls, about 113k input and 505k output tokens (about 490k
+of them reasoning), and 7.2 minutes measured with the default 12 parallel calls (9.2 minutes with 8). Re-runs reuse the
+local score cache (only the synthesis call runs again, about 50 s). `docs/sample_report.json` is such a real
+`deepseek-flash` run on the demo.
+
 ### How it works
 `loader` (imports `psychosight/msgexport.py`, Siho's exporter, unchanged) -> `sessionize` (turn: same sender,
 gap < 30 s; episode: gap > 20 min starts a new one; DST-safe) -> `features` (absolutist-word rate with the 19-word
@@ -74,6 +120,17 @@ messages; strict JSON, one retry; each episode scored twice and kept only when r
 quotes must be verbatim and from my messages) -> `synthesize` (opt-in only: scoped observations "In this
 conversation, in the N episodes reviewed, ...", ids/quotes/wording post-checked, confidence from supporting
 episodes and agreement) -> `report` (validated against the JSON Schema, a failure is a hard error).
+
+### Experimental scores
+
+An optional section can add 0–100 indexes from word counts in this conversation and, when AI scoring is already on, from extra ratings of the same selected excerpts. The indexes are experimental and not validated. They are easy to get wrong, and several of them rest on weak evidence. The banner, both consent lines, and the longer validity note come from `GET /config` and should be shown as returned. Details: `docs/EXPERIMENTAL_SCORES.md`.
+
+```bash
+.venv/bin/python -m psychosight analyze --demo --experimental-scores --score-other
+.venv/bin/python -m psychosight analyze --demo --no-experimental-scores   # demo otherwise includes both
+```
+
+`--score-other` is only valid together with `--experimental-scores` (exit 2, `EXPERIMENTAL_CONSENT_REQUIRED`, if it is not). The other person has not agreed; that consent says the result stays on this computer. `PSYCHOSIGHT_EXPERIMENTAL=0` leaves the section `not_run` ("disabled by configuration"). `PSYCHOSIGHT_EXP_MAX_LLM_CALLS` caps the extra model calls (default 110) separately from `PSYCHOSIGHT_MAX_LLM_CALLS`.
 
 ### Privacy
 - **Local-first.** Analysis runs on this Mac. chat.db is read through a read-only snapshot.
@@ -88,15 +145,20 @@ episodes and agreement) -> `report` (validated against the JSON Schema, a failur
 - **The LLM cache holds no message text.** `llm_scores` is keyed by (episode hash, prompt version, model, run) and
   stores scores plus quote offsets only. `episodes`/`features` tables hold counts and numbers only.
 - **No message bodies or model reasoning in logs.** DeepSeek reasoning traces are discarded on receipt and never
-  logged or stored; logs carry ids, counts and status codes only (enforced by tests). The API key is never logged.
+  logged or stored; logs carry ids, counts and status codes only (enforced by tests). The API key is never logged or returned by the API.
 - The API binds to 127.0.0.1 and only serves message text as evidence quotes inside reports.
 
 ### Troubleshooting
-- **`FULL_DISK_ACCESS_REQUIRED`**: System Settings > Privacy & Security > Full Disk Access, enable the app that runs
-  the backend (Terminal, iTerm, or your IDE), then restart it. The demo conversation works meanwhile.
-- **`LLM_UNAVAILABLE` "DEEPSEEK_MODEL is not set" / "rejected the model"**: the error lists the model ids your key
-  can use (from DeepSeek's `GET /models`); set `DEEPSEEK_MODEL` to one of them and run
-  `python -m psychosight check-llm`.
+- **`FULL_DISK_ACCESS_REQUIRED`**: the packaged app reads a few bytes of `chat.db` on launch so macOS can list
+  PsychoSight under Full Disk Access. Use **Open Full Disk Access Settings** in the app, turn PsychoSight on, then
+  quit and reopen. **Recheck** tells you if a relaunch is still required. From a terminal, grant access to that
+  terminal instead. The demo conversation works meanwhile. Details: `packaging/macos/README.md`.
+- **`LLM_UNAVAILABLE` "No DeepSeek API key found"**: the message lists every place searched. `cp .env.example .env`,
+  paste the key, restart the backend (packaged app: rerun `scripts/inject_bundled_key.py`, see `docs/PACKAGING_KEY.md`).
+- **`LLM_UNAVAILABLE` "rejected the API key"**: the key in `.env` (or `DEEPSEEK_API_KEY`) is wrong or revoked;
+  replace it and run `python -m psychosight check-llm`.
+- **`LLM_UNAVAILABLE` "rejected the model"**: the error lists the model ids your key can use (from DeepSeek's
+  `GET /models`); set `DEEPSEEK_MODEL` to one of them and run `python -m psychosight check-llm`.
 - **HTTP 400 mentioning `response_format` or `temperature`**: set `DEEPSEEK_JSON_MODE=0` or
   `DEEPSEEK_SEND_TEMPERATURE=0`.
 - **`GROUP_CHAT_UNSUPPORTED`**: only 1:1 conversations are supported in this version.
@@ -126,3 +188,7 @@ VITE_MOCK=1 npm run dev
 ```
 
 Dev and build notes also live in `web/README.md`.
+
+## macOS app
+
+`packaging/macos/build.sh` builds a double-clickable `PsychoSight.app` with the Python runtime, dependencies, and `web/dist` inside the bundle. When a key is available at build time it is written into the app as `Contents/Resources/psychosight.env` (mode 600, gitignored). Anyone with the app can extract that key, so share it only with trusted judges and rotate the key afterwards. A `~/.psychosight/.env` or `DEEPSEEK_API_KEY` still overrides it. Full Disk Access, when you want to read Messages, is granted to PsychoSight.app. Details: `packaging/macos/README.md` and `docs/PACKAGING_KEY.md`.

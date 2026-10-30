@@ -1,0 +1,24 @@
+/* Reveal data ink without changing domains, dash patterns, axes or layout. */
+[data-graph-state="waiting"] [data-graph-ink] { opacity:0; clip-path:inset(0 100% 0 0); }
+[data-graph-state="revealing"] [data-graph-ink] { animation:graph-ink-reveal 440ms cubic-bezier(.2,.7,.2,1) both; }
+@keyframes graph-ink-reveal {
+ from { opacity:0; clip-path:inset(0 100% 0 0); }
+ to { opacity:1; clip-path:inset(0 0 0 0); }
+}
+@media(prefers-reduced-motion:reduce) {
+ [data-graph-state] [data-graph-ink] { animation:none !important; clip-path:none !important; opacity:1 !important; }
+}
+
+/* Scored-message content enters from below; it never changes the row's layout. */
+.score-fade[data-content-state="waiting"] > [data-rise-content] { opacity:0; transform:translateY(10px); }
+.score-fade[data-content-state="revealing"] > [data-rise-content] { animation:content-rise-reveal 360ms cubic-bezier(.2,.7,.2,1) var(--rise-delay,0ms) both; }
+.pattern-row > .pattern-result.score-fade { --rise-delay:35ms; }
+.pattern-row > .claim-evidence.score-fade { --rise-delay:70ms; }
+@keyframes content-rise-reveal {
+ from { opacity:0; transform:translateY(10px); }
+ to { opacity:1; transform:translateY(0); }
+}
+@media(max-width:700px) { .pattern-row > .score-fade { --rise-delay:0ms; } }
+@media(prefers-reduced-motion:reduce) { .score-fade[data-content-state] > [data-rise-content] { opacity:1 !important; transform:none !important; animation:none !important; } }
+
+[data-rise-content] { display:block; }
