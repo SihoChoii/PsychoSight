@@ -1,8 +1,8 @@
 import { useId, useRef, type CSSProperties, type KeyboardEvent } from "react";
 import { REASONING_DEEP_LABEL, REASONING_QUICK_LABEL, type ReasoningControlModel } from "../reasoning-adapter";
 
-export const MODEL_STEP_LABEL = "Use the model step";
-export const DETERMINISTIC_REASON = "Not used for a deterministic-only run.";
+export const MODEL_STEP_LABEL = "Enable AI analysis";
+export const DETERMINISTIC_REASON = "Enable AI analysis to choose a reasoning level.";
 
 export function clampReasoningIndex(index: number, count: number): number {
   if (count <= 0) return 0;
@@ -43,19 +43,16 @@ export function ReasoningControl({
   modelStep,
   busy,
   onIndex,
-  onModelStep,
 }: {
   control: ReasoningControlModel;
   index: number;
   modelStep: boolean;
   busy: boolean;
   onIndex: (index: number) => void;
-  onModelStep: (next: boolean) => void;
 }) {
   const legendId = useId();
   const sliderId = useId();
   const hintId = useId();
-  const reasonId = useId();
   const currentId = useId();
   const descriptionId = useId();
   const keyStepped = useRef(false);
@@ -65,7 +62,7 @@ export function ReasoningControl({
   const safeIndex = clampReasoningIndex(index, control.levels.length);
   const current = control.levels[safeIndex];
   const disabled = !modelStep || busy;
-  const describedBy = [hintId, current.description ? descriptionId : null, disabled && !modelStep ? reasonId : null]
+  const describedBy = [hintId, current.description ? descriptionId : null]
     .filter((id): id is string => id !== null)
     .join(" ");
 
@@ -84,16 +81,6 @@ export function ReasoningControl({
   return (
     <fieldset className={disabled ? "reasoning is-disabled" : "reasoning"}>
       <legend id={legendId}>Reasoning</legend>
-      <label className="check">
-        <input
-          type="checkbox"
-          checked={modelStep}
-          disabled={busy}
-          aria-controls={sliderId}
-          onChange={(event) => onModelStep(event.target.checked)}
-        />
-        <span>{MODEL_STEP_LABEL}</span>
-      </label>
       <p id={currentId} className="reasoning-current" data-testid="reasoning-current">
         {current.label}
       </p>
@@ -156,19 +143,26 @@ export function ReasoningControl({
           ))}
         </div>
       </div>
-      {current.description ? (
-        <p id={descriptionId} className="reasoning-description" data-testid="reasoning-description">
-          {current.description}
-        </p>
-      ) : null}
-      {!modelStep ? (
-        <p id={reasonId} className="reasoning-reason" data-testid="reasoning-reason">
-          {DETERMINISTIC_REASON}
-        </p>
-      ) : null}
-      <p id={hintId} className="reasoning-hint" data-testid="reasoning-hint">
-        {control.hint}
-      </p>
+      <div className="reasoning-copy-slot">
+        {control.levels.map((level, levelIndex) => (
+          <p
+            key={`${level.id}-${levelIndex}`}
+            id={levelIndex === safeIndex ? descriptionId : undefined}
+            className={`reasoning-description${levelIndex === safeIndex ? "" : " is-reserved"}`}
+            data-testid={levelIndex === safeIndex ? "reasoning-description" : undefined}
+            aria-hidden={levelIndex !== safeIndex}
+          >{level.description}</p>
+        ))}
+      </div>
+      <div className="reasoning-copy-slot">
+        {[control.hint, DETERMINISTIC_REASON].map((hint, hintIndex) => {
+          const active = modelStep === (hintIndex === 0);
+          return (
+            <p key={hintIndex} id={active ? hintId : undefined} className={`reasoning-hint${active ? "" : " is-reserved"}`}
+              data-testid={active ? "reasoning-hint" : undefined} aria-hidden={!active}>{hint}</p>
+          );
+        })}
+      </div>
     </fieldset>
   );
 }

@@ -3,26 +3,25 @@
   width: 100%;
   max-width: 600px;
   min-width: 0;
-  margin: var(--space-8) 0 0;
-  padding: var(--space-4) 0 0;
+  margin: 0;
+  padding: 0;
   border: 0;
-  border-top: var(--line-width) solid var(--line);
+  transition: color 200ms ease;
 }
 .reasoning legend {
   float: left;
   width: 100%;
-  margin: 0 0 var(--space-3);
+  margin: 0 0 var(--space-1);
   padding: 0;
-  font-size: 28px;
-  font-weight: 400;
+  font-size: 22px;
+  font-weight: 500;
   line-height: 1.2;
   letter-spacing: -0.03em;
 }
 .reasoning legend + * { clear: both; }
 .reasoning-current,
 .reasoning-description,
-.reasoning-hint,
-.reasoning-reason {
+.reasoning-hint {
   margin: var(--space-2) 0 0;
   max-width: 65ch;
   overflow-wrap: anywhere;
@@ -32,9 +31,13 @@
   letter-spacing: -0.02em;
 }
 .reasoning-description,
-.reasoning-hint,
-.reasoning-reason { color: var(--secondary); font-size: 16px; }
+.reasoning-hint { color: var(--secondary); font-size: 16px; }
+.reasoning.is-disabled { color: var(--secondary); }
 .reasoning.is-disabled .reasoning-current { color: var(--secondary); }
+/* Reserve the longest supplied copy at this width, so choosing a level never shifts the next step. */
+.reasoning-copy-slot { display: grid; }
+.reasoning-copy-slot > p { grid-area: 1 / 1; }
+.reasoning-copy-slot .is-reserved { visibility: hidden; pointer-events: none; }
 
 .reasoning-scale { padding-inline: 20px; }
 .reasoning-slider {
@@ -107,7 +110,7 @@
 }
 .reasoning-ticks {
   position: relative;
-  height: 76px;
+  height: 64px;
   margin: var(--space-1) 8px 0;
 }
 .reasoning-ticks.is-single { margin-left: 0; margin-right: 0; }
@@ -164,10 +167,13 @@
   }
 }
 @media (max-width: 400px) {
-  .reasoning legend { font-size: 24px; }
   .reasoning-scale { padding-inline: 12px; }
   .reasoning-ends,
   .reasoning-tick { font-size: 12px; }
 }
 
 .report-reasoning { color: var(--secondary); font-size: 16px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reasoning { transition: none; }
+}

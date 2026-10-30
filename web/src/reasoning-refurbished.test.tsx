@@ -43,6 +43,7 @@ describe("reasoning slider in the refurbished consent flow", () => {
   it("starts at default_reasoning, steps by keyboard, and sends the chosen level", async () => {
     render(<App />);
     const slider = await screen.findByRole("slider", { name: "Reasoning" });
+    fireEvent.click(screen.getByRole("checkbox", { name: MODEL_STEP_LABEL }));
     expect(slider).toHaveAttribute("aria-valuetext", "Low (default)");
     expect(slider).not.toHaveAttribute("tabindex", "-1");
     slider.focus();
@@ -64,6 +65,7 @@ describe("reasoning slider in the refurbished consent flow", () => {
   it("sends the config default when the slider is untouched", async () => {
     render(<App />);
     await screen.findByRole("slider", { name: "Reasoning" });
+    fireEvent.click(screen.getByRole("checkbox", { name: MODEL_STEP_LABEL }));
     fireEvent.click(screen.getByRole("button", { name: "Send excerpts and analyze" }));
     await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
     expect(create.mock.calls[0][0].reasoning_level).toBe(readReasoningControl(mockConfig).levels[1].id);
@@ -72,6 +74,7 @@ describe("reasoning slider in the refurbished consent flow", () => {
   it("omits reasoning_level for a deterministic-only run", async () => {
     render(<App />);
     const slider = await screen.findByRole("slider", { name: "Reasoning" });
+    fireEvent.click(screen.getByRole("checkbox", { name: MODEL_STEP_LABEL }));
     fireEvent.keyDown(slider, { key: "End" });
     fireEvent.click(screen.getByRole("button", { name: "Deterministic only, no LLM" }));
     await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
@@ -81,6 +84,7 @@ describe("reasoning slider in the refurbished consent flow", () => {
   it("blocks the LLM path while the model step is off", async () => {
     render(<App />);
     const slider = await screen.findByRole("slider", { name: "Reasoning" });
+    fireEvent.click(screen.getByRole("checkbox", { name: MODEL_STEP_LABEL }));
     fireEvent.click(screen.getByRole("checkbox", { name: MODEL_STEP_LABEL }));
     expect(slider).toBeDisabled();
     expect(screen.getByRole("button", { name: "Send excerpts and analyze" })).toBeDisabled();
@@ -92,6 +96,7 @@ describe("reasoning slider in the refurbished consent flow", () => {
     create.mockRejectedValue(new ApiError("INVALID_REASONING_LEVEL", message, 422));
     render(<App />);
     await screen.findByRole("slider", { name: "Reasoning" });
+    fireEvent.click(screen.getByRole("checkbox", { name: MODEL_STEP_LABEL }));
     fireEvent.click(screen.getByRole("button", { name: "Send excerpts and analyze" }));
     expect(await screen.findByRole("alert")).toHaveTextContent(message);
     expect(screen.getByRole("slider", { name: "Reasoning" })).toBeEnabled();

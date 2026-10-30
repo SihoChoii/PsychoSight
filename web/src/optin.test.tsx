@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import mockConfig from "./fixtures/mock-config.json";
 import { OptIn } from "./components/OptIn";
@@ -81,6 +81,8 @@ describe("opt-in disclosure", () => {
     );
     expect(screen.getByTestId("opt-in-text").textContent).toBe(mockConfig.opt_in_text);
     expect(screen.getByRole("button", { name: "Deterministic only, no LLM" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Send excerpts and analyze" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("checkbox", { name: "Enable AI analysis" }));
     expect(screen.getByRole("button", { name: "Send excerpts and analyze" })).toBeEnabled();
   });
 });

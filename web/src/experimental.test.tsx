@@ -403,7 +403,7 @@ describe("experimental scores section", () => {
 
 describe("experimental opt-in", () => {
   function renderOptIn(props: Partial<ComponentProps<typeof OptIn>> = {}) {
-    return render(
+    const view = render(
       <OptIn
         text={config.opt_in_text}
         busy={false}
@@ -418,12 +418,14 @@ describe("experimental opt-in", () => {
         {...props}
       />,
     );
+    fireEvent.click(screen.getByRole("checkbox", { name: "Enable AI analysis" }));
+    return view;
   }
 
   it("pre-checks both boxes for the demo and disables the second until the first is checked", () => {
     renderOptIn();
-    const experimental = screen.getByRole("checkbox", { name: config.experimental_opt_in_text });
-    const other = screen.getByRole("checkbox", { name: config.score_other_opt_in_text });
+    const experimental = screen.getByRole("checkbox", { name: "Add experimental scores" });
+    const other = screen.getByRole("checkbox", { name: "Also score the other person" });
     expect(experimental).toBeChecked();
     expect(other).toBeChecked();
     expect(screen.getByTestId("demo-provider-note").textContent).toBe(config.demo_provider_note);
@@ -440,14 +442,14 @@ describe("experimental opt-in", () => {
 
   it("includes experimental scores for real conversations, leaves Other optional, and respects the feature switch", () => {
     const first = renderOptIn({ isDemo: false, demoProviderNote: null });
-    expect(screen.getByRole("checkbox", { name: config.experimental_opt_in_text })).toBeChecked();
-    expect(screen.getByRole("checkbox", { name: config.score_other_opt_in_text })).not.toBeChecked();
-    expect(screen.getByRole("checkbox", { name: config.score_other_opt_in_text })).toBeEnabled();
+    expect(screen.getByRole("checkbox", { name: "Add experimental scores" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Also score the other person" })).not.toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Also score the other person" })).toBeEnabled();
     expect(screen.queryByTestId("demo-provider-note")).not.toBeInTheDocument();
     first.unmount();
 
     renderOptIn({ experimentalEnabled: false });
-    expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+    expect(screen.queryByRole("checkbox", { name: "Add experimental scores" })).not.toBeInTheDocument();
   });
 
   it("echoes the config strings and rejects scoring the other person alone", async () => {

@@ -37,6 +37,7 @@ function renderSetup(props: Partial<ComponentProps<typeof OptIn>> = {}) {
       {...props}
     />,
   );
+  fireEvent.click(screen.getByRole("checkbox", { name: MODEL_STEP_LABEL }));
   return { onOptIn, onLocalOnly };
 }
 
@@ -227,7 +228,7 @@ describe("reasoning control", () => {
     const slider = screen.getByRole("slider", { name: "Reasoning" });
     fireEvent.click(screen.getByRole("checkbox", { name: MODEL_STEP_LABEL }));
     expect(slider).toBeDisabled();
-    expect(screen.getByTestId("reasoning-reason")).toHaveTextContent(DETERMINISTIC_REASON);
+    expect(screen.getByTestId("reasoning-hint")).toHaveTextContent(DETERMINISTIC_REASON);
     expect(screen.getByRole("button", { name: "Send excerpts and analyze" })).toBeDisabled();
     fireEvent.keyDown(slider, { key: "End" });
     expect(slider).toHaveAttribute("aria-valuetext", "Low (default)");

@@ -135,7 +135,9 @@ describe("supporting app recovery", () => {
     expect(screen.getByRole("button",{name:"Send excerpts and analyze"})).toBeDisabled();
     expect(screen.getByRole("button",{name:"Deterministic only, no LLM"})).toBeEnabled();
     fireEvent.click(screen.getByRole("button",{name:"Retry disclosure"}));
-    await waitFor(() => expect(screen.getByRole("button",{name:"Send excerpts and analyze"})).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("checkbox",{name:"Enable AI analysis"})).toBeEnabled());
+    fireEvent.click(screen.getByRole("checkbox",{name:"Enable AI analysis"}));
+    expect(screen.getByRole("button",{name:"Send excerpts and analyze"})).toBeEnabled();
     expect(screen.getByTestId("opt-in-text")).toHaveTextContent(config.opt_in_text);expect(screen.getByText("Synthetic demo")).toBeInTheDocument();
   });
   it("preserves native access callbacks and refreshes catalog after a granted recheck", async () => {
