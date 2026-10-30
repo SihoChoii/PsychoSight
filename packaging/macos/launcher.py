@@ -254,6 +254,7 @@ def run_cocoa(url: str, proc: subprocess.Popen, show_note: bool) -> None:
         NSApplication,
         NSApplicationActivationPolicyRegular,
         NSBackingStoreBuffered,
+        NSColor,
         NSMakeRect,
         NSObject,
         NSTerminateNow,
@@ -266,6 +267,22 @@ def run_cocoa(url: str, proc: subprocess.Popen, show_note: bool) -> None:
     from Foundation import NSURL, NSURLRequest
     from WebKit import WKWebView, WKWebViewConfiguration
 
+    # Page backgrounds from web/src/brand/tokens.css, keyed by data-theme.
+    theme_rgb = {"black": (0.0, 0.0, 0.0), "white": (1.0, 1.0, 1.0)}
+
+    def tint(window, theme: str) -> None:
+        r, g, b = theme_rgb.get(theme, theme_rgb["black"])
+        window.setBackgroundColor_(NSColor.colorWithSRGBRed_green_blue_alpha_(r, g, b, 1.0))
+
+    import objc
+
+    class ThemeHandler(NSObject, protocols=[objc.protocolNamed("WKScriptMessageHandler")]):
+        # web/src/mode.ts posts the theme name here (HOST_THEME_HANDLER).
+        def userContentController_didReceiveScriptMessage_(self, _controller, message):
+            window = getattr(self, "window", None)
+            if window is not None:
+                tint(window, str(message.body()))
+
     class AppDelegate(NSObject):
         def applicationDidFinishLaunching_(self, _notification):
             mask = (
@@ -276,8 +293,23 @@ def run_cocoa(url: str, proc: subprocess.Popen, show_note: bool) -> None:
             window = NSWindow.alloc().initWithContentRect_styleMask_backing_defer_(
                 frame, mask, NSBackingStoreBuffered, False)
             window.setTitle_("PsychoSight")
+            # No visible title bar: hide the title text and let the bar take the
+            # page's colour. The strip keeps its height and stays the window's
+            # drag point (no full-size content view, so the page does not move up).
+            window.setTitleVisibility_(1)  # NSWindowTitleHidden
+            window.setTitlebarAppearsTransparent_(True)
+            # macOS 11 and later draw a hairline under a transparent title bar.
+            # Remove it so the strip is only the theme colour, at the same height.
+            if window.respondsToSelector_("setTitlebarSeparatorStyle:"):
+                window.setTitlebarSeparatorStyle_(1)  # NSTitlebarSeparatorStyleNone
+            tint(window, "black")
             window.setMinSize_((720, 560))
-            web = WKWebView.alloc().initWithFrame_configuration_(frame, WKWebViewConfiguration.alloc().init())
+            config = WKWebViewConfiguration.alloc().init()
+            handler = ThemeHandler.alloc().init()
+            handler.window = window
+            config.userContentController().addScriptMessageHandler_name_(handler, "psychosightTheme")
+            self.theme_handler = handler
+            web = WKWebView.alloc().initWithFrame_configuration_(frame, config)
             window.setContentView_(web)
             window.center()
             window.makeKeyAndOrderFront_(None)

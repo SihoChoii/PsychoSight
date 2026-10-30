@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Shell } from "./components/Shell";
-import { applyTheme, currentTheme, THEME_KEY } from "./mode";
+import { applyTheme, currentTheme, HOST_THEME_HANDLER, notifyHostTheme, THEME_KEY } from "./mode";
 import { parseHash } from "./routes";
 
 afterEach(() => {
@@ -51,6 +51,25 @@ describe("theme assets", () => {
     expect(currentTheme()).toBe("black");
     expect(localStorage.getItem(THEME_KEY)).toBe("black");
     expect(document.getElementById("favicon")).toHaveAttribute("href", "/logos/black/favicon.svg");
+  });
+});
+
+describe("macOS window drag strip", () => {
+  afterEach(() => {
+    delete (window as unknown as { webkit?: unknown }).webkit;
+  });
+
+  it("tells the app wrapper the theme so the hidden title bar strip matches the page", () => {
+    const postMessage = vi.fn();
+    (window as unknown as { webkit: unknown }).webkit = { messageHandlers: { [HOST_THEME_HANDLER]: { postMessage } } };
+    applyTheme("white");
+    applyTheme("black");
+    expect(postMessage.mock.calls).toEqual([["white"], ["black"]]);
+  });
+
+  it("is a no-op in a normal browser", () => {
+    expect(() => notifyHostTheme("white")).not.toThrow();
+    expect(() => applyTheme("white")).not.toThrow();
   });
 });
 

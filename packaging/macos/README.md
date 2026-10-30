@@ -2,6 +2,8 @@
 
 `PsychoSight.app` is a double-clickable app. It starts the FastAPI backend as a child of the signed `PsychoSight` executable, on `127.0.0.1` only, and opens the UI in a window at that same origin. Port `8765` is used when it is free; otherwise the app picks another free port. Quit the window or the Dock icon and the backend stops with it.
 
+The window has no visible title bar. The title text is hidden and the bar is transparent and tinted to the current theme (the page posts its theme to the `psychosightTheme` script message handler). The strip keeps its height and is still where you grab the window to move it; the page starts below it, as before. The close, minimise and zoom buttons stay in the corner.
+
 The app bundles its own Python, dependencies, `web/dist`, `schemas/report.schema.json`, and `psychosight` package data (`data/`, `experimental/`, including `wwbp/`). It does not need system Python or Node. A temporary DeepSeek key can be sealed into the app at build time. It is not committed.
 
 ## Build and install
